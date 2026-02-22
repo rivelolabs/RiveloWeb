@@ -83,7 +83,7 @@ export default function Projects() {
                                 </div>
 
                                 <h3 className="text-4xl sm:text-5xl font-bold text-white tracking-tight font-[var(--font-display)]">
-                                    Life App
+                                    RevFit
                                 </h3>
 
                                 <p className="text-gray-400 text-lg leading-relaxed max-w-lg">
@@ -161,7 +161,7 @@ export default function Projects() {
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={screens[active].src}
-                                                alt={`Life App ${screens[active].label} screen`}
+                                                alt={`RevFit ${screens[active].label} screen`}
                                                 className="w-full h-full object-cover object-top"
                                             />
                                         </motion.div>
