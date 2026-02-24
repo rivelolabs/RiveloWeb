@@ -1,218 +1,470 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowLeft, Shield, Mail } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "RevFit Privacy Policy | Rivelolabs",
-  description: "Privacy Policy for the RevFit mobile application.",
+  description: "Privacy Policy for the RevFit mobile application by Rivelo Labs.",
 };
 
-export default function PrivacyPage() {
+function SectionHeading({ id, number, title }: { id?: string; number: string; title: string }) {
   return (
-    <main className="relative min-h-screen px-6 py-16 sm:px-8">
+    <h2 id={id} className="flex items-baseline gap-3 text-xl font-semibold text-white scroll-mt-24">
+      <span className="text-sm font-bold text-indigo-400">{number}</span>
+      {title}
+    </h2>
+  );
+}
+
+function SubHeading({ title }: { title: string }) {
+  return <h3 className="mt-5 text-lg font-semibold text-white/90">{title}</h3>;
+}
+
+export default function PrivacyPage() {
+  const sections = [
+    { id: "who", label: "Who We Are" },
+    { id: "scope", label: "Scope" },
+    { id: "collect", label: "Information We Collect" },
+    { id: "use", label: "How We Use Info" },
+    { id: "healthkit", label: "HealthKit Data" },
+    { id: "tracking", label: "Tracking & Ads" },
+    { id: "sharing", label: "How We Share" },
+    { id: "retention", label: "Data Retention" },
+    { id: "storage", label: "Storage & Security" },
+    { id: "choices", label: "Your Controls" },
+    { id: "children", label: "Children" },
+    { id: "international", label: "International" },
+    { id: "rights", label: "Your Rights" },
+    { id: "changes", label: "Changes" },
+    { id: "contact", label: "Contact" },
+  ];
+
+  return (
+    <main className="relative min-h-screen px-4 py-16 sm:px-6 lg:px-8">
+      {/* Background effects */}
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-10 h-80 w-80 -translate-x-1/2 rounded-full bg-indigo-500/10 blur-3xl" />
-        <div className="absolute right-10 top-48 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="absolute left-1/2 top-0 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-indigo-500/[0.07] blur-[120px]" />
+        <div className="absolute right-0 top-96 h-80 w-80 rounded-full bg-cyan-500/[0.05] blur-[100px]" />
+        <div className="absolute left-0 bottom-96 h-80 w-80 rounded-full bg-purple-500/[0.05] blur-[100px]" />
       </div>
 
-      <article className="mx-auto max-w-4xl rounded-3xl border border-white/10 bg-white/[0.03] p-6 sm:p-10 backdrop-blur-sm">
-        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-indigo-300">
-          Privacy Policy
-        </p>
-        <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl font-[var(--font-display)]">
-          Privacy Policy for RevFit
-        </h1>
-        <p className="mt-4 text-sm text-gray-400">Effective Date: February 22, 2026</p>
+      <div className="mx-auto max-w-6xl">
+        {/* Back link */}
+        <Link
+          href="/"
+          className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-gray-400 transition-colors hover:text-white"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Home
+        </Link>
 
-        <div className="mt-8 space-y-8 text-sm leading-7 text-gray-300 sm:text-base">
-          <p>
-            RevFit ("RevFit", "we", "our", or "us") respects your privacy. This Privacy Policy
-            explains how we collect, use, store, and protect your information when you use the
-            RevFit mobile application.
-          </p>
+        <div className="flex flex-col lg:flex-row gap-10">
+          {/* Sidebar TOC — sticky on desktop */}
+          <aside className="hidden lg:block lg:w-56 shrink-0">
+            <div className="sticky top-24">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.15em] text-indigo-400">
+                On this page
+              </p>
+              <nav className="flex flex-col gap-1">
+                {sections.map((s) => (
+                  <a
+                    key={s.id}
+                    href={`#${s.id}`}
+                    className="text-[13px] text-gray-500 transition-colors hover:text-gray-200 py-1 border-l-2 border-transparent hover:border-indigo-500/50 pl-3 -ml-0.5"
+                  >
+                    {s.label}
+                  </a>
+                ))}
+              </nav>
+            </div>
+          </aside>
 
-          <p>If you do not agree with this Privacy Policy, please do not use the app.</p>
+          {/* Main content */}
+          <article className="min-w-0 flex-1 rounded-3xl border border-white/[0.06] bg-white/[0.02] p-6 sm:p-10 lg:p-12 backdrop-blur-sm">
+            {/* Header */}
+            <div className="mb-10 pb-8 border-b border-white/[0.06]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/[0.06] px-4 py-1.5 text-sm font-medium text-indigo-300 mb-4">
+                <Shield className="h-3.5 w-3.5" />
+                Privacy Policy
+              </div>
+              <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl font-[var(--font-display)]">
+                Privacy Policy for{" "}
+                <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                  RevFit
+                </span>
+              </h1>
+              <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-400">
+                <p>Effective Date: February 24, 2026</p>
+                <p>Last Updated: February 24, 2026</p>
+              </div>
+            </div>
 
-          <section>
-            <h2 className="text-xl font-semibold text-white">1. Information We Collect</h2>
-            <p className="mt-3">
-              We may collect the following types of information to provide and improve RevFit:
-            </p>
+            <div className="space-y-10 text-sm leading-7 text-gray-300 sm:text-base">
+              {/* Intro */}
+              <p>
+                RevFit (&quot;RevFit&quot;, &quot;we&quot;, &quot;our&quot;, or &quot;us&quot;), operated by Rivelo Labs, respects your privacy. This Privacy Policy explains how we collect, use, disclose, store, and protect information when you use the RevFit mobile application and related services (the &quot;Services&quot;).
+              </p>
+              <p>
+                By using RevFit, you agree to this Privacy Policy. If you do not agree, please do not use the Services.
+              </p>
 
-            <h3 className="mt-4 text-lg font-semibold text-white">A. Account Information</h3>
-            <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>Sign in with Apple account information (such as your Apple account identifier)</li>
-              <li>Name and email address (if provided by Apple and shared by you)</li>
-            </ul>
+              {/* 1. Who We Are */}
+              <section>
+                <SectionHeading id="who" number="01" title="Who We Are" />
+                <p className="mt-3">
+                  RevFit is a fitness, nutrition, wellness, and progress tracking app operated by Rivelo Labs.
+                </p>
+                <div className="mt-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+                  <p className="text-sm font-medium text-white mb-1">Contact:</p>
+                  <p>Rivelo Labs</p>
+                  <p>
+                    Email:{" "}
+                    <a href="mailto:hello@rivelolabs.com" className="text-cyan-300 underline decoration-cyan-400/40 underline-offset-4 hover:text-cyan-200">
+                      hello@rivelolabs.com
+                    </a>
+                  </p>
+                </div>
+              </section>
 
-            <h3 className="mt-4 text-lg font-semibold text-white">B. Profile and Fitness Information</h3>
-            <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>
-                Profile details you enter, such as age, gender, height, weight, target weight,
-                goals, and preferences
-              </li>
-              <li>Workout logs, exercise activity, routines, and progress data</li>
-              <li>Nutrition and hydration data (meals, calories, macros, water intake)</li>
-              <li>
-                Wellness and mind tracking data (journal entries, mood, breathing sessions,
-                recovery-related check-ins)
-              </li>
-            </ul>
+              {/* 2. Scope */}
+              <section>
+                <SectionHeading id="scope" number="02" title="Scope of This Privacy Policy" />
+                <p className="mt-3">This Privacy Policy applies to information collected through:</p>
+                <ul className="mt-3 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>The RevFit iOS app</li>
+                  <li>Features within the app, including fitness tracking, nutrition/hydration logging, wellness tools, subscriptions, and optional AR/camera features</li>
+                  <li>Customer support and privacy-related communications with us</li>
+                </ul>
+                <p className="mt-3 text-gray-400">
+                  This Privacy Policy does not apply to third-party services we do not control (for example, Apple, App Store, or third-party payment/subscription systems), which have their own privacy policies.
+                </p>
+              </section>
 
-            <h3 className="mt-4 text-lg font-semibold text-white">
-              C. HealthKit / Apple Health Data (Optional)
-            </h3>
-            <p className="mt-2">If you grant permission, RevFit may read data from Apple Health / HealthKit, such as:</p>
-            <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>Steps</li>
-              <li>Exercise minutes</li>
-              <li>Stand hours</li>
-            </ul>
-            <p className="mt-2">
-              RevFit may also write limited activity/workout-related data if you enable sync and
-              grant permission.
-            </p>
+              {/* 3. Information We Collect */}
+              <section>
+                <SectionHeading id="collect" number="03" title="Information We Collect" />
+                <p className="mt-3">
+                  Depending on the features you use, we may collect the following categories of information:
+                </p>
 
-            <h3 className="mt-4 text-lg font-semibold text-white">D. Purchase and Subscription Information</h3>
-            <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>Subscription status and product entitlement information provided by Apple (StoreKit)</li>
-              <li>We do not receive your full payment card details. Payments are handled by Apple.</li>
-            </ul>
+                <SubHeading title="3.1 Account and Identity Information" />
+                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>Sign in with Apple account identifier</li>
+                  <li>Name and email address (only if shared by you through Apple or otherwise provided)</li>
+                  <li>Account settings and preferences</li>
+                </ul>
 
-            <h3 className="mt-4 text-lg font-semibold text-white">E. Device and App Data</h3>
-            <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>
-                Basic technical information needed to operate the app (such as app version, device
-                type, and error/debug information)
-              </li>
-            </ul>
-          </section>
+                <SubHeading title="3.2 Profile and Fitness Information" />
+                <p className="mt-2">Information you enter to use and personalize the app, such as:</p>
+                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>Age, gender, height, weight, target weight</li>
+                  <li>Fitness goals and preferences</li>
+                  <li>Workout routines, exercise logs, activity progress</li>
+                  <li>Training history and performance metrics</li>
+                </ul>
 
-          <section>
-            <h2 className="text-xl font-semibold text-white">2. How We Use Your Information</h2>
-            <p className="mt-3">We use your information to:</p>
-            <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>Create and manage your account</li>
-              <li>Provide fitness, nutrition, and wellness tracking features</li>
-              <li>Personalize goals, insights, and recommendations</li>
-              <li>Sync your data across devices (when cloud sync is enabled)</li>
-              <li>Process and manage subscriptions through Apple</li>
-              <li>Improve app performance, reliability, and user experience</li>
-              <li>Provide customer support and respond to requests</li>
-            </ul>
-          </section>
+                <SubHeading title="3.3 Nutrition, Hydration, and Wellness Information" />
+                <p className="mt-2">Information you create or log in the app, such as:</p>
+                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>Meals, calories, macronutrients, and nutrition entries</li>
+                  <li>Water intake and hydration logs</li>
+                  <li>Wellness tracking data (for example, mood, journal entries, breathing sessions, recovery-related check-ins)</li>
+                </ul>
 
-          <section>
-            <h2 className="text-xl font-semibold text-white">3. HealthKit Data Use</h2>
-            <p className="mt-3">If you connect Apple Health / HealthKit:</p>
-            <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>HealthKit data is used only to provide and improve health and fitness features in RevFit</li>
-              <li>HealthKit data is not used for advertising</li>
-              <li>HealthKit data is not sold to third parties</li>
-            </ul>
-          </section>
+                <SubHeading title="3.4 HealthKit / Apple Health Data (Optional)" />
+                <p className="mt-2">
+                  If you connect Apple Health / HealthKit and grant permission, RevFit may read and/or write certain HealthKit data to provide health and fitness features.
+                </p>
+                <p className="mt-2">Examples of HealthKit data RevFit may access (with your permission):</p>
+                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>Steps</li>
+                  <li>Exercise minutes</li>
+                  <li>Stand hours</li>
+                  <li>Limited activity/workout-related data (if you enable sync and grant write permission)</li>
+                </ul>
+                <p className="mt-2 text-gray-400">
+                  HealthKit access is optional and controlled by you through Apple&apos;s permission system.
+                </p>
 
-          <section>
-            <h2 className="text-xl font-semibold text-white">4. How We Store Your Information</h2>
-            <p className="mt-3">Your information may be stored:</p>
-            <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>Locally on your device</li>
-              <li>
-                In secure cloud services used to operate the app (such as authentication and
-                database services)
-              </li>
-            </ul>
-            <p className="mt-2">
-              We take reasonable steps to protect your data, but no method of transmission or
-              storage is 100% secure.
-            </p>
-          </section>
+                <SubHeading title="3.5 Camera, AR, and Face Analysis Data (Optional)" />
+                <p className="mt-2">
+                  If you use RevFit&apos;s camera or AR-based features (such as exercise motion tracking, body angle estimation, or face/appearance analysis features), RevFit may access your device camera.
+                </p>
+                <p className="mt-2">Depending on the feature:</p>
+                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>Camera frames may be processed in real time to estimate movement, body position, joint angles, or facial characteristics for in-app feedback</li>
+                  <li>Camera access is only used while the feature is active and after you grant camera permission</li>
+                </ul>
+                <p className="mt-2">
+                  If a feature allows you to submit a photo or media for analysis, the photo/media you choose to submit may be processed locally on your device and/or sent to a service provider as described in Section 7 (How We Share Information), depending on the feature implementation.
+                </p>
+                <p className="mt-2 text-gray-400">
+                  We do not use camera or face analysis data for advertising or cross-app tracking.
+                </p>
 
-          <section>
-            <h2 className="text-xl font-semibold text-white">5. Sharing of Information</h2>
-            <p className="mt-3">We do not sell your personal information.</p>
-            <p className="mt-3">
-              We may share limited information only when necessary to operate the app, such as:
-            </p>
-            <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>Apple (for Sign in with Apple and subscription billing)</li>
-              <li>
-                Service providers that support app functionality (for example,
-                authentication/database services)
-              </li>
-            </ul>
-            <p className="mt-2">
-              We may also disclose information if required by law or to protect rights, safety, or
-              security.
-            </p>
-          </section>
+                <SubHeading title="3.6 Purchase and Subscription Information" />
+                <p className="mt-2">If you purchase a subscription in RevFit:</p>
+                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>Subscription status, product identifiers, and entitlement information from Apple (StoreKit/App Store)</li>
+                  <li>Transaction metadata made available by Apple to verify access</li>
+                </ul>
+                <p className="mt-2 text-gray-400">
+                  We do not collect or store your full payment card number. Payments are processed by Apple.
+                </p>
 
-          <section>
-            <h2 className="text-xl font-semibold text-white">6. Data Retention</h2>
-            <p className="mt-3">We retain your information only as long as needed to:</p>
-            <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>Provide the app and its features</li>
-              <li>Maintain your account</li>
-              <li>Comply with legal obligations</li>
-              <li>Resolve disputes and enforce agreements</li>
-            </ul>
-          </section>
+                <SubHeading title="3.7 Device, App, and Technical Information" />
+                <p className="mt-2">
+                  We may collect basic technical information needed to operate, secure, and improve the Services, such as:
+                </p>
+                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>App version</li>
+                  <li>Device type and operating system version</li>
+                  <li>Error logs, crash/debug information</li>
+                  <li>Basic usage diagnostics related to app performance and reliability</li>
+                </ul>
+              </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-white">7. Account Deletion and Your Choices</h2>
-            <p className="mt-3">
-              You can request deletion of your account and associated app data from within the app:
-            </p>
-            <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>Profile / Settings -> Delete Account</li>
-            </ul>
-            <p className="mt-2">
-              When you delete your account, we will delete or anonymize your data, subject to legal
-              or operational requirements.
-            </p>
-            <p className="mt-2">You may also contact us for privacy-related requests.</p>
-          </section>
+              {/* 4. How We Use Your Information */}
+              <section>
+                <SectionHeading id="use" number="04" title="How We Use Your Information" />
+                <p className="mt-3">We use your information to:</p>
+                <ul className="mt-3 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>Create and manage your account</li>
+                  <li>Provide fitness, nutrition, hydration, wellness, and progress tracking features</li>
+                  <li>Personalize goals, insights, and recommendations</li>
+                  <li>Enable optional HealthKit integrations (when you grant permission)</li>
+                  <li>Enable optional camera/AR/analysis features (when you grant permission)</li>
+                  <li>Sync data across devices (if cloud sync is enabled)</li>
+                  <li>Process and manage subscriptions and entitlements through Apple</li>
+                  <li>Improve app performance, reliability, and user experience</li>
+                  <li>Provide customer support and respond to your requests</li>
+                  <li>Protect the security and integrity of the Services</li>
+                  <li>Comply with legal obligations</li>
+                </ul>
+              </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-white">8. Children&apos;s Privacy</h2>
-            <p className="mt-3">
-              RevFit is not intended for children under 13 (or the minimum age required in your
-              country/region). We do not knowingly collect personal information from children
-              without appropriate consent.
-            </p>
-          </section>
+              {/* 5. HealthKit Data Use */}
+              <section>
+                <SectionHeading id="healthkit" number="05" title="HealthKit Data Use (Apple Health / HealthKit)" />
+                <p className="mt-3">If you connect Apple Health / HealthKit:</p>
+                <div className="mt-3 rounded-xl border border-emerald-500/10 bg-emerald-500/[0.03] p-5 space-y-2">
+                  <p className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5">&#10003;</span> HealthKit data is used only to provide and improve health and fitness features within RevFit</p>
+                  <p className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5">&#10003;</span> HealthKit data is not used for advertising</p>
+                  <p className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5">&#10003;</span> HealthKit data is not sold to third parties</p>
+                  <p className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5">&#10003;</span> HealthKit data is not used for cross-app or cross-website tracking</p>
+                  <p className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5">&#10003;</span> HealthKit data is not shared with data brokers</p>
+                </div>
+                <p className="mt-3 text-gray-400">
+                  We access only the HealthKit data types you authorize, and you can revoke access at any time in Apple Health / iOS Settings.
+                </p>
+              </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-white">9. International Users</h2>
-            <p className="mt-3">
-              If you use RevFit outside the country where our services are hosted, your information
-              may be processed and stored in other countries where our service providers operate.
-            </p>
-          </section>
+              {/* 6. Tracking and Advertising */}
+              <section>
+                <SectionHeading id="tracking" number="06" title="Tracking and Advertising" />
+                <p className="mt-3">
+                  RevFit does not track users across third-party apps or websites for advertising purposes.
+                </p>
+                <p className="mt-3">We do not:</p>
+                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>Use personal data for cross-app/cross-website behavioral advertising</li>
+                  <li>Share personal information with data brokers</li>
+                  <li>Use HealthKit data for advertising, marketing profiling, or data broker purposes</li>
+                </ul>
+                <p className="mt-3 text-gray-400">
+                  Because RevFit does not perform tracking as defined by Apple&apos;s App Tracking Transparency (ATT) framework, RevFit may not request ATT permission unless our practices change in the future.
+                </p>
+              </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-white">10. Changes to This Privacy Policy</h2>
-            <p className="mt-3">
-              We may update this Privacy Policy from time to time. Updated versions will be posted
-              at the Privacy Policy URL and will become effective on the date listed above (or the
-              updated effective date).
-            </p>
-          </section>
+              {/* 7. How We Share Information */}
+              <section>
+                <SectionHeading id="sharing" number="07" title="How We Share Information" />
+                <p className="mt-3 font-medium text-white">We do not sell your personal information.</p>
+                <p className="mt-3">
+                  We may share limited information only as necessary to operate the Services, including:
+                </p>
 
-          <section>
-            <h2 className="text-xl font-semibold text-white">11. Contact Us</h2>
-            <p className="mt-3">
-              If you have questions about this Privacy Policy or your data, contact us at:
-            </p>
-            <p className="mt-3">
-              <a
-                href="mailto:rivelolabs@gmail.com"
-                className="text-cyan-300 underline decoration-cyan-400/40 underline-offset-4 hover:text-cyan-200"
-              >
-                rivelolabs@gmail.com
-              </a>
-            </p>
-          </section>
+                <SubHeading title="7.1 Apple" />
+                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>Sign in with Apple authentication</li>
+                  <li>App Store / StoreKit subscription billing and entitlement processing</li>
+                  <li>HealthKit framework access (with your permission)</li>
+                </ul>
+
+                <SubHeading title="7.2 Service Providers (Infrastructure / App Operations)" />
+                <p className="mt-2">We may use trusted service providers that support app functionality, such as:</p>
+                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>Authentication and account services</li>
+                  <li>Database/storage services</li>
+                  <li>Cloud infrastructure</li>
+                  <li>Error monitoring / diagnostics (if enabled)</li>
+                </ul>
+                <p className="mt-2 text-gray-400">
+                  Examples may include providers such as Google/Firebase and other infrastructure vendors used to operate the app.
+                </p>
+
+                <SubHeading title="7.3 AI/Analysis Service Providers (Only When You Use Those Features)" />
+                <p className="mt-2">
+                  If you use optional AI-powered analysis features (for example, photo, face, or text-based analysis features), the data you choose to submit for analysis (such as images or prompts) may be transmitted to a third-party AI service provider to generate the requested results.
+                </p>
+                <p className="mt-2 text-gray-400">
+                  We do not use such submitted data for advertising or cross-app tracking. Use of those providers is subject to their service terms and privacy practices.
+                </p>
+
+                <SubHeading title="7.4 Legal, Safety, and Security" />
+                <p className="mt-2">We may disclose information if reasonably necessary to:</p>
+                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>Comply with legal obligations or valid legal process</li>
+                  <li>Enforce our terms or protect our rights</li>
+                  <li>Protect the safety, security, and integrity of users, the Services, or the public</li>
+                </ul>
+              </section>
+
+              {/* 8. Data Retention */}
+              <section>
+                <SectionHeading id="retention" number="08" title="Data Retention" />
+                <p className="mt-3">We retain personal information only for as long as reasonably necessary to:</p>
+                <ul className="mt-3 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>Provide the Services and features you use</li>
+                  <li>Maintain your account</li>
+                  <li>Comply with legal obligations</li>
+                  <li>Resolve disputes and enforce agreements</li>
+                  <li>Maintain security, backups, and service integrity</li>
+                </ul>
+                <p className="mt-3 text-gray-400">
+                  Retention periods may vary based on the type of data and whether you maintain an active account.
+                </p>
+                <p className="mt-2 text-gray-400">
+                  When you request deletion, we will delete or anonymize your data within a reasonable period, subject to legal, security, backup, and operational requirements.
+                </p>
+              </section>
+
+              {/* 9. Data Storage and Security */}
+              <section>
+                <SectionHeading id="storage" number="09" title="Data Storage and Security" />
+                <p className="mt-3">Your information may be stored:</p>
+                <ul className="mt-3 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>Locally on your device</li>
+                  <li>In secure cloud services used to operate the app (for example, authentication and database services)</li>
+                </ul>
+                <p className="mt-3 text-gray-400">
+                  We use reasonable administrative, technical, and organizational measures to protect your information. However, no method of transmission over the internet or electronic storage is 100% secure, and we cannot guarantee absolute security.
+                </p>
+              </section>
+
+              {/* 10. Your Choices and Controls */}
+              <section>
+                <SectionHeading id="choices" number="10" title="Your Choices and Controls" />
+
+                <SubHeading title="10.1 Account and Profile Information" />
+                <p className="mt-2">You can review and update certain profile information in the app.</p>
+
+                <SubHeading title="10.2 HealthKit Permissions" />
+                <p className="mt-2">You can control or revoke HealthKit access at any time through:</p>
+                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>Apple Health app</li>
+                  <li>iOS Settings permissions</li>
+                </ul>
+
+                <SubHeading title="10.3 Camera Permissions" />
+                <p className="mt-2">You can control or revoke camera access in iOS Settings.</p>
+
+                <SubHeading title="10.4 Subscription Management" />
+                <p className="mt-2">
+                  Subscriptions are billed and managed by Apple. You can manage or cancel your subscription in your Apple ID / App Store subscription settings.
+                </p>
+
+                <SubHeading title="10.5 Account Deletion" />
+                <p className="mt-2">
+                  You can request deletion of your account and associated app data from within the app:
+                </p>
+                <div className="mt-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-4 py-3 font-mono text-sm text-gray-300">
+                  Profile / Settings → Delete Account
+                </div>
+                <p className="mt-2 text-gray-400">
+                  When you delete your account, we will delete or anonymize associated data, subject to legal, security, backup, or operational retention requirements.
+                </p>
+
+                <SubHeading title="10.6 Privacy Requests" />
+                <p className="mt-2">
+                  You may contact us for privacy-related requests, including questions, access/deletion requests, or concerns, at:{" "}
+                  <a href="mailto:rivelolabs@gmail.com" className="text-cyan-300 underline decoration-cyan-400/40 underline-offset-4 hover:text-cyan-200">
+                    rivelolabs@gmail.com
+                  </a>
+                </p>
+              </section>
+
+              {/* 11. Children's Privacy */}
+              <section>
+                <SectionHeading id="children" number="11" title="Children&apos;s Privacy" />
+                <p className="mt-3">
+                  RevFit is not intended for children under 13 (or the minimum age required in your country/region). We do not knowingly collect personal information from children without appropriate consent. If you believe a child has provided us personal information in violation of this section, contact us and we will take appropriate steps.
+                </p>
+              </section>
+
+              {/* 12. International Users */}
+              <section>
+                <SectionHeading id="international" number="12" title="International Users" />
+                <p className="mt-3">
+                  If you use RevFit from outside the country where our services are hosted, your information may be processed and stored in other countries where we or our service providers operate. Data protection laws in those countries may differ from the laws in your location.
+                </p>
+              </section>
+
+              {/* 13. Your Regional Rights */}
+              <section>
+                <SectionHeading id="rights" number="13" title="Your Regional Rights (Where Applicable)" />
+                <p className="mt-3">
+                  Depending on your location, you may have privacy rights under applicable law, including rights to:
+                </p>
+                <ul className="mt-3 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
+                  <li>Request access to personal information we hold about you</li>
+                  <li>Request correction of inaccurate information</li>
+                  <li>Request deletion of your information</li>
+                  <li>Object to or restrict certain processing</li>
+                  <li>Request data portability (where applicable)</li>
+                  <li>Withdraw consent where processing is based on consent (for example, optional permissions)</li>
+                </ul>
+                <p className="mt-3 text-gray-400">
+                  To exercise applicable rights, contact us at{" "}
+                  <a href="mailto:hello@rivelolabs.com" className="text-cyan-300 underline decoration-cyan-400/40 underline-offset-4 hover:text-cyan-200">
+                    hello@rivelolabs.com
+                  </a>
+                  . We may need to verify your identity before fulfilling certain requests.
+                </p>
+              </section>
+
+              {/* 14. Changes */}
+              <section>
+                <SectionHeading id="changes" number="14" title="Changes to This Privacy Policy" />
+                <p className="mt-3">
+                  We may update this Privacy Policy from time to time. If we make material changes, we will post the updated version at the Privacy Policy URL and update the &quot;Effective Date&quot; / &quot;Last Updated&quot; date above. Your continued use of RevFit after changes become effective means you accept the updated Privacy Policy.
+                </p>
+              </section>
+
+              {/* 15. Contact Us */}
+              <section>
+                <SectionHeading id="contact" number="15" title="Contact Us" />
+                <p className="mt-3">
+                  If you have questions, requests, or concerns about this Privacy Policy or your data, contact us at:
+                </p>
+                <div className="mt-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+                  <p className="font-medium text-white">Rivelo Labs</p>
+                  <p className="mt-2 flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-indigo-400" />
+                    <a href="mailto:hello@rivelolabs.com" className="text-cyan-300 underline decoration-cyan-400/40 underline-offset-4 hover:text-cyan-200">
+                      hello@rivelolabs.com
+                    </a>
+                  </p>
+                  <p className="mt-2 text-gray-400">
+                    Privacy Policy URL:{" "}
+                    <span className="text-gray-300">https://www.rivelolabs.com/privacy</span>
+                  </p>
+                </div>
+              </section>
+            </div>
+          </article>
         </div>
-      </article>
+      </div>
     </main>
   );
 }
