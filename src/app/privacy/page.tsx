@@ -95,7 +95,7 @@ export default function PrivacyPage() {
               </h1>
               <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-400">
                 <p>Effective Date: February 24, 2026</p>
-                <p>Last Updated: February 24, 2026</p>
+                <p>Last Updated: February 27, 2026</p>
               </div>
             </div>
 
@@ -188,19 +188,44 @@ export default function PrivacyPage() {
 
                 <SubHeading title="3.5 Camera, AR, and Face Analysis Data (Optional)" />
                 <p className="mt-2">
-                  If you use RevFit&apos;s camera or AR-based features (such as exercise motion tracking, body angle estimation, or face/appearance analysis features), RevFit may access your device camera.
+                  RevFit uses your device&apos;s camera for two optional AR-powered features: (1) body motion tracking for exercise rep counting, and (2) face and appearance analysis using Apple&apos;s TrueDepth API (ARKit). Camera access is only used while the feature is active and after you grant camera permission.
                 </p>
-                <p className="mt-2">Depending on the feature:</p>
-                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-indigo-500/60">
-                  <li>Camera frames may be processed in real time to estimate movement, body position, joint angles, or facial characteristics for in-app feedback</li>
-                  <li>Camera access is only used while the feature is active and after you grant camera permission</li>
-                </ul>
-                <p className="mt-2">
+
+                <p className="mt-3 font-medium text-white">What face data is collected:</p>
+                <p className="mt-1">
+                  When you use the Face Analyzer feature, the app accesses face mesh geometry (3D vertex data) and facial expression coefficients (blendShapes) from the TrueDepth camera to estimate face shape, facial symmetry, and expressions.
+                </p>
+
+                <p className="mt-3 font-medium text-white">How it is used:</p>
+                <p className="mt-1">
+                  Face data is used solely to provide real-time visual feedback, including face shape classification, symmetry scoring, lighting assessment, and grooming/styling recommendations. Face data is not used for biometric identification, facial recognition, authentication, or advertising.
+                </p>
+
+                <p className="mt-3 font-medium text-white">Storage and retention:</p>
+                <p className="mt-1">
+                  Face data is processed entirely on-device and exists only in temporary memory during the active AR camera session. No face data is written to disk, databases, or cloud storage. All face data is immediately discarded when the AR session ends or the app is closed. The retention period is zero.
+                </p>
+
+                <p className="mt-3 font-medium text-white">Third-party sharing:</p>
+                <p className="mt-1">
+                  Face data is never shared with any third parties, data brokers, advertisers, or analytics services.
+                </p>
+
+                <p className="mt-3">
+                  For body motion tracking, camera frames may be processed in real time using Apple&apos;s Vision framework to estimate movement, body position, and joint angles for exercise rep counting. This data is also processed entirely on-device and is not stored or transmitted.
+                </p>
+
+                <p className="mt-3">
                   If a feature allows you to submit a photo or media for analysis, the photo/media you choose to submit may be processed locally on your device and/or sent to a service provider as described in Section 7 (How We Share Information), depending on the feature implementation.
                 </p>
-                <p className="mt-2 text-gray-400">
-                  We do not use camera or face analysis data for advertising or cross-app tracking.
-                </p>
+
+                <div className="mt-3 rounded-xl border border-amber-500/10 bg-amber-500/[0.03] p-5 space-y-2">
+                  <p className="flex items-start gap-2"><span className="text-amber-400 mt-0.5">&#10003;</span> Camera and face data is processed entirely on-device</p>
+                  <p className="flex items-start gap-2"><span className="text-amber-400 mt-0.5">&#10003;</span> No face data is stored persistently — discarded when session ends</p>
+                  <p className="flex items-start gap-2"><span className="text-amber-400 mt-0.5">&#10003;</span> Face data is never shared with third parties</p>
+                  <p className="flex items-start gap-2"><span className="text-amber-400 mt-0.5">&#10003;</span> Not used for biometric identification, facial recognition, or advertising</p>
+                  <p className="flex items-start gap-2"><span className="text-amber-400 mt-0.5">&#10003;</span> Not used for cross-app tracking</p>
+                </div>
 
                 <SubHeading title="3.6 Purchase and Subscription Information" />
                 <p className="mt-2">If you purchase a subscription in RevFit:</p>
