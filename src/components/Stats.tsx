@@ -44,32 +44,41 @@ function AnimatedNumber({ target, suffix = "" }: { target: number; suffix?: stri
 }
 
 const stats = [
-  { value: 10, suffix: "K+", label: "Lines of Code", color: "from-indigo-400 to-blue-400" },
-  { value: 3, suffix: "+", label: "Products Shipped", color: "from-cyan-400 to-teal-400" },
-  { value: 99, suffix: "%", label: "Uptime SLA", color: "from-purple-400 to-pink-400" },
-  { value: 5, suffix: "★", label: "App Store Rating", color: "from-amber-400 to-orange-400" },
+  { value: 10, suffix: "K+", label: "Lines of Code" },
+  { value: 3, suffix: "+", label: "Products Shipped" },
+  { value: 99, suffix: "%", label: "Uptime SLA" },
+  { value: 5, suffix: ".0", label: "App Store Rating" },
 ];
 
 export default function Stats() {
   return (
-    <section className="relative z-10 py-24 px-6">
-      <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+    <section className="relative z-10 py-20 px-6">
+      <div className="mx-auto max-w-6xl">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {stats.map((stat, i) => (
             <motion.div
               key={stat.label}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1, duration: 0.6 }}
+              transition={{ delay: i * 0.1, duration: 0.5 }}
               viewport={{ once: true, margin: "-50px" }}
-              className="group relative rounded-2xl border border-white/[0.04] bg-white/[0.02] p-6 sm:p-8 text-center transition-all duration-500 hover:bg-white/[0.05] hover:border-white/[0.08]"
+              className="text-center"
             >
               <div
-                className={`text-4xl sm:text-5xl font-bold tracking-tight bg-gradient-to-r ${stat.color} bg-clip-text text-transparent font-[var(--font-display)]`}
+                className="text-4xl sm:text-5xl font-bold tracking-tight"
+                style={{
+                  fontFamily: "var(--font-display), system-ui, sans-serif",
+                  color: "var(--text)",
+                }}
               >
                 <AnimatedNumber target={stat.value} suffix={stat.suffix} />
               </div>
-              <p className="mt-2 text-sm text-gray-500 font-medium">{stat.label}</p>
+              <p
+                className="mt-2 text-sm font-medium"
+                style={{ color: "var(--text-muted)" }}
+              >
+                {stat.label}
+              </p>
             </motion.div>
           ))}
         </div>

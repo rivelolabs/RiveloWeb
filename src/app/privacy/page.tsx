@@ -9,15 +9,15 @@ export const metadata: Metadata = {
 
 function SectionHeading({ id, number, title }: { id?: string; number: string; title: string }) {
   return (
-    <h2 id={id} className="flex items-baseline gap-3 text-xl font-semibold text-white scroll-mt-24">
-      <span className="text-sm font-bold text-indigo-400">{number}</span>
+    <h2 id={id} className="flex items-baseline gap-3 text-xl font-semibold scroll-mt-24" style={{ color: "var(--text)" }}>
+      <span className="text-sm font-bold" style={{ color: "var(--accent)" }}>{number}</span>
       {title}
     </h2>
   );
 }
 
 function SubHeading({ title }: { title: string }) {
-  return <h3 className="mt-5 text-lg font-semibold text-white/90">{title}</h3>;
+  return <h3 className="mt-5 text-lg font-semibold" style={{ color: "var(--text)", opacity: 0.9 }}>{title}</h3>;
 }
 
 export default function PrivacyPage() {
@@ -42,17 +42,14 @@ export default function PrivacyPage() {
   return (
     <main className="relative min-h-screen px-4 py-16 sm:px-6 lg:px-8">
       {/* Background effects */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-0 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-indigo-500/[0.07] blur-[120px]" />
-        <div className="absolute right-0 top-96 h-80 w-80 rounded-full bg-cyan-500/[0.05] blur-[100px]" />
-        <div className="absolute left-0 bottom-96 h-80 w-80 rounded-full bg-purple-500/[0.05] blur-[100px]" />
-      </div>
+      <div className="mesh-gradient" />
 
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-6xl relative z-10">
         {/* Back link */}
         <Link
           href="/"
-          className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-gray-400 transition-colors hover:text-white"
+          className="mb-8 inline-flex items-center gap-2 text-sm font-medium transition-colors"
+          style={{ color: "var(--text-muted)" }}
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Home
@@ -62,7 +59,7 @@ export default function PrivacyPage() {
           {/* Sidebar TOC — sticky on desktop */}
           <aside className="hidden lg:block lg:w-56 shrink-0">
             <div className="sticky top-24">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.15em] text-indigo-400">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.15em]" style={{ color: "var(--accent)" }}>
                 On this page
               </p>
               <nav className="flex flex-col gap-1">
@@ -70,7 +67,8 @@ export default function PrivacyPage() {
                   <a
                     key={s.id}
                     href={`#${s.id}`}
-                    className="text-[13px] text-gray-500 transition-colors hover:text-gray-200 py-1 border-l-2 border-transparent hover:border-indigo-500/50 pl-3 -ml-0.5"
+                    className="text-[13px] transition-colors py-1 border-l-2 border-transparent pl-3 -ml-0.5"
+                    style={{ color: "var(--text-muted)" }}
                   >
                     {s.label}
                   </a>
@@ -80,26 +78,35 @@ export default function PrivacyPage() {
           </aside>
 
           {/* Main content */}
-          <article className="min-w-0 flex-1 rounded-3xl border border-white/[0.06] bg-white/[0.02] p-6 sm:p-10 lg:p-12 backdrop-blur-sm">
+          <article className="card min-w-0 flex-1 p-6 sm:p-10 lg:p-12">
             {/* Header */}
-            <div className="mb-10 pb-8 border-b border-white/[0.06]">
-              <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/[0.06] px-4 py-1.5 text-sm font-medium text-indigo-300 mb-4">
+            <div className="mb-10 pb-8" style={{ borderBottom: "1px solid var(--border)" }}>
+              <div className="badge mb-4">
                 <Shield className="h-3.5 w-3.5" />
                 Privacy Policy
               </div>
-              <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl font-[var(--font-display)]">
+              <h1
+                className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl"
+                style={{
+                  fontFamily: "var(--font-display), system-ui, sans-serif",
+                  color: "var(--text)",
+                }}
+              >
                 Privacy Policy for{" "}
-                <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                <span
+                  className="bg-clip-text text-transparent"
+                  style={{ backgroundImage: "linear-gradient(135deg, var(--accent), #06b6d4)" }}
+                >
                   RevFit
                 </span>
               </h1>
-              <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-400">
+              <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm" style={{ color: "var(--text-muted)" }}>
                 <p>Effective Date: February 24, 2026</p>
                 <p>Last Updated: February 27, 2026</p>
               </div>
             </div>
 
-            <div className="space-y-10 text-sm leading-7 text-gray-300 sm:text-base">
+            <div className="space-y-10 text-sm leading-7 sm:text-base" style={{ color: "var(--text-secondary)" }}>
               {/* Intro */}
               <p>
                 RevFit (&quot;RevFit&quot;, &quot;we&quot;, &quot;our&quot;, or &quot;us&quot;), operated by Rivelo Labs, respects your privacy. This Privacy Policy explains how we collect, use, disclose, store, and protect information when you use the RevFit mobile application and related services (the &quot;Services&quot;).
@@ -114,12 +121,12 @@ export default function PrivacyPage() {
                 <p className="mt-3">
                   RevFit is a fitness, nutrition, wellness, and progress tracking app operated by Rivelo Labs.
                 </p>
-                <div className="mt-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
-                  <p className="text-sm font-medium text-white mb-1">Contact:</p>
+                <div className="mt-4 rounded-xl p-5" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}>
+                  <p className="text-sm font-medium mb-1" style={{ color: "var(--text)" }}>Contact:</p>
                   <p>Rivelo Labs</p>
                   <p>
                     Email:{" "}
-                    <a href="mailto:hello@rivelolabs.com" className="text-cyan-300 underline decoration-cyan-400/40 underline-offset-4 hover:text-cyan-200">
+                    <a href="mailto:hello@rivelolabs.com" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>
                       hello@rivelolabs.com
                     </a>
                   </p>
@@ -135,7 +142,7 @@ export default function PrivacyPage() {
                   <li>Features within the app, including fitness tracking, nutrition/hydration logging, wellness tools, subscriptions, and optional AR/camera features</li>
                   <li>Customer support and privacy-related communications with us</li>
                 </ul>
-                <p className="mt-3 text-gray-400">
+                <p className="mt-3" style={{ color: "var(--text-muted)" }}>
                   This Privacy Policy does not apply to third-party services we do not control (for example, Apple, App Store, or third-party payment/subscription systems), which have their own privacy policies.
                 </p>
               </section>
@@ -182,7 +189,7 @@ export default function PrivacyPage() {
                   <li>Stand hours</li>
                   <li>Limited activity/workout-related data (if you enable sync and grant write permission)</li>
                 </ul>
-                <p className="mt-2 text-gray-400">
+                <p className="mt-2" style={{ color: "var(--text-muted)" }}>
                   HealthKit access is optional and controlled by you through Apple&apos;s permission system.
                 </p>
 
@@ -191,22 +198,22 @@ export default function PrivacyPage() {
                   RevFit uses your device&apos;s camera for two optional AR-powered features: (1) body motion tracking for exercise rep counting, and (2) face and appearance analysis using Apple&apos;s TrueDepth API (ARKit). Camera access is only used while the feature is active and after you grant camera permission.
                 </p>
 
-                <p className="mt-3 font-medium text-white">What face data is collected:</p>
+                <p className="mt-3 font-medium" style={{ color: "var(--text)" }}>What face data is collected:</p>
                 <p className="mt-1">
                   When you use the Face Analyzer feature, the app accesses face mesh geometry (3D vertex data) and facial expression coefficients (blendShapes) from the TrueDepth camera to estimate face shape, facial symmetry, and expressions.
                 </p>
 
-                <p className="mt-3 font-medium text-white">How it is used:</p>
+                <p className="mt-3 font-medium" style={{ color: "var(--text)" }}>How it is used:</p>
                 <p className="mt-1">
                   Face data is used solely to provide real-time visual feedback, including face shape classification, symmetry scoring, lighting assessment, and grooming/styling recommendations. Face data is not used for biometric identification, facial recognition, authentication, or advertising.
                 </p>
 
-                <p className="mt-3 font-medium text-white">Storage and retention:</p>
+                <p className="mt-3 font-medium" style={{ color: "var(--text)" }}>Storage and retention:</p>
                 <p className="mt-1">
                   Face data is processed entirely on-device and exists only in temporary memory during the active AR camera session. No face data is written to disk, databases, or cloud storage. All face data is immediately discarded when the AR session ends or the app is closed. The retention period is zero.
                 </p>
 
-                <p className="mt-3 font-medium text-white">Third-party sharing:</p>
+                <p className="mt-3 font-medium" style={{ color: "var(--text)" }}>Third-party sharing:</p>
                 <p className="mt-1">
                   Face data is never shared with any third parties, data brokers, advertisers, or analytics services.
                 </p>
@@ -219,12 +226,12 @@ export default function PrivacyPage() {
                   If a feature allows you to submit a photo or media for analysis, the photo/media you choose to submit may be processed locally on your device and/or sent to a service provider as described in Section 7 (How We Share Information), depending on the feature implementation.
                 </p>
 
-                <div className="mt-3 rounded-xl border border-amber-500/10 bg-amber-500/[0.03] p-5 space-y-2">
-                  <p className="flex items-start gap-2"><span className="text-amber-400 mt-0.5">&#10003;</span> Camera and face data is processed entirely on-device</p>
-                  <p className="flex items-start gap-2"><span className="text-amber-400 mt-0.5">&#10003;</span> No face data is stored persistently — discarded when session ends</p>
-                  <p className="flex items-start gap-2"><span className="text-amber-400 mt-0.5">&#10003;</span> Face data is never shared with third parties</p>
-                  <p className="flex items-start gap-2"><span className="text-amber-400 mt-0.5">&#10003;</span> Not used for biometric identification, facial recognition, or advertising</p>
-                  <p className="flex items-start gap-2"><span className="text-amber-400 mt-0.5">&#10003;</span> Not used for cross-app tracking</p>
+                <div className="mt-3 rounded-xl p-5 space-y-2" style={{ backgroundColor: "rgba(245, 158, 11, 0.05)", border: "1px solid rgba(245, 158, 11, 0.1)" }}>
+                  <p className="flex items-start gap-2"><span className="text-amber-500 mt-0.5">&#10003;</span> Camera and face data is processed entirely on-device</p>
+                  <p className="flex items-start gap-2"><span className="text-amber-500 mt-0.5">&#10003;</span> No face data is stored persistently — discarded when session ends</p>
+                  <p className="flex items-start gap-2"><span className="text-amber-500 mt-0.5">&#10003;</span> Face data is never shared with third parties</p>
+                  <p className="flex items-start gap-2"><span className="text-amber-500 mt-0.5">&#10003;</span> Not used for biometric identification, facial recognition, or advertising</p>
+                  <p className="flex items-start gap-2"><span className="text-amber-500 mt-0.5">&#10003;</span> Not used for cross-app tracking</p>
                 </div>
 
                 <SubHeading title="3.6 Purchase and Subscription Information" />
@@ -233,7 +240,7 @@ export default function PrivacyPage() {
                   <li>Subscription status, product identifiers, and entitlement information from Apple (StoreKit/App Store)</li>
                   <li>Transaction metadata made available by Apple to verify access</li>
                 </ul>
-                <p className="mt-2 text-gray-400">
+                <p className="mt-2" style={{ color: "var(--text-muted)" }}>
                   We do not collect or store your full payment card number. Payments are processed by Apple.
                 </p>
 
@@ -272,14 +279,14 @@ export default function PrivacyPage() {
               <section>
                 <SectionHeading id="healthkit" number="05" title="HealthKit Data Use (Apple Health / HealthKit)" />
                 <p className="mt-3">If you connect Apple Health / HealthKit:</p>
-                <div className="mt-3 rounded-xl border border-emerald-500/10 bg-emerald-500/[0.03] p-5 space-y-2">
-                  <p className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5">&#10003;</span> HealthKit data is used only to provide and improve health and fitness features within RevFit</p>
-                  <p className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5">&#10003;</span> HealthKit data is not used for advertising</p>
-                  <p className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5">&#10003;</span> HealthKit data is not sold to third parties</p>
-                  <p className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5">&#10003;</span> HealthKit data is not used for cross-app or cross-website tracking</p>
-                  <p className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5">&#10003;</span> HealthKit data is not shared with data brokers</p>
+                <div className="mt-3 rounded-xl p-5 space-y-2" style={{ backgroundColor: "rgba(16, 185, 129, 0.05)", border: "1px solid rgba(16, 185, 129, 0.1)" }}>
+                  <p className="flex items-start gap-2"><span className="text-emerald-500 mt-0.5">&#10003;</span> HealthKit data is used only to provide and improve health and fitness features within RevFit</p>
+                  <p className="flex items-start gap-2"><span className="text-emerald-500 mt-0.5">&#10003;</span> HealthKit data is not used for advertising</p>
+                  <p className="flex items-start gap-2"><span className="text-emerald-500 mt-0.5">&#10003;</span> HealthKit data is not sold to third parties</p>
+                  <p className="flex items-start gap-2"><span className="text-emerald-500 mt-0.5">&#10003;</span> HealthKit data is not used for cross-app or cross-website tracking</p>
+                  <p className="flex items-start gap-2"><span className="text-emerald-500 mt-0.5">&#10003;</span> HealthKit data is not shared with data brokers</p>
                 </div>
-                <p className="mt-3 text-gray-400">
+                <p className="mt-3" style={{ color: "var(--text-muted)" }}>
                   We access only the HealthKit data types you authorize, and you can revoke access at any time in Apple Health / iOS Settings.
                 </p>
               </section>
@@ -296,7 +303,7 @@ export default function PrivacyPage() {
                   <li>Share personal information with data brokers</li>
                   <li>Use HealthKit data for advertising, marketing profiling, or data broker purposes</li>
                 </ul>
-                <p className="mt-3 text-gray-400">
+                <p className="mt-3" style={{ color: "var(--text-muted)" }}>
                   Because RevFit does not perform tracking as defined by Apple&apos;s App Tracking Transparency (ATT) framework, RevFit may not request ATT permission unless our practices change in the future.
                 </p>
               </section>
@@ -304,7 +311,7 @@ export default function PrivacyPage() {
               {/* 7. How We Share Information */}
               <section>
                 <SectionHeading id="sharing" number="07" title="How We Share Information" />
-                <p className="mt-3 font-medium text-white">We do not sell your personal information.</p>
+                <p className="mt-3 font-medium" style={{ color: "var(--text)" }}>We do not sell your personal information.</p>
                 <p className="mt-3">
                   We may share limited information only as necessary to operate the Services, including:
                 </p>
@@ -324,7 +331,7 @@ export default function PrivacyPage() {
                   <li>Cloud infrastructure</li>
                   <li>Error monitoring / diagnostics (if enabled)</li>
                 </ul>
-                <p className="mt-2 text-gray-400">
+                <p className="mt-2" style={{ color: "var(--text-muted)" }}>
                   Examples may include providers such as Google/Firebase and other infrastructure vendors used to operate the app.
                 </p>
 
@@ -332,7 +339,7 @@ export default function PrivacyPage() {
                 <p className="mt-2">
                   If you use optional AI-powered analysis features (for example, photo, face, or text-based analysis features), the data you choose to submit for analysis (such as images or prompts) may be transmitted to a third-party AI service provider to generate the requested results.
                 </p>
-                <p className="mt-2 text-gray-400">
+                <p className="mt-2" style={{ color: "var(--text-muted)" }}>
                   We do not use such submitted data for advertising or cross-app tracking. Use of those providers is subject to their service terms and privacy practices.
                 </p>
 
@@ -356,10 +363,10 @@ export default function PrivacyPage() {
                   <li>Resolve disputes and enforce agreements</li>
                   <li>Maintain security, backups, and service integrity</li>
                 </ul>
-                <p className="mt-3 text-gray-400">
+                <p className="mt-3" style={{ color: "var(--text-muted)" }}>
                   Retention periods may vary based on the type of data and whether you maintain an active account.
                 </p>
-                <p className="mt-2 text-gray-400">
+                <p className="mt-2" style={{ color: "var(--text-muted)" }}>
                   When you request deletion, we will delete or anonymize your data within a reasonable period, subject to legal, security, backup, and operational requirements.
                 </p>
               </section>
@@ -372,7 +379,7 @@ export default function PrivacyPage() {
                   <li>Locally on your device</li>
                   <li>In secure cloud services used to operate the app (for example, authentication and database services)</li>
                 </ul>
-                <p className="mt-3 text-gray-400">
+                <p className="mt-3" style={{ color: "var(--text-muted)" }}>
                   We use reasonable administrative, technical, and organizational measures to protect your information. However, no method of transmission over the internet or electronic storage is 100% secure, and we cannot guarantee absolute security.
                 </p>
               </section>
@@ -403,17 +410,17 @@ export default function PrivacyPage() {
                 <p className="mt-2">
                   You can request deletion of your account and associated app data from within the app:
                 </p>
-                <div className="mt-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-4 py-3 font-mono text-sm text-gray-300">
+                <div className="mt-2 rounded-lg px-4 py-3 font-mono text-sm" style={{ backgroundColor: "var(--code-bg)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>
                   Profile / Settings → Delete Account
                 </div>
-                <p className="mt-2 text-gray-400">
+                <p className="mt-2" style={{ color: "var(--text-muted)" }}>
                   When you delete your account, we will delete or anonymize associated data, subject to legal, security, backup, or operational retention requirements.
                 </p>
 
                 <SubHeading title="10.6 Privacy Requests" />
                 <p className="mt-2">
                   You may contact us for privacy-related requests, including questions, access/deletion requests, or concerns, at:{" "}
-                  <a href="mailto:rivelolabs@gmail.com" className="text-cyan-300 underline decoration-cyan-400/40 underline-offset-4 hover:text-cyan-200">
+                  <a href="mailto:rivelolabs@gmail.com" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>
                     rivelolabs@gmail.com
                   </a>
                 </p>
@@ -449,9 +456,9 @@ export default function PrivacyPage() {
                   <li>Request data portability (where applicable)</li>
                   <li>Withdraw consent where processing is based on consent (for example, optional permissions)</li>
                 </ul>
-                <p className="mt-3 text-gray-400">
+                <p className="mt-3" style={{ color: "var(--text-muted)" }}>
                   To exercise applicable rights, contact us at{" "}
-                  <a href="mailto:hello@rivelolabs.com" className="text-cyan-300 underline decoration-cyan-400/40 underline-offset-4 hover:text-cyan-200">
+                  <a href="mailto:hello@rivelolabs.com" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>
                     hello@rivelolabs.com
                   </a>
                   . We may need to verify your identity before fulfilling certain requests.
@@ -472,17 +479,17 @@ export default function PrivacyPage() {
                 <p className="mt-3">
                   If you have questions, requests, or concerns about this Privacy Policy or your data, contact us at:
                 </p>
-                <div className="mt-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
-                  <p className="font-medium text-white">Rivelo Labs</p>
+                <div className="mt-4 rounded-xl p-5" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}>
+                  <p className="font-medium" style={{ color: "var(--text)" }}>Rivelo Labs</p>
                   <p className="mt-2 flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-indigo-400" />
-                    <a href="mailto:hello@rivelolabs.com" className="text-cyan-300 underline decoration-cyan-400/40 underline-offset-4 hover:text-cyan-200">
+                    <Mail className="h-4 w-4" style={{ color: "var(--accent)" }} />
+                    <a href="mailto:hello@rivelolabs.com" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>
                       hello@rivelolabs.com
                     </a>
                   </p>
-                  <p className="mt-2 text-gray-400">
+                  <p className="mt-2" style={{ color: "var(--text-muted)" }}>
                     Privacy Policy URL:{" "}
-                    <span className="text-gray-300">https://www.rivelolabs.com/privacy</span>
+                    <span style={{ color: "var(--text-secondary)" }}>https://www.rivelolabs.com/privacy</span>
                   </p>
                 </div>
               </section>

@@ -17,7 +17,7 @@ const stack = [
   { name: "SwiftUI", category: "mobile", color: "#007AFF" },
   { name: "Kotlin", category: "mobile", color: "#7F52FF" },
   { name: "TypeScript", category: "web", color: "#3178C6" },
-  { name: "Next.js", category: "web", color: "#ffffff" },
+  { name: "Next.js", category: "web", color: "#888888" },
   { name: "React", category: "web", color: "#61DAFB" },
   { name: "Three.js", category: "web", color: "#049EF4" },
   { name: "Tailwind", category: "web", color: "#06B6D4" },
@@ -41,46 +41,53 @@ export default function TechStack() {
       : stack.filter((item) => item.category === activeCategory);
 
   return (
-    <section id="stack" className="relative z-10 py-32 px-6">
-      <div className="mx-auto max-w-7xl">
+    <section id="stack" className="relative z-10 py-28 px-6">
+      <div className="mx-auto max-w-6xl">
         {/* Heading */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
+          transition={{ duration: 0.6 }}
           viewport={{ once: true, margin: "-100px" }}
-          className="mb-16 text-center"
+          className="mb-14 text-center"
         >
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-indigo-400">
-            Technology
-          </p>
-          <h2 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl font-[var(--font-display)]">
+          <p className="section-label">Technology</p>
+          <h2 className="section-title mx-auto">
             Our{" "}
-            <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+            <span
+              className="bg-clip-text text-transparent"
+              style={{
+                backgroundImage: "linear-gradient(135deg, var(--accent), #8b5cf6)",
+              }}
+            >
               Arsenal
             </span>
           </h2>
-          <p className="mt-5 mx-auto max-w-xl text-gray-400 text-lg">
-            Battle-tested technologies chosen for reliability, performance, and developer joy.
+          <p className="section-desc mx-auto">
+            Battle-tested technologies chosen for reliability, performance, and
+            developer joy.
           </p>
         </motion.div>
 
         {/* Category Tabs */}
-        <div className="flex flex-wrap justify-center gap-2 mb-12">
+        <div className="flex flex-wrap justify-center gap-1.5 mb-10">
           {categories.map((cat) => (
             <button
               key={cat.key}
               onClick={() => setActiveCategory(cat.key)}
-              className={`relative rounded-full px-5 py-2 text-sm font-medium transition-all duration-300 ${
-                activeCategory === cat.key
-                  ? "text-white"
-                  : "text-gray-500 hover:text-gray-300"
-              }`}
+              className="relative rounded-full px-4 py-2 text-sm font-medium transition-all duration-200"
+              style={{
+                color: activeCategory === cat.key ? "var(--text)" : "var(--text-muted)",
+              }}
             >
               {activeCategory === cat.key && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute inset-0 rounded-full bg-white/[0.08] border border-white/[0.1]"
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    backgroundColor: "var(--surface)",
+                    border: "1px solid var(--border)",
+                  }}
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
@@ -89,34 +96,37 @@ export default function TechStack() {
           ))}
         </div>
 
-        {/* Animated Grid */}
+        {/* Grid */}
         <motion.div layout className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
           <AnimatePresence mode="popLayout">
             {filtered.map((item) => (
               <motion.div
                 key={item.name}
                 layout
-                initial={{ opacity: 0, scale: 0.8 }}
+                initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.3 }}
-                whileHover={{ scale: 1.08, y: -4 }}
-                className="group flex flex-col items-center gap-3 rounded-2xl border border-white/[0.04] bg-white/[0.02] p-6 transition-all duration-300 hover:bg-white/[0.06] hover:border-white/[0.1] cursor-default"
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.25 }}
+                whileHover={{ y: -3 }}
+                className="card group flex flex-col items-center gap-3 p-5 cursor-default"
               >
                 <div
-                  className="h-3 w-3 rounded-full transition-transform duration-300 group-hover:scale-150"
-                  style={{ backgroundColor: item.color, boxShadow: `0 0 20px ${item.color}40` }}
+                  className="h-2.5 w-2.5 rounded-full transition-transform duration-300 group-hover:scale-150"
+                  style={{
+                    backgroundColor: item.color,
+                    boxShadow: `0 0 12px ${item.color}30`,
+                  }}
                 />
-                <span className="text-sm font-medium text-gray-400 group-hover:text-white transition-colors text-center">
+                <span
+                  className="text-sm font-medium text-center transition-colors"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   {item.name}
                 </span>
               </motion.div>
             ))}
           </AnimatePresence>
         </motion.div>
-
-        {/* Animated gradient line separator */}
-        <div className="mt-20 animated-gradient-line" />
       </div>
     </section>
   );
