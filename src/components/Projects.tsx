@@ -26,6 +26,8 @@ function useTilt() {
 type Screen = { src: string; label: string; desc: string };
 type Feature = { label: string };
 
+type PrivacyLink = { label: string; href: string };
+
 type Project = {
   name: string;
   typeLabel: string;
@@ -33,7 +35,7 @@ type Project = {
   features: Feature[];
   tech: string[];
   screens: Screen[];
-  privacyHref: string;
+  privacyLinks: PrivacyLink[];
   caseStudyHref?: string;
   accent: string;
 };
@@ -65,7 +67,7 @@ const projects: Project[] = [
       { src: "/life-mind.png", label: "Mind", desc: "Mood tracking, breathing exercises & recovery coaching" },
       { src: "/life-profile.png", label: "Profile", desc: "XP leveling, achievements & personalized goals" },
     ],
-    privacyHref: "/privacy",
+    privacyLinks: [{ label: "Privacy Policy", href: "/privacy" }],
     caseStudyHref: "#",
   },
   {
@@ -92,7 +94,38 @@ const projects: Project[] = [
       { src: "/calarm-screen-2.png", label: "Alarm Colors", desc: "Configure event color triggers and premium timing options" },
       { src: "/calarm-screen-3.png", label: "Premium", desc: "Unlock unlimited alarms, all colors, timing, and sounds" },
     ],
-    privacyHref: "/privacy/calarm",
+    privacyLinks: [{ label: "Privacy Policy", href: "/privacy/calarm" }],
+  },
+  {
+    name: "Klyq",
+    typeLabel: "iOS & Android Application",
+    accent: "#ec4899",
+    description: (
+      <>
+        Play. Chat. Match. A live social arena where you meet new people through
+        random video, voice, and text matching, battle strangers in quick
+        multiplayer games, drop into anonymous circles, and discover who&apos;s
+        nearby.
+      </>
+    ),
+    features: [
+      { label: "Random Video Match" },
+      { label: "Voice & Text Chat" },
+      { label: "Multiplayer Games" },
+      { label: "Anonymous Circles" },
+      { label: "Nearby Map" },
+      { label: "Communities & Stories" },
+    ],
+    tech: ["Swift", "SwiftUI", "Kotlin", "Jetpack Compose", "Firebase Auth", "Realtime Database", "Firebase Analytics"],
+    screens: [
+      { src: "/klyq-arena.png", label: "Arena", desc: "Random opponents & quick multiplayer games with live chat" },
+      { src: "/klyq-match.png", label: "Match", desc: "Random video, voice, and text matching with new people" },
+      { src: "/klyq-nearby.png", label: "Nearby", desc: "Discover people and groups around you on the live map" },
+    ],
+    privacyLinks: [
+      { label: "Privacy (iOS)", href: "/privacy/klyq" },
+      { label: "Privacy (Android)", href: "/privacy/klyq-android" },
+    ],
   },
 ];
 
@@ -149,13 +182,18 @@ function ProjectCard({ project }: { project: Project }) {
               {project.description}
             </p>
 
-            <a
-              href={project.privacyHref}
-              className="inline-flex items-center gap-1.5 text-sm font-medium transition-colors"
-              style={{ color: "var(--accent)" }}
-            >
-              Privacy Policy <ExternalLink className="h-3.5 w-3.5" />
-            </a>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 justify-center lg:justify-start">
+              {project.privacyLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="inline-flex items-center gap-1.5 text-sm font-medium transition-colors"
+                  style={{ color: "var(--accent)" }}
+                >
+                  {link.label} <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              ))}
+            </div>
 
             <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
               {project.features.map((f) => (

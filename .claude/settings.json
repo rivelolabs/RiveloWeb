@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/jai/**)",
+      "Read(//Users/jai/Downloads/**)",
+      "Read(//Users/jai/Desktop/**)",
+      "Bash(cp \"/Users/jai/Desktop/Simulator Screenshot - iPhone Air - 2026-06-18 at 00.07.49.png\" public/klyq-arena.png)",
+      "Bash(cp \"/Users/jai/Desktop/Simulator Screenshot - iPhone Air - 2026-06-18 at 00.07.43.png\" public/klyq-match.png)",
+      "Bash(cp \"/Users/jai/Desktop/Simulator Screenshot - iPhone Air - 2026-06-18 at 00.07.59.png\" public/klyq-nearby.png)",
+      "Bash(npx tsc *)",
+      "Bash(echo \"TSC_EXIT=$?\")"
+    ]
+  }
+}
