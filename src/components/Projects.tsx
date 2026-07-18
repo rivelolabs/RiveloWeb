@@ -116,7 +116,7 @@ const projects: Project[] = [
       { label: "Nearby Map" },
       { label: "Communities & Stories" },
     ],
-    tech: ["Swift", "SwiftUI", "Kotlin", "Jetpack Compose", "Firebase Auth", "Realtime Database", "Firebase Analytics"],
+    tech: ["Swift", "SwiftUI", "Kotlin", "Jetpack Compose", "Supabase", "LiveKit", "Google Mobile Ads"],
     screens: [
       { src: "/klyq-arena.png", label: "Arena", desc: "Random opponents & quick multiplayer games with live chat" },
       { src: "/klyq-match.png", label: "Match", desc: "Random video, voice, and text matching with new people" },
