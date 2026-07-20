@@ -142,7 +142,6 @@ export default function KlyqPrivacyPage() {
                   <p className="text-sm font-medium mb-1" style={{ color: "var(--text)" }}>App &amp; Developer:</p>
                   <p>Klyq — operated by Rivelo Labs</p>
                   <p>Managed by calquors.com</p>
-                  <p>Bundle ID: jai.Klyq</p>
                   <p className="mt-1">
                     Email:{" "}
                     <a href="mailto:support@calquors.com" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>
