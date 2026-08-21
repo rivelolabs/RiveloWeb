@@ -1,389 +1,334 @@
 "use client";
 
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
-import { ExternalLink, Apple, Globe, ChevronLeft, ChevronRight, Activity, Zap } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ExternalLink,
+  Globe,
+  Apple,
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  Pause,
+  Zap,
+  Activity,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
 import Image from "next/image";
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 
-/* ——— 3D Tilt Hook ——— */
-function useTilt() {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [3, -3]), { stiffness: 200, damping: 25 });
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-3, 3]), { stiffness: 200, damping: 25 });
-
-  const handleMouse = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    x.set((e.clientX - rect.left) / rect.width - 0.5);
-    y.set((e.clientY - rect.top) / rect.height - 0.5);
-  };
-  const reset = () => {
-    x.set(0);
-    y.set(0);
-  };
-  return { rotateX, rotateY, handleMouse, reset };
-}
-
-type Screen = { src: string; label: string; desc: string };
-type Feature = { label: string };
-type PrivacyLink = { label: string; href: string };
-
-type Project = {
+type ProjectItem = {
+  id: string;
   name: string;
-  typeLabel: string;
+  tagline: string;
+  category: string;
   accent: string;
-  isWeb?: boolean;
+  badge: string;
+  bgGradient: string;
+  description: string;
+  image: string;
   liveUrl?: string;
-  metricsBadge?: string;
-  description: ReactNode;
-  features: Feature[];
-  tech: string[];
-  screens: Screen[];
-  privacyLinks?: PrivacyLink[];
-  caseStudyHref?: string;
-  cardClass?: string;
+  privacyLinks?: { label: string; href: string }[];
+  specs: string[];
+  isWeb?: boolean;
 };
 
-const projects: Project[] = [
+const projects: ProjectItem[] = [
   {
+    id: "omeglevc",
     name: "OmegleVC",
-    typeLabel: "Live Video & Voice Web Platform",
-    accent: "#0891b2",
-    isWeb: true,
+    tagline: "Sub-50ms WebRTC Video & Live Voice Matchmaking",
+    category: "High-Throughput Web Platform",
+    accent: "#06b6d4",
+    badge: "⚡ 100K+ Requests · 20K+ Active Visitors",
+    bgGradient: "linear-gradient(135deg, #082f49 0%, #0c4a6e 40%, #0369a1 100%)",
+    description:
+      "A distributed real-time communication platform handling over 100,000 network requests with zero-lag WebRTC media streaming and distributed WebSocket routing.",
+    image: "/omeglevc.png",
     liveUrl: "https://omeglevc.com",
-    metricsBadge: "⚡ 100K+ Requests · 20K+ Active Visitors",
-    cardClass: "card-pastel-blue",
-    description: (
-      <>
-        A high-throughput, real-time random video, voice, and text connection
-        platform. Engineered with sub-second peer matching, low-latency WebRTC
-        media pipelines, and distributed WebSocket routing. Handling{" "}
-        <strong className="text-cyan-700 font-bold">100K+ network requests</strong> and{" "}
-        <strong className="text-cyan-700 font-bold">20K+ monthly active visitors</strong> with zero-lag uptime.
-      </>
-    ),
-    features: [
-      { label: "100K+ Handled Requests" },
-      { label: "20K+ Active Visitors" },
-      { label: "Sub-50ms Peer Matching" },
-      { label: "WebRTC Video & Voice Mesh" },
-      { label: "Distributed WebSockets" },
-      { label: "Zero-Log Privacy" },
-    ],
-    tech: ["Next.js", "TypeScript", "WebRTC", "Node.js", "WebSockets", "Redis", "Tailwind CSS"],
-    screens: [
-      {
-        src: "/omeglevc.png",
-        label: "Live Arena",
-        desc: "Instant random video, chat, custom rooms & live streaming with 100K+ requests",
-      },
-    ],
+    specs: ["WebRTC Media Mesh", "Distributed WebSockets", "Redis Cluster", "Next.js & TypeScript"],
+    isWeb: true,
   },
   {
+    id: "revfit",
     name: "RevFit",
-    typeLabel: "iOS Application",
-    accent: "#4f46e5",
-    cardClass: "card-pastel-white",
-    description: (
-      <>
-        The ultimate lifestyle companion for peak performance. An all-in-one
-        ecosystem integrating health tracking, fitness coaching, mindfulness,
-        and nutrition management.
-      </>
-    ),
-    features: [
-      { label: "Activity Tracking" },
-      { label: "Meal Logger" },
-      { label: "Custom Workouts" },
-      { label: "Mood Tracking" },
-      { label: "XP & Leveling" },
-      { label: "Weight Progress" },
-    ],
-    tech: ["Swift", "SwiftUI", "Firebase", "Charts", "HealthKit", "Core Data"],
-    screens: [
-      {
-        src: "/revfit.png",
-        label: "Dashboard",
-        desc: "Live workout tracking, activity rings, weekly goals & exercise logs",
-      },
-    ],
+    tagline: "Apple HealthKit Performance & Daily Habit Ecosystem",
+    category: "Native iOS Application",
+    accent: "#6366f1",
+    badge: "SwiftUI · HealthKit · 60 FPS",
+    bgGradient: "linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 100%)",
+    description:
+      "The ultimate lifestyle and athletic companion. Seamlessly syncs Apple Watch biometric sensors, workout logs, nutrition macros, and gamified XP leveling.",
+    image: "/revfit.png",
     privacyLinks: [{ label: "Privacy Policy", href: "/privacy" }],
+    specs: ["Apple HealthKit Sync", "Swift Charts", "CoreData Engine", "Offline-First"],
   },
   {
+    id: "calarm",
     name: "Calarm",
-    typeLabel: "iOS Application",
+    tagline: "Google Calendar Smart Wake-Up & Event-Color Triggers",
+    category: "Smart Calendar iOS App",
     accent: "#d97706",
-    cardClass: "card-pastel-white",
-    description: (
-      <>
-        A smart wake-up app that turns Google Calendar events into reliable
-        alarms. Calarm combines color-based triggers, calendar sync, premium
-        timing controls, and push-backed reminders.
-      </>
-    ),
-    features: [
-      { label: "Google Calendar Sync" },
-      { label: "Color Alarm Rules" },
-      { label: "Custom Alarm Timing" },
-      { label: "Push Notifications" },
-      { label: "Premium Plans" },
-    ],
-    tech: ["Swift", "SwiftUI", "Firebase Auth", "Google Calendar API", "APNs", "StoreKit", "AlarmKit"],
-    screens: [
-      { src: "/calarm-screen-1.png", label: "Settings", desc: "Subscription, calendar sync, alarms, and account controls" },
-      { src: "/calarm-screen-2.png", label: "Alarm Colors", desc: "Configure event color triggers and premium timing options" },
-      { src: "/calarm-screen-3.png", label: "Premium", desc: "Unlock unlimited alarms, all colors, timing, and sounds" },
-    ],
+    badge: "OAuth2 Sync · APNs Push Triggers",
+    bgGradient: "linear-gradient(135deg, #451a03 0%, #78350f 40%, #b45309 100%)",
+    description:
+      "Transforms Google Calendar events into persistent, reliable alarms. Features automated color-based rules, custom alarm timing, and critical sound bypass.",
+    image: "/calarm-screen-1.png",
     privacyLinks: [{ label: "Privacy Policy", href: "/privacy/calarm" }],
+    specs: ["Google Calendar API", "AlarmKit Sound Engine", "StoreKit 2 IAP", "Push Notifications"],
   },
   {
+    id: "klyq",
     name: "Klyq",
-    typeLabel: "iOS & Android Application",
+    tagline: "Real-Time Social Arena, Mini-Games & Live Match",
+    category: "iOS & Android Cross-Platform Arena",
     accent: "#db2777",
-    cardClass: "card-pastel-green",
-    description: (
-      <>
-        Play. Chat. Match. A live social arena where you meet new people through
-        random video, voice, and text matching, battle strangers in quick
-        multiplayer games, drop into anonymous circles, and discover who&apos;s
-        nearby.
-      </>
-    ),
-    features: [
-      { label: "Random Video Match" },
-      { label: "Voice & Text Chat" },
-      { label: "Multiplayer Games" },
-      { label: "Anonymous Circles" },
-      { label: "Nearby Map" },
-      { label: "Communities & Stories" },
-    ],
-    tech: ["Swift", "SwiftUI", "Kotlin", "Jetpack Compose", "Supabase", "LiveKit", "Google Mobile Ads"],
-    screens: [
-      { src: "/klyq-arena.png", label: "Arena", desc: "Random opponents & quick multiplayer games with live chat" },
-      { src: "/klyq-match.png", label: "Match", desc: "Random video, voice, and text matching with new people" },
-      { src: "/klyq-nearby.png", label: "Nearby", desc: "Discover people and groups around you on the live map" },
-    ],
+    badge: "LiveKit SFU · Supabase Cluster",
+    bgGradient: "linear-gradient(135deg, #500724 0%, #831843 40%, #be185d 100%)",
+    description:
+      "A high-energy live social platform featuring instant video & voice matchmaking, multiplayer arcade challenges, anonymous circles, and local geospatial discovery.",
+    image: "/klyq-arena.png",
     privacyLinks: [
       { label: "Privacy (iOS)", href: "/privacy/klyq" },
       { label: "Privacy (Android)", href: "/privacy/klyq-android" },
     ],
+    specs: ["LiveKit WebRTC SFU", "Supabase Realtime", "PostGIS Nearby Map", "Jetpack Compose & SwiftUI"],
   },
 ];
 
-function ProjectCard({ project, isFirst }: { project: Project; isFirst: boolean }) {
-  const { rotateX, rotateY, handleMouse, reset } = useTilt();
-  const [active, setActive] = useState(0);
+export default function Projects() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const next = () => setActive((p) => (p + 1) % project.screens.length);
-  const prev = () => setActive((p) => (p - 1 + project.screens.length) % project.screens.length);
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev + 1) % projects.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex((prev) => (prev - 1 + projects.length) % projects.length);
+  };
+
+  const goToSlide = (idx: number) => {
+    setCurrentIndex(idx);
+  };
+
+  // Auto-advance loop (5 seconds per slide like Apple.com)
+  useEffect(() => {
+    if (!isPlaying) {
+      if (timerRef.current) clearInterval(timerRef.current);
+      return;
+    }
+
+    timerRef.current = setInterval(() => {
+      nextSlide();
+    }, 5000);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [isPlaying, currentIndex]);
+
+  const currentProject = projects[currentIndex];
 
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7 }}
-      viewport={{ once: true, margin: "-100px" }}
-      className="perspective"
-    >
-      <div
-        onMouseMove={handleMouse}
-        onMouseLeave={reset}
-        style={{ transform: `perspective(1000px)` }}
-        className={`${project.cardClass || "card-pastel-white"} relative overflow-hidden p-7 sm:p-12 rounded-3xl transition-transform duration-300`}
-      >
-        <div className="relative z-10 flex flex-col lg:flex-row items-center gap-10 lg:gap-14">
-          {/* Info */}
-          <div className="flex-1 space-y-4 text-center lg:text-left">
-            <div className="flex flex-wrap items-center gap-2 justify-center lg:justify-start">
-              <div
-                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold"
-                style={{
-                  backgroundColor: `${project.accent}15`,
-                  border: `1px solid ${project.accent}30`,
-                  color: project.accent,
-                }}
-              >
-                {project.isWeb ? <Globe className="h-3.5 w-3.5" /> : <Apple className="h-3.5 w-3.5" />}
-                <span>{project.typeLabel}</span>
-              </div>
+    <section id="work" className="relative z-10 py-24 overflow-hidden">
+      {/* Section Header */}
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 mb-12 text-center">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-700 text-xs font-semibold uppercase tracking-wider mb-3">
+          <Zap className="w-3.5 h-3.5" />
+          <span>Proven Track Record</span>
+        </div>
+        <h2
+          className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 mb-3"
+          style={{ fontFamily: "var(--font-display), system-ui, sans-serif" }}
+        >
+          Featured <span className="bg-gradient-to-r from-indigo-600 bg-clip-text text-transparent">Creations</span>
+        </h2>
+        <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
+          From high-throughput real-time platforms handling 100K+ requests to native mobile ecosystems.
+        </p>
+      </div>
 
-              {project.metricsBadge && (
-                <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-mono font-bold bg-cyan-600/10 border border-cyan-600/25 text-cyan-800">
-                  <Activity className="h-3.5 w-3.5 text-cyan-600" />
-                  <span>{project.metricsBadge}</span>
-                </div>
-              )}
-            </div>
+      {/* Apple-Style Carousel Viewport */}
+      <div className="relative w-full max-w-[1400px] mx-auto px-4 sm:px-8">
+        {/* Navigation Arrow Buttons */}
+        <button
+          onClick={prevSlide}
+          aria-label="Previous project"
+          className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-30 flex h-11 w-11 items-center justify-center rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md border border-white/20 shadow-xl transition-all cursor-pointer group"
+        >
+          <ChevronLeft className="h-5 w-5 transition-transform group-hover:-translate-x-0.5" />
+        </button>
 
-            <h3
-              className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900"
-              style={{
-                fontFamily: "var(--font-display), system-ui, sans-serif",
-              }}
+        <button
+          onClick={nextSlide}
+          aria-label="Next project"
+          className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-30 flex h-11 w-11 items-center justify-center rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md border border-white/20 shadow-xl transition-all cursor-pointer group"
+        >
+          <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
+        </button>
+
+        {/* Carousel Slide Track */}
+        <div className="relative overflow-hidden rounded-3xl shadow-2xl">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentProject.id}
+              initial={{ opacity: 0, scale: 0.98, x: 50 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.98, x: -50 }}
+              transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] }}
+              style={{ background: currentProject.bgGradient }}
+              className="relative min-h-[500px] sm:min-h-[560px] lg:min-h-[600px] w-full rounded-3xl overflow-hidden p-8 sm:p-14 lg:p-16 flex flex-col justify-between text-white"
             >
-              {project.name}
-            </h3>
-
-            <p className="text-sm sm:text-base leading-relaxed text-slate-700 max-w-lg">
-              {project.description}
-            </p>
-
-            {project.liveUrl && (
-              <div className="pt-1 flex justify-center lg:justify-start">
-                <a
-                  href={project.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`Visit live site for ${project.name}`}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition-all group cursor-pointer"
-                >
-                  <Globe className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Visit {project.name} ({project.liveUrl.replace("https://", "")})</span>
-                  <ExternalLink className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </a>
-              </div>
-            )}
-
-            {project.privacyLinks && (
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 justify-center lg:justify-start pt-1">
-                {project.privacyLinks.map((link) => (
-                  <a
-                    key={link.href}
-                    href={link.href}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
-                  >
-                    {link.label} <ExternalLink className="h-3 w-3" />
-                  </a>
-                ))}
-              </div>
-            )}
-
-            <div className="flex flex-wrap gap-1.5 justify-center lg:justify-start pt-2">
-              {project.features.map((f) => (
-                <span
-                  key={f.label}
-                  className="rounded-full px-2.5 py-0.5 text-[11px] font-medium bg-white border border-black/10 text-slate-700 shadow-2xs"
-                >
-                  {f.label}
-                </span>
-              ))}
-            </div>
-
-            <div className="flex flex-wrap gap-1.5 pt-1 justify-center lg:justify-start">
-              {project.tech.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-md px-2 py-0.5 text-[10px] font-mono bg-black/5 border border-black/8 text-slate-600"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Project Visual Showcase */}
-          <div className="flex-shrink-0 flex flex-col items-center gap-4">
-            {/* Device Mockup */}
-            <div
-              className="relative w-[240px] sm:w-[260px] h-[480px] sm:h-[520px] rounded-[2.5rem] overflow-hidden border-[6px] border-slate-900 bg-slate-950 shadow-xl"
-            >
-              {/* Notch */}
+              {/* Subtle background glow */}
               <div
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-5 rounded-b-2xl z-20 bg-slate-900 pointer-events-none"
+                className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full pointer-events-none opacity-20 blur-3xl"
+                style={{ backgroundColor: currentProject.accent }}
               />
 
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={active}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.25 }}
-                  className="absolute inset-0"
-                >
-                  {project.screens[active]?.src && (
-                    <Image
-                      src={project.screens[active].src}
-                      alt={`${project.name} - ${project.screens[active].label}`}
-                      fill
-                      sizes="(max-width: 640px) 240px, 260px"
-                      priority={isFirst && active === 0}
-                      loading={isFirst && active === 0 ? "eager" : "lazy"}
-                      quality={85}
-                      className="object-cover object-top"
-                    />
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            {/* Carousel Controls (if multiple screens) */}
-            {project.screens.length > 1 && (
-              <div className="flex items-center gap-3 pt-1">
-                <button
-                  onClick={prev}
-                  aria-label="Previous screen"
-                  className="flex h-7 w-7 items-center justify-center rounded-full bg-white border border-black/10 text-slate-600 hover:text-slate-900 shadow-2xs transition-colors cursor-pointer"
-                >
-                  <ChevronLeft className="h-3.5 w-3.5" />
-                </button>
-
-                <div className="text-center min-w-[120px]">
-                  <p className="text-xs font-semibold text-slate-900">
-                    {project.screens[active]?.label}
-                  </p>
-                  <p className="text-[10px] text-slate-500 truncate max-w-[140px]">
-                    {project.screens[active]?.desc}
-                  </p>
+              {/* Top Meta Bar */}
+              <div className="relative z-10 flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
+                    {currentProject.isWeb ? (
+                      <Globe className="w-4 h-4 text-cyan-300" />
+                    ) : (
+                      <Apple className="w-4 h-4 text-white" />
+                    )}
+                  </div>
+                  <span className="text-xs sm:text-sm font-semibold tracking-wider uppercase text-white/90 font-mono">
+                    {currentProject.category}
+                  </span>
                 </div>
 
-                <button
-                  onClick={next}
-                  aria-label="Next screen"
-                  className="flex h-7 w-7 items-center justify-center rounded-full bg-white border border-black/10 text-slate-600 hover:text-slate-900 shadow-2xs transition-colors cursor-pointer"
-                >
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </button>
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/30 backdrop-blur-md border border-white/15 text-xs font-mono font-bold text-white shadow-sm">
+                  <Activity className="w-3.5 h-3.5 text-cyan-300 animate-pulse" />
+                  <span>{currentProject.badge}</span>
+                </div>
               </div>
-            )}
-          </div>
+
+              {/* Main Center Content & Image Showcase */}
+              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center my-auto py-6">
+                {/* Left Text Block */}
+                <div className="lg:col-span-7 space-y-4 text-left">
+                  <h3
+                    className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    {currentProject.name}
+                  </h3>
+
+                  <p className="text-lg sm:text-xl font-medium text-white/95 leading-snug">
+                    {currentProject.tagline}
+                  </p>
+
+                  <p className="text-sm sm:text-base text-white/80 leading-relaxed max-w-xl">
+                    {currentProject.description}
+                  </p>
+
+                  {/* Spec Chips */}
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {currentProject.specs.map((spec) => (
+                      <span
+                        key={spec}
+                        className="px-3 py-1 rounded-lg bg-white/10 backdrop-blur-md border border-white/15 text-xs font-mono font-medium text-white/90"
+                      >
+                        {spec}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Action CTA & Privacy Links */}
+                  <div className="flex flex-wrap items-center gap-4 pt-4">
+                    {currentProject.liveUrl ? (
+                      <a
+                        href={currentProject.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-6 py-3 rounded-full bg-white text-slate-950 hover:bg-slate-100 font-bold text-sm shadow-xl transition-transform hover:scale-105 flex items-center gap-2 cursor-pointer"
+                      >
+                        <Globe className="w-4 h-4 text-cyan-600" />
+                        <span>Visit {currentProject.name} Live</span>
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    ) : (
+                      <div className="px-6 py-3 rounded-full bg-white text-slate-950 font-bold text-sm shadow-xl flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-indigo-600" />
+                        <span>Shipped Production System</span>
+                      </div>
+                    )}
+
+                    {currentProject.privacyLinks && (
+                      <div className="flex items-center gap-3">
+                        {currentProject.privacyLinks.map((link) => (
+                          <a
+                            key={link.href}
+                            href={link.href}
+                            className="text-xs font-medium text-white/80 hover:text-white underline underline-offset-4 transition-colors"
+                          >
+                            {link.label}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Device Visual */}
+                <div className="lg:col-span-5 flex justify-center items-center">
+                  <div className="relative w-[240px] sm:w-[270px] h-[480px] sm:h-[530px] rounded-[2.8rem] overflow-hidden border-[6px] border-slate-950 bg-slate-950 shadow-2xl transition-transform hover:scale-[1.02] duration-300">
+                    {/* Phone Notch */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-5 rounded-b-2xl z-20 bg-slate-950 pointer-events-none" />
+
+                    <Image
+                      src={currentProject.image}
+                      alt={currentProject.name}
+                      fill
+                      sizes="(max-width: 640px) 240px, 270px"
+                      priority
+                      className="object-cover object-top"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Carousel Indicator Bar (Apple.com style) */}
+              <div className="relative z-10 pt-4 flex items-center justify-between border-t border-white/10 text-xs font-mono text-white/70">
+                <span>0{currentIndex + 1} / 0{projects.length}</span>
+                <span className="hidden sm:inline font-sans">
+                  {currentProject.name} — {currentProject.category}
+                </span>
+                <span className="text-white/90 font-semibold">Auto-advancing (5s)</span>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
-      </div>
-    </motion.article>
-  );
-}
 
-export default function Projects() {
-  return (
-    <section id="work" className="relative z-10 py-24 px-4 sm:px-6">
-      <div className="mx-auto max-w-6xl">
-        {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="mb-14 text-center"
-        >
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-700 text-xs font-semibold uppercase tracking-wider mb-3">
-            <Zap className="w-3.5 h-3.5" />
-            <span>Proven Track Record</span>
+        {/* Apple-Style Bottom Controls: Dots & Play/Pause Button */}
+        <div className="mt-8 flex items-center justify-center gap-4">
+          <div className="flex items-center gap-2 p-1.5 rounded-full bg-white border border-black/10 shadow-xs">
+            {projects.map((proj, idx) => (
+              <button
+                key={proj.id}
+                onClick={() => goToSlide(idx)}
+                aria-label={`Go to slide ${idx + 1}: ${proj.name}`}
+                className={`h-2.5 rounded-full transition-all cursor-pointer ${
+                  currentIndex === idx
+                    ? "w-8 bg-slate-900 shadow-xs"
+                    : "w-2.5 bg-slate-300 hover:bg-slate-500"
+                }`}
+              />
+            ))}
           </div>
-          <h2
-            className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 mb-3"
-            style={{ fontFamily: "var(--font-display), system-ui, sans-serif" }}
-          >
-            Featured <span className="bg-gradient-to-r from-indigo-600 via-cyan-600 to-purple-600 bg-clip-text text-transparent">Creations</span>
-          </h2>
-          <p className="text-sm text-slate-600 max-w-md mx-auto">
-            From high-throughput real-time platforms handling 100K+ requests to native mobile ecosystems.
-          </p>
-        </motion.div>
 
-        <div className="space-y-10">
-          {projects.map((project, index) => (
-            <ProjectCard key={project.name} project={project} isFirst={index === 0} />
-          ))}
+          <button
+            onClick={() => setIsPlaying(!isPlaying)}
+            aria-label={isPlaying ? "Pause auto-scroll" : "Play auto-scroll"}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white border border-black/10 text-slate-700 hover:text-slate-950 shadow-xs transition-colors cursor-pointer"
+          >
+            {isPlaying ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+          </button>
         </div>
       </div>
     </section>

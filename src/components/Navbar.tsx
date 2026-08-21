@@ -54,7 +54,7 @@ export default function Navbar({ onOpenModal }: NavbarProps) {
         <div className="hidden lg:flex items-center">
           <div className="glass-pill text-[11px] sm:text-xs py-1.5 px-3.5 border-black/10 bg-white/80 shadow-xs">
             <span className="flex items-center gap-1.5 text-indigo-600 font-semibold">
-              <Sparkles className="w-3 h-3 text-indigo-600 animate-pulse" />
+             
               Autonomous AI &amp; Product Engineering
             </span>
             <span className="text-slate-300">|</span>
