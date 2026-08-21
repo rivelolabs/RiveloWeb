@@ -101,10 +101,11 @@ const projects: Project[] = [
     ],
     tech: ["Swift", "SwiftUI", "Firebase", "Charts", "HealthKit", "Core Data"],
     screens: [
-      { src: "/life-home.png", label: "Home", desc: "Activity tracking with Move, Exercise & Stand goals" },
-      { src: "/life-fitness.png", label: "Fitness", desc: "Custom workout plans, weekly charts & weight tracking" },
-      { src: "/life-mind.png", label: "Mind", desc: "Mood tracking, breathing exercises & recovery coaching" },
-      { src: "/life-profile.png", label: "Profile", desc: "XP leveling, achievements & personalized goals" },
+      {
+        src: "/revfit.png",
+        label: "Dashboard",
+        desc: "Live workout tracking, activity rings, weekly goals & exercise logs",
+      },
     ],
     privacyLinks: [{ label: "Privacy Policy", href: "/privacy" }],
   },
