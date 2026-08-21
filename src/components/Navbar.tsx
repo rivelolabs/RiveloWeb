@@ -1,201 +1,88 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Sun, Moon } from "lucide-react";
-import { useTheme } from "./ThemeProvider";
+import Image from "next/image";
+import { ArrowRight, Sparkles, Mail } from "lucide-react";
 
-const links = [
-  { label: "Work", href: "#work" },
-  { label: "Services", href: "#services" },
-  { label: "Stack", href: "#stack" },
-  { label: "Contact", href: "#contact" },
-];
+interface NavbarProps {
+  onOpenModal: () => void;
+}
 
-export default function Navbar() {
+export default function Navbar({ onOpenModal }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const { theme, toggle } = useTheme();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
-    <motion.header
-      initial={{ y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed top-0 left-0 right-0 z-50"
-      style={{
-        paddingTop: scrolled ? "0.75rem" : "1.25rem",
-        paddingBottom: scrolled ? "0.75rem" : "1.25rem",
-        backgroundColor: scrolled ? "var(--nav-bg)" : "transparent",
-        backdropFilter: scrolled ? "blur(20px) saturate(1.2)" : "none",
-        WebkitBackdropFilter: scrolled ? "blur(20px) saturate(1.2)" : "none",
-        borderBottom: scrolled ? "1px solid var(--border)" : "1px solid transparent",
-        transition: "all 0.4s ease",
-      }}
+    <header
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+        scrolled
+          ? "bg-[#0a0d18]/80 backdrop-blur-xl border-b border-white/10 py-3"
+          : "bg-transparent py-4"
+      }`}
     >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6">
-        {/* Logo */}
-        <a href="#" className="flex items-center gap-2.5 group">
-          <div
-            className="relative flex h-8 w-8 items-center justify-center rounded-lg"
-            style={{ background: "var(--accent)" }}
-          >
-            <span className="text-xs font-black text-white tracking-tight">R</span>
-          </div>
-          <span
-            className="text-base font-semibold tracking-tight"
-            style={{
-              fontFamily: "var(--font-display), system-ui, sans-serif",
-              color: "var(--text)",
-            }}
-          >
-            rivelo<span style={{ color: "var(--accent)" }}>labs</span>
-          </span>
-        </a>
-
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-1">
-          {links.map((l) => (
-            <a
-              key={l.label}
-              href={l.href}
-              className="relative px-4 py-2 text-sm font-medium transition-all duration-200 group"
-              style={{ color: "var(--text-muted)" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text)")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Left: Brand Logo */}
+        <div className="flex items-center gap-6">
+          <a href="#" aria-label="RIVENO Home" className="flex items-center gap-2.5 group">
+            <div className="relative w-8 h-8 rounded-full overflow-hidden bg-white/10 border border-white/15 flex items-center justify-center p-1 shadow-md transition-transform group-hover:scale-105">
+              <Image
+                src="/logo.png"
+                alt="RIVENO Logo"
+                width={32}
+                height={32}
+                className="w-full h-full rounded-full object-cover"
+                priority
+              />
+            </div>
+            <span
+              className="text-xl sm:text-2xl font-black tracking-widest text-white uppercase"
+              style={{ fontFamily: "var(--font-display), system-ui, sans-serif" }}
             >
-              {l.label}
-            </a>
-          ))}
-        </div>
-
-        {/* Right side - Theme toggle + CTA */}
-        <div className="hidden md:flex items-center gap-3">
-          <button
-            onClick={toggle}
-            className="flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200"
-            style={{
-              background: "var(--surface)",
-              border: "1px solid var(--border)",
-              color: "var(--text-muted)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "var(--border-hover)";
-              e.currentTarget.style.color = "var(--text)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "var(--border)";
-              e.currentTarget.style.color = "var(--text-muted)";
-            }}
-            aria-label="Toggle theme"
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={theme}
-                initial={{ scale: 0, rotate: -90 }}
-                animate={{ scale: 1, rotate: 0 }}
-                exit={{ scale: 0, rotate: 90 }}
-                transition={{ duration: 0.2 }}
-              >
-                {theme === "dark" ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </button>
-
-          <a href="#contact" className="btn-primary" style={{ padding: "0.5rem 1.25rem", fontSize: "0.8125rem" }}>
-            Let&apos;s Talk
+              RIVENO
+            </span>
           </a>
         </div>
 
-        {/* Mobile: Theme toggle + Hamburger */}
-        <div className="md:hidden flex items-center gap-3">
-          <button
-            onClick={toggle}
-            className="flex h-9 w-9 items-center justify-center rounded-full"
-            style={{
-              background: "var(--surface)",
-              border: "1px solid var(--border)",
-              color: "var(--text-muted)",
-            }}
-            aria-label="Toggle theme"
+        {/* Center Pill: Feature Highlights (Hidden on small mobile) */}
+        <div className="hidden lg:flex items-center">
+          <div className="glass-pill text-[11px] sm:text-xs py-1.5 px-3.5 border-white/15 bg-slate-950/60 shadow-lg">
+            <span className="flex items-center gap-1.5 text-indigo-400 font-semibold">
+              <Sparkles className="w-3 h-3 text-indigo-400 animate-pulse" />
+              Autonomous AI &amp; Product Engineering
+            </span>
+            <span className="text-slate-500">|</span>
+            <span className="text-slate-300 font-normal">
+              Grounded in High Performance &amp; Clean Code
+            </span>
+          </div>
+        </div>
+
+        {/* Right: Mail / Contact & Launch Button */}
+        <div className="flex items-center gap-3 sm:gap-5">
+          <a
+            href="mailto:hello@rivelolabs.com"
+            aria-label="Email hello@rivelolabs.com"
+            className="hidden sm:flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition-colors"
           >
-            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </button>
+            <Mail className="w-3.5 h-3.5 text-indigo-400" />
+            <span>hello@rivelolabs.com</span>
+          </a>
 
           <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="flex flex-col gap-1.5 p-2"
-            aria-label="Menu"
+            onClick={onOpenModal}
+            aria-label="Launch Project Brief"
+            className="btn-launch text-xs sm:text-sm font-semibold !py-1.5 sm:!py-2 !px-4 sm:!px-5 cursor-pointer"
           >
-            <motion.span
-              animate={mobileOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
-              className="block h-0.5 w-5 rounded-full"
-              style={{ backgroundColor: "var(--text)" }}
-            />
-            <motion.span
-              animate={mobileOpen ? { opacity: 0 } : { opacity: 1 }}
-              className="block h-0.5 w-5 rounded-full"
-              style={{ backgroundColor: "var(--text)" }}
-            />
-            <motion.span
-              animate={mobileOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
-              className="block h-0.5 w-5 rounded-full"
-              style={{ backgroundColor: "var(--text)" }}
-            />
+            <span>Launch Project</span>
+            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black transition-transform group-hover:translate-x-0.5" />
           </button>
         </div>
-      </nav>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="md:hidden overflow-hidden"
-            style={{
-              backgroundColor: "var(--nav-bg)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              borderTop: "1px solid var(--border)",
-            }}
-          >
-            <div className="flex flex-col gap-1 px-6 py-4">
-              {links.map((l) => (
-                <a
-                  key={l.label}
-                  href={l.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="py-3 text-base font-medium transition-colors"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  {l.label}
-                </a>
-              ))}
-              <a
-                href="#contact"
-                onClick={() => setMobileOpen(false)}
-                className="btn-primary mt-2 justify-center"
-                style={{ padding: "0.75rem 1.5rem" }}
-              >
-                Let&apos;s Talk
-              </a>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.header>
+      </div>
+    </header>
   );
 }

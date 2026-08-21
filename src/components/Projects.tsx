@@ -1,7 +1,8 @@
 "use client";
 
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
-import { ExternalLink, Apple, ChevronLeft, ChevronRight } from "lucide-react";
+import { ExternalLink, Apple, Globe, ChevronLeft, ChevronRight, Activity, Zap } from "lucide-react";
+import Image from "next/image";
 import { useState, type ReactNode } from "react";
 
 /* ——— 3D Tilt Hook ——— */
@@ -25,22 +26,57 @@ function useTilt() {
 
 type Screen = { src: string; label: string; desc: string };
 type Feature = { label: string };
-
 type PrivacyLink = { label: string; href: string };
 
 type Project = {
   name: string;
   typeLabel: string;
+  accent: string;
+  isWeb?: boolean;
+  liveUrl?: string;
+  metricsBadge?: string;
   description: ReactNode;
   features: Feature[];
   tech: string[];
   screens: Screen[];
-  privacyLinks: PrivacyLink[];
+  privacyLinks?: PrivacyLink[];
   caseStudyHref?: string;
-  accent: string;
 };
 
 const projects: Project[] = [
+  {
+    name: "OmegleVC",
+    typeLabel: "Live Video & Voice Web Platform",
+    accent: "#10b981",
+    isWeb: true,
+    liveUrl: "https://omeglevc.com",
+    metricsBadge: "⚡ 100K+ Requests · 20K+ Active Visitors",
+    description: (
+      <>
+        A high-throughput, real-time random video, voice, and text connection
+        platform. Engineered with sub-second peer matching, low-latency WebRTC
+        media pipelines, and distributed WebSocket routing. Handling{" "}
+        <strong className="text-emerald-400 font-semibold">100K+ network requests</strong> and{" "}
+        <strong className="text-emerald-400 font-semibold">20K+ monthly active visitors</strong> with zero-lag uptime.
+      </>
+    ),
+    features: [
+      { label: "100K+ Handled Requests" },
+      { label: "20K+ Active Visitors" },
+      { label: "Sub-50ms Peer Matching" },
+      { label: "WebRTC Video & Voice Mesh" },
+      { label: "Distributed WebSockets" },
+      { label: "Zero-Log Privacy" },
+    ],
+    tech: ["Next.js", "TypeScript", "WebRTC", "Node.js", "WebSockets", "Redis", "Tailwind CSS"],
+    screens: [
+      {
+        src: "/omeglevc.png",
+        label: "Live Arena",
+        desc: "Instant random video, chat, custom rooms & live streaming with 100K+ requests",
+      },
+    ],
+  },
   {
     name: "RevFit",
     typeLabel: "iOS Application",
@@ -68,7 +104,6 @@ const projects: Project[] = [
       { src: "/life-profile.png", label: "Profile", desc: "XP leveling, achievements & personalized goals" },
     ],
     privacyLinks: [{ label: "Privacy Policy", href: "/privacy" }],
-    caseStudyHref: "#",
   },
   {
     name: "Calarm",
@@ -129,7 +164,7 @@ const projects: Project[] = [
   },
 ];
 
-function ProjectCard({ project }: { project: Project }) {
+function ProjectCard({ project, isFirst }: { project: Project; isFirst: boolean }) {
   const { rotateX, rotateY, handleMouse, reset } = useTilt();
   const [active, setActive] = useState(0);
 
@@ -137,74 +172,91 @@ function ProjectCard({ project }: { project: Project }) {
   const prev = () => setActive((p) => (p - 1 + project.screens.length) % project.screens.length);
 
   return (
-    <motion.div
+    <motion.article
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7 }}
       viewport={{ once: true, margin: "-100px" }}
       className="perspective"
     >
-      <motion.div
+      <div
         onMouseMove={handleMouse}
         onMouseLeave={reset}
-        style={{ rotateX, rotateY }}
-        className="card relative overflow-hidden p-8 sm:p-12"
-        /* override card border-radius */
+        style={{ transform: `perspective(1000px)` }}
+        className="card relative overflow-hidden p-7 sm:p-12 border border-white/10 bg-[#0e121d]/90 shadow-2xl backdrop-blur-2xl transition-transform duration-300"
       >
-        <div className="relative z-10 flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+        <div className="relative z-10 flex flex-col lg:flex-row items-center gap-10 lg:gap-14">
           {/* Info */}
-          <div className="flex-1 space-y-5 text-center lg:text-left">
-            <div
-              className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium"
-              style={{
-                backgroundColor: `${project.accent}12`,
-                border: `1px solid ${project.accent}25`,
-                color: project.accent,
-              }}
-            >
-              <Apple className="h-3.5 w-3.5" /> {project.typeLabel}
+          <div className="flex-1 space-y-4 text-center lg:text-left">
+            <div className="flex flex-wrap items-center gap-2 justify-center lg:justify-start">
+              <div
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
+                style={{
+                  backgroundColor: `${project.accent}15`,
+                  border: `1px solid ${project.accent}30`,
+                  color: project.accent,
+                }}
+              >
+                {project.isWeb ? <Globe className="h-3.5 w-3.5" /> : <Apple className="h-3.5 w-3.5" />}
+                <span>{project.typeLabel}</span>
+              </div>
+
+              {project.metricsBadge && (
+                <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-mono font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
+                  <Activity className="h-3.5 w-3.5 text-emerald-400" />
+                  <span>{project.metricsBadge}</span>
+                </div>
+              )}
             </div>
 
             <h3
-              className="text-3xl sm:text-4xl font-bold tracking-tight"
+              className="text-3xl sm:text-4xl font-bold tracking-tight text-white"
               style={{
                 fontFamily: "var(--font-display), system-ui, sans-serif",
-                color: "var(--text)",
               }}
             >
               {project.name}
             </h3>
 
-            <p
-              className="text-base leading-relaxed max-w-lg"
-              style={{ color: "var(--text-muted)" }}
-            >
+            <p className="text-sm sm:text-base leading-relaxed text-slate-300 max-w-lg">
               {project.description}
             </p>
 
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 justify-center lg:justify-start">
-              {project.privacyLinks.map((link) => (
+            {project.liveUrl && (
+              <div className="pt-1 flex justify-center lg:justify-start">
                 <a
-                  key={link.href}
-                  href={link.href}
-                  className="inline-flex items-center gap-1.5 text-sm font-medium transition-colors"
-                  style={{ color: "var(--accent)" }}
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Visit live site for ${project.name}`}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition-all group"
                 >
-                  {link.label} <ExternalLink className="h-3.5 w-3.5" />
+                  <Globe className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Visit {project.name} ({project.liveUrl.replace("https://", "")})</span>
+                  <ExternalLink className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </a>
-              ))}
-            </div>
+              </div>
+            )}
 
-            <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+            {project.privacyLinks && (
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 justify-center lg:justify-start pt-1">
+                {project.privacyLinks.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
+                  >
+                    {link.label} <ExternalLink className="h-3 w-3" />
+                  </a>
+                ))}
+              </div>
+            )}
+
+            <div className="flex flex-wrap gap-1.5 justify-center lg:justify-start pt-2">
               {project.features.map((f) => (
                 <span
                   key={f.label}
-                  className="rounded-full px-3 py-1 text-xs font-medium"
-                  style={{
-                    backgroundColor: "var(--accent-subtle)",
-                    color: "var(--accent)",
-                    border: "1px solid var(--border)",
-                  }}
+                  className="rounded-full px-2.5 py-0.5 text-[11px] font-medium bg-white/5 border border-white/10 text-slate-300"
                 >
                   {f.label}
                 </span>
@@ -215,51 +267,23 @@ function ProjectCard({ project }: { project: Project }) {
               {project.tech.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-md px-2 py-0.5 text-[11px] font-mono"
-                  style={{
-                    backgroundColor: "var(--surface)",
-                    border: "1px solid var(--border)",
-                    color: "var(--text-muted)",
-                  }}
+                  className="rounded-md px-2 py-0.5 text-[10px] font-mono bg-black/40 border border-white/10 text-slate-400"
                 >
                   {tag}
                 </span>
               ))}
             </div>
-
-            {project.caseStudyHref && (
-              <div className="pt-2 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
-                <a
-                  href={project.caseStudyHref}
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold transition-colors"
-                  style={{ color: "var(--accent)" }}
-                >
-                  View Case Study <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              </div>
-            )}
           </div>
 
-          {/* Phone Mockup */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 16 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.7 }}
-            viewport={{ once: true }}
-            className="flex-shrink-0 flex flex-col items-center gap-5"
-          >
+          {/* Project Visual Showcase */}
+          <div className="flex-shrink-0 flex flex-col items-center gap-4">
+            {/* Device Mockup with Next.js Image optimization */}
             <div
-              className="relative w-[260px] h-[530px] rounded-[2.5rem] overflow-hidden"
-              style={{
-                border: "5px solid var(--border)",
-                boxShadow: "var(--shadow-xl)",
-                backgroundColor: "var(--surface)",
-              }}
+              className="relative w-[240px] sm:w-[260px] h-[480px] sm:h-[520px] rounded-[2.5rem] overflow-hidden border-[5px] border-white/15 bg-black shadow-2xl"
             >
               {/* Notch */}
               <div
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-6 rounded-b-2xl z-20"
-                style={{ backgroundColor: "var(--border)" }}
+                className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-5 rounded-b-2xl z-20 bg-white/10 pointer-events-none"
               />
 
               <AnimatePresence mode="wait">
@@ -271,77 +295,61 @@ function ProjectCard({ project }: { project: Project }) {
                   transition={{ duration: 0.25 }}
                   className="absolute inset-0"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={project.screens[active].src}
-                    alt={`${project.name} ${project.screens[active].label} screen`}
-                    className="w-full h-full object-cover object-top"
-                  />
+                  {project.screens[active]?.src && (
+                    <Image
+                      src={project.screens[active].src}
+                      alt={`${project.name} - ${project.screens[active].label}`}
+                      fill
+                      sizes="(max-width: 640px) 240px, 260px"
+                      priority={isFirst && active === 0}
+                      loading={isFirst && active === 0 ? "eager" : "lazy"}
+                      quality={85}
+                      className="object-cover object-top"
+                    />
+                  )}
                 </motion.div>
               </AnimatePresence>
             </div>
 
-            {/* Controls */}
-            <div className="flex items-center gap-4">
-              <button
-                onClick={prev}
-                className="flex h-8 w-8 items-center justify-center rounded-full transition-all"
-                style={{
-                  border: "1px solid var(--border)",
-                  backgroundColor: "var(--surface)",
-                  color: "var(--text-muted)",
-                }}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-
-              <div className="text-center min-w-[140px]">
-                <p className="text-sm font-medium" style={{ color: "var(--text)" }}>
-                  {project.screens[active].label}
-                </p>
-                <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
-                  {project.screens[active].desc}
-                </p>
-              </div>
-
-              <button
-                onClick={next}
-                className="flex h-8 w-8 items-center justify-center rounded-full transition-all"
-                style={{
-                  border: "1px solid var(--border)",
-                  backgroundColor: "var(--surface)",
-                  color: "var(--text-muted)",
-                }}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-
-            {/* Dots */}
-            <div className="flex gap-1.5">
-              {project.screens.map((_, i) => (
+            {/* Carousel Controls (if multiple screens) */}
+            {project.screens.length > 1 && (
+              <div className="flex items-center gap-3 pt-1">
                 <button
-                  key={i}
-                  onClick={() => setActive(i)}
-                  className="rounded-full transition-all duration-300"
-                  style={{
-                    width: i === active ? "1.25rem" : "0.375rem",
-                    height: "0.375rem",
-                    backgroundColor: i === active ? "var(--accent)" : "var(--border-hover)",
-                  }}
-                />
-              ))}
-            </div>
-          </motion.div>
+                  onClick={prev}
+                  aria-label="Previous screen"
+                  className="flex h-7 w-7 items-center justify-center rounded-full bg-white/5 border border-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                </button>
+
+                <div className="text-center min-w-[120px]">
+                  <p className="text-xs font-semibold text-white">
+                    {project.screens[active]?.label}
+                  </p>
+                  <p className="text-[10px] text-slate-400 truncate max-w-[140px]">
+                    {project.screens[active]?.desc}
+                  </p>
+                </div>
+
+                <button
+                  onClick={next}
+                  aria-label="Next screen"
+                  className="flex h-7 w-7 items-center justify-center rounded-full bg-white/5 border border-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </motion.article>
   );
 }
 
 export default function Projects() {
   return (
-    <section id="work" className="relative z-10 py-28 px-6">
+    <section id="work" className="relative z-10 py-24 px-4 sm:px-6">
       <div className="mx-auto max-w-6xl">
         {/* Heading */}
         <motion.div
@@ -349,25 +357,26 @@ export default function Projects() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true, margin: "-100px" }}
-          className="mb-16 text-center"
+          className="mb-14 text-center"
         >
-          <p className="section-label">Our Creations</p>
-          <h2 className="section-title mx-auto">
-            Featured{" "}
-            <span
-              className="bg-clip-text text-transparent"
-              style={{
-                backgroundImage: "linear-gradient(135deg, #06b6d4, #8b5cf6)",
-              }}
-            >
-              Projects
-            </span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-semibold uppercase tracking-wider mb-3">
+            <Zap className="w-3.5 h-3.5" />
+            <span>Proven Track Record</span>
+          </div>
+          <h2
+            className="text-3xl sm:text-5xl font-bold tracking-tight text-white mb-3"
+            style={{ fontFamily: "var(--font-display), system-ui, sans-serif" }}
+          >
+            Featured <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">Creations</span>
           </h2>
+          <p className="text-sm text-slate-400 max-w-md mx-auto">
+            From high-throughput real-time platforms handling 100K+ requests to native mobile ecosystems.
+          </p>
         </motion.div>
 
-        <div className="space-y-12">
-          {projects.map((project) => (
-            <ProjectCard key={project.name} project={project} />
+        <div className="space-y-10">
+          {projects.map((project, index) => (
+            <ProjectCard key={project.name} project={project} isFirst={index === 0} />
           ))}
         </div>
       </div>

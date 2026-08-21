@@ -44,15 +44,15 @@ function AnimatedNumber({ target, suffix = "" }: { target: number; suffix?: stri
 }
 
 const stats = [
-  { value: 10, suffix: "K+", label: "Lines of Code" },
-  { value: 3, suffix: "+", label: "Products Shipped" },
-  { value: 99, suffix: "%", label: "Uptime SLA" },
-  { value: 5, suffix: ".0", label: "App Store Rating" },
+  { value: 100, suffix: "K+", label: "Requests Handled (omeglevc.com)" },
+  { value: 20, suffix: "K+", label: "Monthly Active Visitors" },
+  { value: 4, suffix: "+", label: "Shipped Production Systems" },
+  { value: 99, suffix: ".9%", label: "Uptime & High Availability" },
 ];
 
 export default function Stats() {
   return (
-    <section className="relative z-10 py-20 px-6">
+    <section className="relative z-10 py-16 px-6">
       <div className="mx-auto max-w-6xl">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {stats.map((stat, i) => (
@@ -65,17 +65,15 @@ export default function Stats() {
               className="text-center"
             >
               <div
-                className="text-4xl sm:text-5xl font-bold tracking-tight"
+                className="text-4xl sm:text-5xl font-bold tracking-tight text-white"
                 style={{
                   fontFamily: "var(--font-display), system-ui, sans-serif",
-                  color: "var(--text)",
                 }}
               >
                 <AnimatedNumber target={stat.value} suffix={stat.suffix} />
               </div>
               <p
-                className="mt-2 text-sm font-medium"
-                style={{ color: "var(--text-muted)" }}
+                className="mt-2 text-xs sm:text-sm font-medium text-slate-400 font-mono"
               >
                 {stat.label}
               </p>
