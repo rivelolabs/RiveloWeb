@@ -27,7 +27,7 @@ const faqs: FAQItem[] = [
     category: "Intellectual Property & Code Ownership",
     question: "Who owns the code, intellectual property (IP), and architecture?",
     answer:
-      "You own 100% of all intellectual property, source code, design files, and cloud infrastructure upon project handover. Calquors Private Limited / Riveno signs comprehensive non-disclosure agreements (NDAs) by default and guarantees zero vendor lock-in.",
+      "You own 100% of all intellectual property, source code, design files, and cloud infrastructure upon project handover. Calquors Private Limited / Riveno signs comprehensive non-disclosure agreements (NDAs) by default and guarantees zero vendor lock-in",
   },
   {
     category: "AI & Modern Tech Stack",
