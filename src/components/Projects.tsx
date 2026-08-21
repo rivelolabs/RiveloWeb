@@ -9,8 +9,8 @@ import { useState, type ReactNode } from "react";
 function useTilt() {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [4, -4]), { stiffness: 200, damping: 25 });
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-4, 4]), { stiffness: 200, damping: 25 });
+  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [3, -3]), { stiffness: 200, damping: 25 });
+  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-3, 3]), { stiffness: 200, damping: 25 });
 
   const handleMouse = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -41,23 +41,25 @@ type Project = {
   screens: Screen[];
   privacyLinks?: PrivacyLink[];
   caseStudyHref?: string;
+  cardClass?: string;
 };
 
 const projects: Project[] = [
   {
     name: "OmegleVC",
     typeLabel: "Live Video & Voice Web Platform",
-    accent: "#10b981",
+    accent: "#0891b2",
     isWeb: true,
     liveUrl: "https://omeglevc.com",
     metricsBadge: "⚡ 100K+ Requests · 20K+ Active Visitors",
+    cardClass: "card-pastel-blue",
     description: (
       <>
         A high-throughput, real-time random video, voice, and text connection
         platform. Engineered with sub-second peer matching, low-latency WebRTC
         media pipelines, and distributed WebSocket routing. Handling{" "}
-        <strong className="text-emerald-400 font-semibold">100K+ network requests</strong> and{" "}
-        <strong className="text-emerald-400 font-semibold">20K+ monthly active visitors</strong> with zero-lag uptime.
+        <strong className="text-cyan-700 font-bold">100K+ network requests</strong> and{" "}
+        <strong className="text-cyan-700 font-bold">20K+ monthly active visitors</strong> with zero-lag uptime.
       </>
     ),
     features: [
@@ -80,7 +82,8 @@ const projects: Project[] = [
   {
     name: "RevFit",
     typeLabel: "iOS Application",
-    accent: "#6366f1",
+    accent: "#4f46e5",
+    cardClass: "card-pastel-white",
     description: (
       <>
         The ultimate lifestyle companion for peak performance. An all-in-one
@@ -108,7 +111,8 @@ const projects: Project[] = [
   {
     name: "Calarm",
     typeLabel: "iOS Application",
-    accent: "#f59e0b",
+    accent: "#d97706",
+    cardClass: "card-pastel-white",
     description: (
       <>
         A smart wake-up app that turns Google Calendar events into reliable
@@ -134,7 +138,8 @@ const projects: Project[] = [
   {
     name: "Klyq",
     typeLabel: "iOS & Android Application",
-    accent: "#ec4899",
+    accent: "#db2777",
+    cardClass: "card-pastel-green",
     description: (
       <>
         Play. Chat. Match. A live social arena where you meet new people through
@@ -183,14 +188,14 @@ function ProjectCard({ project, isFirst }: { project: Project; isFirst: boolean 
         onMouseMove={handleMouse}
         onMouseLeave={reset}
         style={{ transform: `perspective(1000px)` }}
-        className="card relative overflow-hidden p-7 sm:p-12 border border-white/10 bg-[#0e121d]/90 shadow-2xl backdrop-blur-2xl transition-transform duration-300"
+        className={`${project.cardClass || "card-pastel-white"} relative overflow-hidden p-7 sm:p-12 rounded-3xl transition-transform duration-300`}
       >
         <div className="relative z-10 flex flex-col lg:flex-row items-center gap-10 lg:gap-14">
           {/* Info */}
           <div className="flex-1 space-y-4 text-center lg:text-left">
             <div className="flex flex-wrap items-center gap-2 justify-center lg:justify-start">
               <div
-                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold"
                 style={{
                   backgroundColor: `${project.accent}15`,
                   border: `1px solid ${project.accent}30`,
@@ -202,15 +207,15 @@ function ProjectCard({ project, isFirst }: { project: Project; isFirst: boolean 
               </div>
 
               {project.metricsBadge && (
-                <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-mono font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
-                  <Activity className="h-3.5 w-3.5 text-emerald-400" />
+                <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-mono font-bold bg-cyan-600/10 border border-cyan-600/25 text-cyan-800">
+                  <Activity className="h-3.5 w-3.5 text-cyan-600" />
                   <span>{project.metricsBadge}</span>
                 </div>
               )}
             </div>
 
             <h3
-              className="text-3xl sm:text-4xl font-bold tracking-tight text-white"
+              className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900"
               style={{
                 fontFamily: "var(--font-display), system-ui, sans-serif",
               }}
@@ -218,7 +223,7 @@ function ProjectCard({ project, isFirst }: { project: Project; isFirst: boolean 
               {project.name}
             </h3>
 
-            <p className="text-sm sm:text-base leading-relaxed text-slate-300 max-w-lg">
+            <p className="text-sm sm:text-base leading-relaxed text-slate-700 max-w-lg">
               {project.description}
             </p>
 
@@ -229,9 +234,9 @@ function ProjectCard({ project, isFirst }: { project: Project; isFirst: boolean 
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Visit live site for ${project.name}`}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition-all group"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition-all group cursor-pointer"
                 >
-                  <Globe className="w-3.5 h-3.5 text-emerald-400" />
+                  <Globe className="w-3.5 h-3.5 text-cyan-400" />
                   <span>Visit {project.name} ({project.liveUrl.replace("https://", "")})</span>
                   <ExternalLink className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </a>
@@ -244,7 +249,7 @@ function ProjectCard({ project, isFirst }: { project: Project; isFirst: boolean 
                   <a
                     key={link.href}
                     href={link.href}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
                   >
                     {link.label} <ExternalLink className="h-3 w-3" />
                   </a>
@@ -256,7 +261,7 @@ function ProjectCard({ project, isFirst }: { project: Project; isFirst: boolean 
               {project.features.map((f) => (
                 <span
                   key={f.label}
-                  className="rounded-full px-2.5 py-0.5 text-[11px] font-medium bg-white/5 border border-white/10 text-slate-300"
+                  className="rounded-full px-2.5 py-0.5 text-[11px] font-medium bg-white border border-black/10 text-slate-700 shadow-2xs"
                 >
                   {f.label}
                 </span>
@@ -267,7 +272,7 @@ function ProjectCard({ project, isFirst }: { project: Project; isFirst: boolean 
               {project.tech.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-md px-2 py-0.5 text-[10px] font-mono bg-black/40 border border-white/10 text-slate-400"
+                  className="rounded-md px-2 py-0.5 text-[10px] font-mono bg-black/5 border border-black/8 text-slate-600"
                 >
                   {tag}
                 </span>
@@ -277,13 +282,13 @@ function ProjectCard({ project, isFirst }: { project: Project; isFirst: boolean 
 
           {/* Project Visual Showcase */}
           <div className="flex-shrink-0 flex flex-col items-center gap-4">
-            {/* Device Mockup with Next.js Image optimization */}
+            {/* Device Mockup */}
             <div
-              className="relative w-[240px] sm:w-[260px] h-[480px] sm:h-[520px] rounded-[2.5rem] overflow-hidden border-[5px] border-white/15 bg-black shadow-2xl"
+              className="relative w-[240px] sm:w-[260px] h-[480px] sm:h-[520px] rounded-[2.5rem] overflow-hidden border-[6px] border-slate-900 bg-slate-950 shadow-xl"
             >
               {/* Notch */}
               <div
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-5 rounded-b-2xl z-20 bg-white/10 pointer-events-none"
+                className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-5 rounded-b-2xl z-20 bg-slate-900 pointer-events-none"
               />
 
               <AnimatePresence mode="wait">
@@ -317,16 +322,16 @@ function ProjectCard({ project, isFirst }: { project: Project; isFirst: boolean 
                 <button
                   onClick={prev}
                   aria-label="Previous screen"
-                  className="flex h-7 w-7 items-center justify-center rounded-full bg-white/5 border border-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                  className="flex h-7 w-7 items-center justify-center rounded-full bg-white border border-black/10 text-slate-600 hover:text-slate-900 shadow-2xs transition-colors cursor-pointer"
                 >
                   <ChevronLeft className="h-3.5 w-3.5" />
                 </button>
 
                 <div className="text-center min-w-[120px]">
-                  <p className="text-xs font-semibold text-white">
+                  <p className="text-xs font-semibold text-slate-900">
                     {project.screens[active]?.label}
                   </p>
-                  <p className="text-[10px] text-slate-400 truncate max-w-[140px]">
+                  <p className="text-[10px] text-slate-500 truncate max-w-[140px]">
                     {project.screens[active]?.desc}
                   </p>
                 </div>
@@ -334,7 +339,7 @@ function ProjectCard({ project, isFirst }: { project: Project; isFirst: boolean 
                 <button
                   onClick={next}
                   aria-label="Next screen"
-                  className="flex h-7 w-7 items-center justify-center rounded-full bg-white/5 border border-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                  className="flex h-7 w-7 items-center justify-center rounded-full bg-white border border-black/10 text-slate-600 hover:text-slate-900 shadow-2xs transition-colors cursor-pointer"
                 >
                   <ChevronRight className="h-3.5 w-3.5" />
                 </button>
@@ -359,17 +364,17 @@ export default function Projects() {
           viewport={{ once: true, margin: "-100px" }}
           className="mb-14 text-center"
         >
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-semibold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-700 text-xs font-semibold uppercase tracking-wider mb-3">
             <Zap className="w-3.5 h-3.5" />
             <span>Proven Track Record</span>
           </div>
           <h2
-            className="text-3xl sm:text-5xl font-bold tracking-tight text-white mb-3"
+            className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 mb-3"
             style={{ fontFamily: "var(--font-display), system-ui, sans-serif" }}
           >
-            Featured <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">Creations</span>
+            Featured <span className="bg-gradient-to-r from-indigo-600 via-cyan-600 to-purple-600 bg-clip-text text-transparent">Creations</span>
           </h2>
-          <p className="text-sm text-slate-400 max-w-md mx-auto">
+          <p className="text-sm text-slate-600 max-w-md mx-auto">
             From high-throughput real-time platforms handling 100K+ requests to native mobile ecosystems.
           </p>
         </motion.div>

@@ -21,18 +21,18 @@ export default function Navbar({ onOpenModal }: NavbarProps) {
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         scrolled
-          ? "bg-[#0a0d18]/80 backdrop-blur-xl border-b border-white/10 py-3"
+          ? "bg-[#f8f7f4]/90 backdrop-blur-xl border-b border-black/8 py-3 shadow-xs"
           : "bg-transparent py-4"
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left: Brand Logo */}
         <div className="flex items-center gap-6">
-          <a href="#" aria-label="RIVENO Home" className="flex items-center gap-2.5 group">
-            <div className="relative w-8 h-8 rounded-full overflow-hidden bg-white/10 border border-white/15 flex items-center justify-center p-1 shadow-md transition-transform group-hover:scale-105">
+          <a href="#" aria-label="rivelolabs Home" className="flex items-center gap-2.5 group">
+            <div className="relative w-8 h-8 rounded-full overflow-hidden bg-white border border-black/10 flex items-center justify-center p-1 shadow-xs transition-transform group-hover:scale-105">
               <Image
                 src="/logo.png"
-                alt="RIVENO Logo"
+                alt="rivelolabs Logo"
                 width={32}
                 height={32}
                 className="w-full h-full rounded-full object-cover"
@@ -40,23 +40,25 @@ export default function Navbar({ onOpenModal }: NavbarProps) {
               />
             </div>
             <span
-              className="text-xl sm:text-2xl font-black tracking-widest text-white uppercase"
+              className={`text-xl sm:text-2xl font-black tracking-tight transition-colors ${
+                scrolled ? "text-slate-900" : "text-white"
+              }`}
               style={{ fontFamily: "var(--font-display), system-ui, sans-serif" }}
             >
-              RIVENO
+              rivelo<span className="text-indigo-500 font-extrabold">labs</span>
             </span>
           </a>
         </div>
 
         {/* Center Pill: Feature Highlights (Hidden on small mobile) */}
         <div className="hidden lg:flex items-center">
-          <div className="glass-pill text-[11px] sm:text-xs py-1.5 px-3.5 border-white/15 bg-slate-950/60 shadow-lg">
-            <span className="flex items-center gap-1.5 text-indigo-400 font-semibold">
-              <Sparkles className="w-3 h-3 text-indigo-400 animate-pulse" />
+          <div className="glass-pill text-[11px] sm:text-xs py-1.5 px-3.5 border-black/10 bg-white/80 shadow-xs">
+            <span className="flex items-center gap-1.5 text-indigo-600 font-semibold">
+              <Sparkles className="w-3 h-3 text-indigo-600 animate-pulse" />
               Autonomous AI &amp; Product Engineering
             </span>
-            <span className="text-slate-500">|</span>
-            <span className="text-slate-300 font-normal">
+            <span className="text-slate-300">|</span>
+            <span className="text-slate-600 font-normal">
               Grounded in High Performance &amp; Clean Code
             </span>
           </div>
@@ -67,9 +69,11 @@ export default function Navbar({ onOpenModal }: NavbarProps) {
           <a
             href="mailto:hello@rivelolabs.com"
             aria-label="Email hello@rivelolabs.com"
-            className="hidden sm:flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition-colors"
+            className={`hidden sm:flex items-center gap-1.5 text-xs sm:text-sm font-medium transition-colors ${
+              scrolled ? "text-slate-600 hover:text-slate-950" : "text-slate-200 hover:text-white"
+            }`}
           >
-            <Mail className="w-3.5 h-3.5 text-indigo-400" />
+            <Mail className="w-3.5 h-3.5 text-indigo-500" />
             <span>hello@rivelolabs.com</span>
           </a>
 

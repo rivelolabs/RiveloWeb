@@ -17,19 +17,19 @@ const stack = [
   { name: "SwiftUI", category: "mobile", color: "#007AFF" },
   { name: "Kotlin", category: "mobile", color: "#7F52FF" },
   { name: "TypeScript", category: "web", color: "#3178C6" },
-  { name: "Next.js", category: "web", color: "#888888" },
-  { name: "React", category: "web", color: "#61DAFB" },
-  { name: "Three.js", category: "web", color: "#049EF4" },
+  { name: "Next.js", category: "web", color: "#18181b" },
+  { name: "React", category: "web", color: "#0891b2" },
+  { name: "WebRTC", category: "web", color: "#0284c7" },
   { name: "Tailwind", category: "web", color: "#06B6D4" },
-  { name: "Firebase", category: "backend", color: "#FFCA28" },
-  { name: "Node.js", category: "backend", color: "#339933" },
-  { name: "Python", category: "backend", color: "#3776AB" },
-  { name: "PostgreSQL", category: "backend", color: "#4169E1" },
-  { name: "Docker", category: "devops", color: "#2496ED" },
-  { name: "AWS", category: "devops", color: "#FF9900" },
-  { name: "Git", category: "devops", color: "#F05032" },
-  { name: "Figma", category: "design", color: "#F24E1E" },
-  { name: "TensorFlow", category: "backend", color: "#FF6F00" },
+  { name: "Firebase", category: "backend", color: "#d97706" },
+  { name: "Node.js", category: "backend", color: "#16a34a" },
+  { name: "Python", category: "backend", color: "#2563eb" },
+  { name: "PostgreSQL", category: "backend", color: "#4f46e5" },
+  { name: "Docker", category: "devops", color: "#0284c7" },
+  { name: "AWS", category: "devops", color: "#ea580c" },
+  { name: "Git", category: "devops", color: "#dc2626" },
+  { name: "Figma", category: "design", color: "#9333ea" },
+  { name: "TensorFlow", category: "backend", color: "#d97706" },
 ];
 
 export default function TechStack() {
@@ -41,7 +41,7 @@ export default function TechStack() {
       : stack.filter((item) => item.category === activeCategory);
 
   return (
-    <section id="stack" className="relative z-10 py-28 px-6">
+    <section id="stack" className="relative z-10 py-24 px-4 sm:px-6">
       <div className="mx-auto max-w-6xl">
         {/* Heading */}
         <motion.div
@@ -57,15 +57,14 @@ export default function TechStack() {
             <span
               className="bg-clip-text text-transparent"
               style={{
-                backgroundImage: "linear-gradient(135deg, var(--accent), #8b5cf6)",
+                backgroundImage: "linear-gradient(135deg, #4f46e5, #9333ea)",
               }}
             >
               Arsenal
             </span>
           </h2>
           <p className="section-desc mx-auto">
-            Battle-tested technologies chosen for reliability, performance, and
-            developer joy.
+            Battle-tested technologies chosen for reliability, performance, and developer joy.
           </p>
         </motion.div>
 
@@ -75,29 +74,19 @@ export default function TechStack() {
             <button
               key={cat.key}
               onClick={() => setActiveCategory(cat.key)}
-              className="relative rounded-full px-4 py-2 text-sm font-medium transition-all duration-200"
-              style={{
-                color: activeCategory === cat.key ? "var(--text)" : "var(--text-muted)",
-              }}
+              className={`relative rounded-full px-4 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                activeCategory === cat.key
+                  ? "bg-slate-900 text-white shadow-sm"
+                  : "text-slate-600 hover:text-slate-950 hover:bg-black/5"
+              }`}
             >
-              {activeCategory === cat.key && (
-                <motion.div
-                  layoutId="activeTab"
-                  className="absolute inset-0 rounded-full"
-                  style={{
-                    backgroundColor: "var(--surface)",
-                    border: "1px solid var(--border)",
-                  }}
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-              )}
               <span className="relative z-10">{cat.label}</span>
             </button>
           ))}
         </div>
 
         {/* Grid */}
-        <motion.div layout className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+        <motion.div layout className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
           <AnimatePresence mode="popLayout">
             {filtered.map((item) => (
               <motion.div
@@ -108,18 +97,17 @@ export default function TechStack() {
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.25 }}
                 whileHover={{ y: -3 }}
-                className="card group flex flex-col items-center gap-3 p-5 cursor-default"
+                className="card-pastel-white group flex flex-col items-center gap-2.5 p-5 rounded-2xl cursor-default"
               >
                 <div
                   className="h-2.5 w-2.5 rounded-full transition-transform duration-300 group-hover:scale-150"
                   style={{
                     backgroundColor: item.color,
-                    boxShadow: `0 0 12px ${item.color}30`,
+                    boxShadow: `0 0 10px ${item.color}40`,
                   }}
                 />
                 <span
-                  className="text-sm font-medium text-center transition-colors"
-                  style={{ color: "var(--text-secondary)" }}
+                  className="text-xs sm:text-sm font-bold text-slate-800 text-center"
                 >
                   {item.name}
                 </span>

@@ -18,7 +18,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#090a0f",
+  themeColor: "#f8f7f4",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -27,14 +27,15 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://rivelolabs.com"),
   title: {
-    default: "RIVENO — AI & Software Engineering at flash speed | Rivelo Labs",
-    template: "%s | RIVENO",
+    default: "rivelolabs — AI & Software Engineering at flash speed | Calquors Private Limited",
+    template: "%s | rivelolabs",
   },
   description:
-    "Riveno by Rivelo Labs is a premier digital engineering studio crafting high-throughput AI platforms, native iOS/Android apps, and full-stack software. Creators of OmegleVC (100K+ requests), RevFit, Calarm, and Klyq. Direct project dispatch to hello@rivelolabs.com.",
+    "rivelolabs by Calquors Private Limited is a premier digital engineering studio crafting high-throughput AI platforms, native iOS/Android apps, and full-stack software. Creators of OmegleVC (100K+ requests), RevFit, Calarm, and Klyq. Direct project dispatch to hello@rivelolabs.com.",
   keywords: [
-    "Riveno",
+    "rivelolabs",
     "Rivelo Labs",
+    "Calquors Private Limited",
     "AI Software Engineering",
     "Fullstack Studio",
     "OmegleVC",
@@ -46,9 +47,9 @@ export const metadata: Metadata = {
     "Custom Software Agency",
     "hello@rivelolabs.com",
   ],
-  authors: [{ name: "Rivelo Labs", url: "https://rivelolabs.com" }],
-  creator: "Rivelo Labs",
-  publisher: "Rivelo Labs",
+  authors: [{ name: "rivelolabs", url: "https://rivelolabs.com" }],
+  creator: "rivelolabs",
+  publisher: "Calquors Private Limited",
   formatDetection: {
     email: false,
     address: false,
@@ -62,11 +63,11 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "RIVENO — AI & Software Engineering at flash speed",
+    title: "rivelolabs — AI & Software Engineering at flash speed",
     description:
       "Sub-second AI architectures, high-performance web & mobile systems. Handling 100K+ requests at flash speed. Inquiries to hello@rivelolabs.com.",
     url: "https://rivelolabs.com",
-    siteName: "RIVENO by Rivelo Labs",
+    siteName: "rivelolabs",
     locale: "en_US",
     type: "website",
     images: [
@@ -74,13 +75,13 @@ export const metadata: Metadata = {
         url: "/cloud.jpg",
         width: 1200,
         height: 630,
-        alt: "RIVENO — AI & Software Engineering at flash speed",
+        alt: "rivelolabs — AI & Software Engineering at flash speed",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "RIVENO — AI & Software Engineering at flash speed",
+    title: "rivelolabs — AI & Software Engineering at flash speed",
     description:
       "Sub-second AI architectures, high-performance web & mobile systems. Dispatched directly to hello@rivelolabs.com.",
     images: ["/cloud.jpg"],
@@ -105,9 +106,9 @@ const jsonLd = {
     {
       "@type": "Organization",
       "@id": "https://rivelolabs.com/#organization",
-      "name": "Rivelo Labs",
+      "name": "rivelolabs",
       "legalName": "Calquors Private Limited",
-      "alternateName": ["RIVENO", "Calquors Private Limited"],
+      "alternateName": ["Rivelo Labs", "Calquors Private Limited"],
       "url": "https://rivelolabs.com",
       "email": "hello@rivelolabs.com",
       "logo": "https://rivelolabs.com/logo.png",
@@ -123,14 +124,14 @@ const jsonLd = {
       "@type": "WebSite",
       "@id": "https://rivelolabs.com/#website",
       "url": "https://rivelolabs.com",
-      "name": "RIVENO",
+      "name": "rivelolabs",
       "publisher": { "@id": "https://rivelolabs.com/#organization" },
       "inLanguage": "en-US",
     },
     {
       "@type": "ProfessionalService",
       "@id": "https://rivelolabs.com/#service",
-      "name": "RIVENO AI & Software Engineering",
+      "name": "rivelolabs AI & Software Engineering",
       "image": "https://rivelolabs.com/cloud.jpg",
       "url": "https://rivelolabs.com",
       "email": "hello@rivelolabs.com",
@@ -216,7 +217,7 @@ const jsonLd = {
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "How fast can Riveno build and deploy a production-grade AI or web platform?",
+          "name": "How fast can rivelolabs build and deploy a production-grade AI or web platform?",
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "Rapid MVPs and AI tools are typically designed, built, and deployed within 1 to 2 weeks. Full production-grade SaaS platforms, native iOS/Android mobile applications, and WebRTC systems typically ship in 3 to 5 weeks.",
@@ -224,7 +225,7 @@ const jsonLd = {
         },
         {
           "@type": "Question",
-          "name": "What high-traffic platforms and scalable applications has Riveno engineered?",
+          "name": "What high-traffic platforms and scalable applications has rivelolabs engineered?",
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "We have engineered and scaled applications like OmegleVC (omeglevc.com) handling over 100K+ network requests and 20K+ active visitors with sub-50ms WebRTC latency. We also built RevFit, Calarm, and Klyq.",
@@ -235,7 +236,7 @@ const jsonLd = {
           "name": "Who owns the code, intellectual property (IP), and architecture?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "You own 100% of all intellectual property, source code, design files, and cloud infrastructure upon project handover. We sign NDAs by default and ensure zero vendor lock-in.",
+            "text": "You own 100% of all intellectual property, source code, design files, and cloud infrastructure upon project handover. Calquors Private Limited / rivelolabs signs comprehensive NDAs by default and ensures zero vendor lock-in.",
           },
         },
         {
@@ -255,7 +256,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning>
+    <html lang="en" data-theme="light" suppressHydrationWarning>
       <head>
         {/* Preload critical LCP Hero background asset */}
         <link rel="preload" as="image" href="/cloud.jpg" fetchPriority="high" />
@@ -266,7 +267,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${spaceGrotesk.variable} font-sans bg-[#090a0f] text-white antialiased`}
+        className={`${inter.variable} ${spaceGrotesk.variable} font-sans bg-[#f8f7f4] text-[#18181b] antialiased`}
       >
         <ThemeProvider>{children}</ThemeProvider>
       </body>

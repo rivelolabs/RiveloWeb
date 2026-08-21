@@ -1,50 +1,58 @@
 @import "tailwindcss";
 
-/* ——— Design System ——— */
+/* ——— Design System (Portside Warm Cream Aesthetic) ——— */
 
 :root {
-  --bg: #090a0f;
-  --bg-alt: #0f111a;
-  --surface: #141724;
-  --surface-hover: #1c2033;
-  --border: rgba(255, 255, 255, 0.1);
-  --border-hover: rgba(255, 255, 255, 0.2);
-  --text: #ffffff;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --accent: #6366f1;
-  --accent-hover: #4f46e5;
-  --accent-cyan: #06b6d4;
-  --accent-purple: #a855f7;
-  --accent-subtle: rgba(99, 102, 241, 0.15);
-  --accent-glow: rgba(99, 102, 241, 0.35);
-  --card-bg: rgba(15, 18, 28, 0.75);
-  --card-bg-hover: rgba(20, 25, 40, 0.9);
-  --nav-bg: rgba(10, 12, 20, 0.75);
-  --code-bg: rgba(10, 13, 22, 0.85);
-  --selection-bg: rgba(99, 102, 241, 0.4);
-}
-
-[data-theme="light"] {
-  --bg: #f8fafc;
-  --bg-alt: #f1f5f9;
+  --bg: #f8f7f4;
+  --bg-alt: #f1efe9;
   --surface: #ffffff;
-  --surface-hover: #f8fafc;
+  --surface-hover: #faf9f6;
   --border: rgba(0, 0, 0, 0.08);
-  --border-hover: rgba(0, 0, 0, 0.15);
-  --text: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
+  --border-hover: rgba(0, 0, 0, 0.16);
+  --text: #18181b;
+  --text-secondary: #3f3f46;
+  --text-muted: #71717a;
   --accent: #4f46e5;
   --accent-hover: #4338ca;
   --accent-cyan: #0891b2;
   --accent-purple: #9333ea;
   --accent-subtle: rgba(79, 70, 229, 0.08);
   --accent-glow: rgba(79, 70, 229, 0.2);
-  --card-bg: rgba(255, 255, 255, 0.85);
-  --card-bg-hover: rgba(255, 255, 255, 0.95);
-  --nav-bg: rgba(255, 255, 255, 0.8);
-  --code-bg: #f1f5f9;
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --card-bg-hover: #ffffff;
+  --nav-bg: rgba(248, 247, 244, 0.85);
+  --code-bg: #f1efe9;
+  --selection-bg: rgba(79, 70, 229, 0.2);
+
+  /* Portside Pastel Card Accents */
+  --card-pastel-blue: #e7f0f6;
+  --card-pastel-blue-border: rgba(186, 215, 233, 0.8);
+  --card-pastel-green: #ebf3eb;
+  --card-pastel-green-border: rgba(195, 220, 195, 0.8);
+  --card-pastel-white: #ffffff;
+  --card-pastel-white-border: #e7e5de;
+}
+
+[data-theme="dark"] {
+  --bg: #f8f7f4;
+  --bg-alt: #f1efe9;
+  --surface: #ffffff;
+  --surface-hover: #faf9f6;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.16);
+  --text: #18181b;
+  --text-secondary: #3f3f46;
+  --text-muted: #71717a;
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-cyan: #0891b2;
+  --accent-purple: #9333ea;
+  --accent-subtle: rgba(79, 70, 229, 0.08);
+  --accent-glow: rgba(79, 70, 229, 0.2);
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --card-bg-hover: #ffffff;
+  --nav-bg: rgba(248, 247, 244, 0.85);
+  --code-bg: #f1efe9;
   --selection-bg: rgba(79, 70, 229, 0.2);
 }
 
@@ -62,7 +70,7 @@ html {
 body {
   margin: 0;
   background: var(--bg);
-  color: var(--text-secondary);
+  color: var(--text);
   font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
@@ -89,9 +97,9 @@ body {
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(10, 15, 30, 0.35) 0%,
-    rgba(10, 15, 30, 0.45) 30%,
-    rgba(9, 10, 15, 0.75) 70%,
+    rgba(15, 23, 42, 0.25) 0%,
+    rgba(15, 23, 42, 0.4) 30%,
+    rgba(248, 247, 244, 0.85) 80%,
     var(--bg) 100%
   );
   pointer-events: none;
@@ -103,25 +111,74 @@ body {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
   background-size: 28px 28px;
-  opacity: 0.5;
+  opacity: 0.8;
+}
+
+/* ——— Section Separator ——— */
+.section-separator {
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.08), transparent);
 }
 
 /* ——— Custom Cards ——— */
 .card {
   background: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 1rem;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 10px 35px -5px rgba(0, 0, 0, 0.4);
-  transition: all 0.3s ease;
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card:hover {
   background: var(--card-bg-hover);
   border-color: var(--border-hover);
+  box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* ——— Portside Pastel Card Styles ——— */
+.card-pastel-blue {
+  background: var(--card-pastel-blue);
+  border: 1px solid var(--card-pastel-blue-border);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
+}
+
+.card-pastel-blue:hover {
+  box-shadow: 0 10px 28px -4px rgba(186, 215, 233, 0.5);
+  transform: translateY(-2px);
+}
+
+.card-pastel-green {
+  background: var(--card-pastel-green);
+  border: 1px solid var(--card-pastel-green-border);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
+}
+
+.card-pastel-green:hover {
+  box-shadow: 0 10px 28px -4px rgba(195, 220, 195, 0.5);
+  transform: translateY(-2px);
+}
+
+.card-pastel-white {
+  background: var(--card-pastel-white);
+  border: 1px solid var(--card-pastel-white-border);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
+}
+
+.card-pastel-white:hover {
+  box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 
 /* ——— Pill Badges ——— */
@@ -129,43 +186,44 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(15, 23, 42, 0.65);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 9999px;
   padding: 0.35rem 1rem;
-  color: #f1f5f9;
+  color: #18181b;
   font-size: 0.8125rem;
   font-weight: 500;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   transition: all 0.2s ease;
 }
 
 .glass-pill:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(0, 0, 0, 0.16);
+  background: #ffffff;
+  transform: translateY(-1px);
 }
 
-/* ——— Primary Launch Button (White with black text, like screenshot) ——— */
+/* ——— Primary Launch Button ——— */
 .btn-launch {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: #ffffff;
-  color: #090a0f;
+  background: #18181b;
+  color: #ffffff;
   font-weight: 600;
   font-size: 0.875rem;
   padding: 0.5rem 1.25rem;
   border-radius: 9999px;
-  box-shadow: 0 4px 14px rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
   transition: all 0.2s ease;
 }
 
 .btn-launch:hover {
-  background: #f1f5f9;
+  background: #27272a;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.35);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* ——— Glowing CTA Button ——— */
@@ -173,21 +231,21 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.625rem;
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #18181b 0%, #3f3f46 100%);
   color: #ffffff;
   font-weight: 600;
   font-size: 0.9375rem;
   padding: 0.875rem 1.75rem;
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 24px -4px rgba(99, 102, 241, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.25);
   transition: all 0.25s ease;
 }
 
 .btn-gradient:hover {
-  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+  background: linear-gradient(135deg, #09090b 0%, #27272a 100%);
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px -4px rgba(99, 102, 241, 0.7);
+  box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.35);
 }
 
 .btn-gradient:active {
@@ -199,42 +257,67 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.625rem;
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: #e2e8f0;
+  background: #ffffff;
+  color: #18181b;
   font-weight: 600;
   font-size: 0.9375rem;
   padding: 0.875rem 1.75rem;
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
 }
 
 .btn-terminal:hover {
-  background: rgba(30, 41, 59, 0.85);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: #f8f7f4;
+  border-color: rgba(0, 0, 0, 0.2);
   transform: translateY(-1px);
 }
 
 /* ——— Glowing Speed Text ——— */
 .glow-speed {
-  background: linear-gradient(135deg, #818cf8 0%, #a78bfa 50%, #60a5fa 100%);
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #06b6d4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 35px rgba(129, 140, 248, 0.4);
 }
 
-/* ——— CLI Snippet Box ——— */
-.cli-box {
-  background: rgba(10, 15, 25, 0.8);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+/* ——— Section Titles & Labels ——— */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #4f46e5;
+  background: rgba(79, 70, 229, 0.08);
+  border: 1px solid rgba(79, 70, 229, 0.15);
+  padding: 0.25rem 0.75rem;
   border-radius: 9999px;
-  padding: 0.45rem 0.5rem 0.45rem 1.25rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #18181b;
+  margin-bottom: 0.75rem;
+  line-height: 1.15;
+}
+
+@media (min-width: 640px) {
+  .section-title {
+    font-size: 3rem;
+  }
+}
+
+.section-desc {
+  font-size: 1rem;
+  color: #71717a;
+  max-width: 32rem;
+  line-height: 1.6;
 }
 
 /* ——— Scrollbars ——— */
@@ -244,14 +327,14 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.3);
 }

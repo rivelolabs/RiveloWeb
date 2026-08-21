@@ -178,7 +178,7 @@ export default function ProjectModal({ isOpen, onClose, initialType = "AI Applic
   };
 
   const copyBrief = () => {
-    const brief = `=== PROJECT BRIEF FOR RIVENO ===\nName: ${name || "N/A"}\nEmail: ${email || "N/A"}\nPhone: ${phone || "N/A"}\nType: ${projectType}\nBudget: ${effectiveBudget}\nTimeline: ${timeline}\nDescription:\n${description}\nTarget: hello@rivelolabs.com`;
+    const brief = `=== PROJECT BRIEF FOR RIVELOLABS ===\nName: ${name || "N/A"}\nEmail: ${email || "N/A"}\nPhone: ${phone || "N/A"}\nType: ${projectType}\nBudget: ${effectiveBudget}\nTimeline: ${timeline}\nDescription:\n${description}\nTarget: hello@rivelolabs.com`;
     navigator.clipboard.writeText(brief);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
@@ -220,7 +220,7 @@ export default function ProjectModal({ isOpen, onClose, initialType = "AI Applic
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src="/logo.png"
-                      alt="RIVENO Logo"
+                      alt="rivelolabs Logo"
                       className="w-full h-full rounded-full object-cover"
                     />
                   </div>

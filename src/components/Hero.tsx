@@ -200,14 +200,14 @@ export default function Hero({ onOpenModal }: HeroProps) {
         >
           <button
             onClick={onOpenModal}
-            className="glass-pill text-xs py-1.5 px-4 cursor-pointer hover:scale-[1.02] transition-transform flex items-center gap-2"
+            className="inline-flex items-center gap-2 text-xs py-2 px-4.5 rounded-full bg-slate-950/85 backdrop-blur-xl border border-white/20 text-slate-100 shadow-xl hover:bg-black hover:border-white/40 transition-all cursor-pointer group"
           >
-            <span className="text-slate-300">
-              Now live: <strong className="text-white font-medium">AI Project Scoper &amp; Instant Inquiry Dispatch</strong>
+            <span className="text-slate-200 font-normal">
+              Now live: <strong className="text-white font-semibold">AI Project Scoper &amp; Instant Inquiry Dispatch</strong>
             </span>
-            <span className="text-slate-500">·</span>
-            <span className="text-indigo-400 font-semibold flex items-center gap-1">
-              hello@rivelolabs.com <ArrowRight className="w-3 h-3" />
+            <span className="text-slate-400">·</span>
+            <span className="text-cyan-300 font-bold flex items-center gap-1 group-hover:text-cyan-200">
+              hello@rivelolabs.com <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
             </span>
           </button>
         </motion.div>
@@ -315,12 +315,12 @@ export default function Hero({ onOpenModal }: HeroProps) {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/logo.png"
-                    alt="RIVENO"
+                    alt="rivelolabs"
                     className="w-full h-full rounded-full object-cover"
                   />
                 </div>
-                <span className="font-bold tracking-wider text-sm sm:text-base text-white uppercase" style={{ fontFamily: "var(--font-display)" }}>
-                  RIVENO
+                <span className="font-bold tracking-tight text-sm sm:text-base text-white" style={{ fontFamily: "var(--font-display)" }}>
+                  rivelo<span className="text-indigo-400">labs</span>
                 </span>
               </div>
               <div className="hidden sm:flex items-center gap-4 text-xs text-slate-400 font-medium">
@@ -623,7 +623,7 @@ export default function Hero({ onOpenModal }: HeroProps) {
                       <thead>
                         <tr className="border-b border-white/10 text-slate-400 font-mono text-[11px]">
                           <th className="pb-2.5 font-medium">CAPABILITY / METRIC</th>
-                          <th className="pb-2.5 font-medium text-indigo-400">RIVENO STUDIO</th>
+                          <th className="pb-2.5 font-medium text-indigo-400">RIVELOLABS STUDIO</th>
                           <th className="pb-2.5 font-medium text-slate-400">TRADITIONAL AGENCY</th>
                           <th className="pb-2.5 font-medium text-slate-400">IN-HOUSE HIRING</th>
                         </tr>
@@ -673,9 +673,9 @@ export default function Hero({ onOpenModal }: HeroProps) {
                     <span className="text-[11px] text-slate-400">Ready to test our turnaround?</span>
                     <button
                       onClick={onOpenModal}
-                      className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1"
+                      className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 cursor-pointer"
                     >
-                      Start Project with Riveno →
+                      Start Project with rivelolabs →
                     </button>
                   </div>
                 </motion.div>
