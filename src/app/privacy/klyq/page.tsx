@@ -3,9 +3,9 @@ import Link from "next/link";
 import { ArrowLeft, Shield, Mail, Apple } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Klyq Privacy Policy (iOS) | Rivelolabs",
+  title: "Privacy Policy for Klyq (iOS) | Rivelolabs",
   description:
-    "Privacy Policy for the Klyq iOS app — community feed, live discovery with direct audio/video calls, nearby discovery, circles, direct messaging, and multiplayer mini-games.",
+    "Privacy Policy for Klyq (iOS) — adults-only social app for conversations, interest-based circles, nearby discovery, direct audio and video calls, and multiplayer games.",
 };
 
 function SectionHeading({ id, number, title }: { id?: string; number: string; title: string }) {
@@ -23,24 +23,16 @@ function SubHeading({ title }: { title: string }) {
 
 export default function KlyqPrivacyPage() {
   const sections = [
-    { id: "who", label: "Who We Are" },
-    { id: "scope", label: "Scope" },
-    { id: "collect", label: "Information We Collect" },
-    { id: "use", label: "How We Use Info" },
-    { id: "live", label: "Live Discovery & Calls" },
-    { id: "location", label: "Location & Nearby" },
-    { id: "ads", label: "Advertising & Tracking" },
-    { id: "sharing", label: "How We Share" },
-    { id: "safety", label: "Safety & Moderation" },
-    { id: "retention", label: "Data Retention" },
-    { id: "storage", label: "Storage & Security" },
-    { id: "choices", label: "Your Choices" },
-    { id: "age", label: "Age Requirement" },
-    { id: "international", label: "International" },
-    { id: "rights", label: "Regional Rights" },
-    { id: "changes", label: "Changes" },
-    { id: "contact", label: "Contact" },
-    { id: "summary", label: "Store Disclosure Summary" },
+    { id: "collect", label: "1. Information We Collect" },
+    { id: "use", label: "2. How We Use Info" },
+    { id: "sharing", label: "3. Who Receives Info" },
+    { id: "safety", label: "4. Safety & Moderation" },
+    { id: "ads", label: "5. Advertising & Tracking" },
+    { id: "retention", label: "6. Retention & Deletion" },
+    { id: "choices", label: "7. Your Choices & Rights" },
+    { id: "age", label: "8. Age Requirement" },
+    { id: "security", label: "9. Security & Processing" },
+    { id: "changes", label: "10. Changes & Contact" },
   ];
 
   return (
@@ -71,7 +63,7 @@ export default function KlyqPrivacyPage() {
                   <a
                     key={s.id}
                     href={`#${s.id}`}
-                    className="text-[13px] transition-colors py-1 border-l-2 border-transparent pl-3 -ml-0.5"
+                    className="text-[13px] transition-colors py-1 border-l-2 border-transparent pl-3 -ml-0.5 hover:text-white"
                     style={{ color: "var(--text-muted)" }}
                   >
                     {s.label}
@@ -110,12 +102,12 @@ export default function KlyqPrivacyPage() {
                   className="bg-clip-text text-transparent"
                   style={{ backgroundImage: "linear-gradient(135deg, #ec4899, #8b5cf6)" }}
                 >
-                  Klyq
+                  Klyq (iOS)
                 </span>
               </h1>
               <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm" style={{ color: "var(--text-muted)" }}>
-                <p>Effective Date: June 20, 2026</p>
-                <p>Last Updated: July 18, 2026</p>
+                <p>Effective date: June 20, 2026</p>
+                <p>Last updated: September 24, 2026</p>
                 <p>Platform: Apple iOS</p>
               </div>
             </div>
@@ -123,373 +115,208 @@ export default function KlyqPrivacyPage() {
             <div className="space-y-10 text-sm leading-7 sm:text-base" style={{ color: "var(--text-secondary)" }}>
               {/* Intro */}
               <p>
-                Klyq (&quot;Klyq&quot;, &quot;we&quot;, &quot;our&quot;, or &quot;us&quot;), operated by Rivelo Labs, respects your privacy. This Privacy Policy explains how we collect, use, disclose, store, and protect information when you use the Klyq mobile application and related services (the &quot;Services&quot;).
+                Klyq is operated by Rivelo Labs, managed by calquors.com (&quot;Klyq,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;). This policy explains what information the Klyq iOS app and its supporting services collect, how we use and share it, and the choices available to you. Questions and privacy requests can be sent to{" "}
+                <a href="mailto:support@calquors.com" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>
+                  support@calquors.com
+                </a>
+                .
               </p>
               <p>
-                Klyq is a social app built around a community feed, live discovery with direct audio/video calls, nearby discovery, circles (communities), direct messaging, and real-opponent multiplayer mini-games. Because Klyq connects you with other people, please read this policy and our safety guidance carefully.
-              </p>
-              <p>
-                By using Klyq, you agree to this Privacy Policy. If you do not agree, please do not use the Services.
+                Klyq is an adults-only social app for conversations, interest-based circles, nearby discovery, direct audio and video calls, and multiplayer games. This policy covers the iOS app, the backend services that support it, and communications with our support team. Third-party services and other users may have their own privacy practices.
               </p>
 
-              {/* 1. Who We Are */}
+              {/* 1. Information we collect */}
               <section>
-                <SectionHeading id="who" number="01" title="Who We Are" />
-                <p className="mt-3">
-                  Klyq is a real-time social and gaming app operated by Rivelo Labs.
-                </p>
-                <div className="mt-4 rounded-xl p-5" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}>
-                  <p className="text-sm font-medium mb-1" style={{ color: "var(--text)" }}>App &amp; Developer:</p>
-                  <p>Klyq — operated by Rivelo Labs</p>
-                  <p>Managed by calquors.com</p>
-                  <p className="mt-1">
-                    Email:{" "}
-                    <a href="mailto:support@calquors.com" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>
-                      support@calquors.com
-                    </a>
-                  </p>
+                <SectionHeading id="collect" number="01" title="Information we collect" />
+                <div className="mt-4 space-y-4">
+                  <div>
+                    <SubHeading title="Account and profile" />
+                    <p className="mt-1">
+                      When you register, we process your email address, account ID, display name, unique username, date of birth, and account preferences. You may add a profile photo, gender, interests, hobbies, and other profile details. Supabase handles account authentication and password credentials; we do not store your password in plain text. The app may also store a record on your device that you accepted the Terms of Use and confirmed the adult age requirement.
+                    </p>
+                  </div>
+
+                  <div>
+                    <SubHeading title="Content and interactions" />
+                    <p className="mt-1">
+                      We process the messages, circle messages, status or story content, photos, game moves and results, connection requests, and other material you choose to share. We also process information about the accounts you message, follow up with, block, or report. Content you share with another person or a circle is visible to its intended recipients, who may copy or capture it outside Klyq.
+                    </p>
+                  </div>
+
+                  <div>
+                    <SubHeading title="Profile visits" />
+                    <p className="mt-1">
+                      When you open another person&apos;s profile, we record your account and the time of the visit. Klyq Plus subscribers can view recent visitors for the preceding 30 days, subject to blocking and account deletion controls.
+                    </p>
+                  </div>
+
+                  <div>
+                    <SubHeading title="Location" />
+                    <p className="mt-1">
+                      If you enable Nearby and grant location permission, the app obtains your device location to find people or circles near you. Klyq sends and stores an approximate discovery location rather than a continuous precise location history. A manually selected place label may also be stored. You can change or revoke location permission in iOS Settings. Location is not used to target ads.
+                    </p>
+                  </div>
+
+                  <div>
+                    <SubHeading title="Contacts, if you choose to use contact discovery" />
+                    <p className="mt-1">
+                      With your permission, the app reads contact names and email addresses on your device to show which contacts use Klyq. It sends SHA-256 hashes of normalized email addresses to our backend for matching. Contact names, phone numbers, and raw contact email addresses are not uploaded for this feature. Email hashes can still be personal information and are handled as such.
+                    </p>
+                  </div>
+
+                  <div>
+                    <SubHeading title="Calls and permissions" />
+                    <p className="mt-1">
+                      If you make a direct audio or video call, the app uses your microphone and, for video, your camera after you grant permission. LiveKit carries the call in real time. Klyq does not record the live audio or video stream as call content. We may retain call connection details and any related abuse reports. You can stop a call or revoke camera and microphone permission in iOS Settings.
+                    </p>
+                  </div>
+
+                  <div>
+                    <SubHeading title="Purchases" />
+                    <p className="mt-1">
+                      Apple processes Klyq Plus subscription payments. We receive and store information needed to verify and provide your subscription, including the product ID, original transaction identifier, subscription status, expiration date, and the Klyq account linked to the purchase. We do not receive your payment-card details. Deleting your Klyq account does not cancel your Apple subscription; cancellation is managed through your Apple account settings.
+                    </p>
+                  </div>
+
+                  <div>
+                    <SubHeading title="Device and usage information" />
+                    <p className="mt-1">
+                      We process push notification tokens, app interactions, feature usage events, service logs, and information needed for reliability and abuse prevention. When ads are enabled, Google Mobile Ads may process device and advertising information under its own privacy practices. Klyq requests Apple&apos;s App Tracking Transparency permission before enabling tracking-capable ad flows. Declining tracking does not prevent you from using Klyq. Klyq Plus removes third-party ads from the app.
+                    </p>
+                  </div>
+
+                  <div>
+                    <SubHeading title="Support and safety reports" />
+                    <p className="mt-1">
+                      If you contact us or report another account, we receive the information you provide and related account or content details needed to investigate and respond.
+                    </p>
+                  </div>
                 </div>
               </section>
 
-              {/* 2. Scope */}
+              {/* 2. How we use information */}
               <section>
-                <SectionHeading id="scope" number="02" title="Scope of This Privacy Policy" />
-                <p className="mt-3">This Privacy Policy applies to information collected through:</p>
-                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-pink-500/60">
-                  <li>The Klyq iOS and Android apps</li>
-                  <li>Features within the app, including the community feed, live discovery and direct calls, nearby discovery, circles and communities, direct messaging, and multiplayer games</li>
-                  <li>Customer support and privacy-related communications with us</li>
-                </ul>
-                <p className="mt-3" style={{ color: "var(--text-muted)" }}>
-                  This Privacy Policy does not apply to third-party services we do not control (for example, Apple, Google, the App Store, Google Play, or other people you interact with on Klyq), which have their own terms and privacy policies. A separate copy of this policy, with Android-specific detail, is also published for the{" "}
-                  <Link href="/privacy/klyq-android" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>Klyq Android app</Link>.
-                </p>
-              </section>
-
-              {/* 3. Information We Collect */}
-              <section>
-                <SectionHeading id="collect" number="03" title="Information We Collect" />
-                <p className="mt-3">Depending on the features you use, we may collect the following categories of information:</p>
-
-                <SubHeading title="3.1 Account and Identity Information" />
-                <p className="mt-2">When you create a Klyq account using email authentication (powered by Supabase Auth), we collect:</p>
-                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-pink-500/60">
-                  <li>Email address</li>
-                  <li>An authentication credential (your password is handled by our authentication provider; we never store your plain-text password). Email sign-up and account recovery are verified with a one-time code sent to your email.</li>
-                  <li>A unique user ID</li>
-                  <li>Display name, username/handle, alias, and account settings</li>
-                  <li>Date of birth (used to verify you are old enough to use Klyq) and, optionally, gender (used for discovery preferences)</li>
-                </ul>
-
-                <SubHeading title="3.2 Profile and Content You Create" />
-                <p className="mt-2">Information you choose to add or share in the app, such as:</p>
-                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-pink-500/60">
-                  <li>Profile details (display name, bio, avatar/photos, interests, intent, and preferences)</li>
-                  <li>Posts, comments, and reactions in the community feed</li>
-                  <li>Circles and communities you create or join</li>
-                  <li>Direct messages, in-game chat, and circle chat</li>
-                  <li>Virtual gifts you send or receive</li>
-                </ul>
-
-                <SubHeading title="3.3 Camera and Microphone (Optional — Live Calls)" />
-                <p className="mt-2">
-                  Klyq&apos;s Live tab shows people currently available to connect with, and lets you send a connect request for a direct audio or video call — the call only starts once the other person accepts. Camera and/or microphone access is used only while you are actively in a call, and only after you grant permission through your device. Live audio and video are used to carry that call in real time. <strong style={{ color: "var(--text)" }}>We do not record your live audio or video streams.</strong>
-                </p>
-
-                <SubHeading title="3.4 Approximate Location (Optional — Nearby)" />
-                <p className="mt-2">
-                  The Nearby feature shows people and circles around you. If you enable it and grant location permission, we use your device location to power nearby discovery. Klyq is built to reduce location precision: your position is stored as an approximate discovery area (snapped to a coarse grid) rather than an exact GPS trail. You may also set a location manually, in which case a human-readable place label is stored. You control location access through your device settings at any time.
-                </p>
-                <p className="mt-2" style={{ color: "var(--text-muted)" }}>
-                  We do not use your location for advertising and do not sell your location data.
-                </p>
-
-                <SubHeading title="3.5 Communications and Interaction Data" />
-                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-pink-500/60">
-                  <li>Messages and chat content you send through direct messages, circles, and in-game chat</li>
-                  <li>Connect requests and message requests (who you connect with, decline, block, or report)</li>
-                  <li>Reports and safety-related information you submit about other users</li>
-                </ul>
-
-                <SubHeading title="3.6 Multiplayer Game Data" />
-                <p className="mt-2">
-                  Klyq offers turn-based multiplayer mini-games (such as Tic Tac Toe, Connect Four, Checkers, and others) played against another real user matched to you, or an opponent you invite directly. We process gameplay data needed to run a live match, such as moves, results, scores, and the opponent you are paired with.
-                </p>
-
-                <SubHeading title="3.7 Purchases, Coins, and Earnings" />
-                <p className="mt-2">If you use paid or reward features, we process:</p>
-                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-pink-500/60">
-                  <li>Subscription and purchase status returned by Apple (StoreKit) or Google (Play Billing). Payment is handled entirely by Apple or Google — we never receive or store your credit card or banking details.</li>
-                  <li>Your in-app virtual currency balances (coins and diamonds), coin transactions, gift sends, and reward claims</li>
-                  <li>Cashout requests (the amount of diamonds you request to redeem). Payout arrangements are handled through support; the app does not collect payment account credentials.</li>
-                </ul>
-
-                <SubHeading title="3.8 Device, App, and Diagnostic Information" />
-                <p className="mt-2">We may collect basic technical information needed to operate, secure, and improve the Services, such as:</p>
-                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-pink-500/60">
-                  <li>App version, device type, and operating system version</li>
-                  <li>Error logs and crash/diagnostic information</li>
-                  <li>First-party usage and feature analytics events, processed on our own backend infrastructure</li>
-                </ul>
-              </section>
-
-              {/* 4. How We Use Your Information */}
-              <section>
-                <SectionHeading id="use" number="04" title="How We Use Your Information" />
-                <p className="mt-3">We use your information to:</p>
-                <ul className="mt-3 list-disc space-y-1.5 pl-6 marker:text-pink-500/60">
-                  <li>Create and manage your account and authenticate you</li>
-                  <li>Show who is available on Live and run the connect-request handshake for direct audio/video calls</li>
-                  <li>Run multiplayer games and pair you with an opponent</li>
-                  <li>Power the community feed, circles, and direct messaging</li>
-                  <li>Provide nearby discovery when you enable it</li>
-                  <li>Operate subscriptions, coins, gifts, rewarded features, and (where enabled) advertising</li>
-                  <li>Keep Klyq safe — detect, review, and act on abuse, spam, and policy violations</li>
-                  <li>Improve app performance, reliability, and user experience</li>
-                  <li>Provide support and respond to your requests</li>
-                  <li>Comply with legal obligations</li>
-                </ul>
-              </section>
-
-              {/* 5. Live Discovery and Direct Calls */}
-              <section>
-                <SectionHeading id="live" number="05" title="Live Discovery and Direct Calls" />
+                <SectionHeading id="use" number="02" title="How we use information" />
                 <p className="mt-3">
-                  The Live tab shows other users currently available to connect, and lets you request a direct 1:1 audio or video call — the call only begins once the other person accepts your request (or you accept theirs). It is not anonymous or random matching with an unknown stranger; you see who you&apos;re requesting before you call.
-                </p>
-                <ul className="mt-3 list-disc space-y-1.5 pl-6 marker:text-pink-500/60">
-                  <li>Live audio/video is delivered through our real-time infrastructure provider (LiveKit).</li>
-                  <li>The person you call can see and/or hear you and anything in view of your camera and microphone — only share what you are comfortable with.</li>
-                  <li>You can end the call, block, or report at any time.</li>
-                  <li>We do not record, sell, or use your live video or voice streams for advertising.</li>
-                </ul>
-                <p className="mt-3" style={{ color: "var(--text-muted)" }}>
-                  We may retain limited information related to a call (for example, reports, block records, or safety signals) to investigate abuse and keep the community safe, as described in Section 9.
+                  We use this information to create and protect accounts; show profiles, circles, nearby users and relevant activity; deliver messages, calls, notifications and games; verify subscriptions and provide paid features; respond to support requests; detect and act on harassment, spam, fraud and other misuse; and maintain and improve service reliability. We do not sell personal information.
                 </p>
               </section>
 
-              {/* 6. Location and Nearby */}
+              {/* 3. Who receives information */}
               <section>
-                <SectionHeading id="location" number="06" title="Location and Nearby" />
+                <SectionHeading id="sharing" number="03" title="Who receives information" />
                 <p className="mt-3">
-                  Location is optional and used only to power the Nearby discovery feature. You can grant, limit (approximate only), or revoke location access at any time in your device settings. If you disable location, Nearby will be limited or unavailable, but the rest of Klyq will continue to work.
+                  Other users receive the profile and content you choose to share with them. For example, a message recipient sees your message and profile identity; circle members see content shared in that circle; and someone on a call can hear or see what you share during that call.
                 </p>
-              </section>
-
-              {/* 7. Advertising and Tracking */}
-              <section>
-                <SectionHeading id="ads" number="07" title="Advertising and Tracking" />
                 <p className="mt-3">
-                  Klyq may show ads (such as interstitial and rewarded ads) to users without a premium subscription, using Google Mobile Ads (AdMob). Rewarded ads are always optional — you choose to watch them in exchange for in-app rewards. Ads can also be turned on or off remotely for all users; when ads are off, ad-related processing does not occur and non-subscribers see a subscribe option instead.
-                </p>
-                <ul className="mt-3 list-disc space-y-1.5 pl-6 marker:text-pink-500/60">
-                  <li><strong style={{ color: "var(--text)" }}>On iOS:</strong> before any tracking-capable advertising flow can collect the Identifier for Advertisers (IDFA), Klyq presents Apple&apos;s App Tracking Transparency (ATT) prompt. If you decline, Klyq does not track you across other companies&apos; apps and websites, and any ads shown are non-personalized.</li>
-                  <li><strong style={{ color: "var(--text)" }}>On Android:</strong> Google Mobile Ads may use the advertising ID subject to your device&apos;s ads personalization settings, which you can change or reset at any time.</li>
-                  <li>Premium subscribers do not see third-party ads.</li>
-                </ul>
-                <p className="mt-3" style={{ color: "var(--text-muted)" }}>
-                  We do not sell your personal information or share it with data brokers, and we do not use your messages, location, or live audio/video for advertising.
+                  We use service providers to operate Klyq, including Supabase for authentication, Railway for application hosting and databases, Cloudflare R2 for uploaded media, LiveKit for live calls, Apple for subscriptions and push notifications, and Google Mobile Ads when ads are enabled. These providers process information needed for their services and may have their own privacy policies. We may also disclose information when required by law or reasonably necessary to protect users, enforce our terms, or investigate abuse. If the business changes ownership, information may transfer as part of that transaction subject to applicable law.
                 </p>
               </section>
 
-              {/* 8. How We Share Information */}
+              {/* 4. Safety and moderation */}
               <section>
-                <SectionHeading id="sharing" number="08" title="How We Share Information" />
-                <p className="mt-3 font-medium" style={{ color: "var(--text)" }}>We do not sell your personal information.</p>
-
-                <SubHeading title="8.1 Other Users (By Design)" />
-                <p className="mt-2">
-                  Klyq is a social product, so some information is shared with other people by design — for example, your profile, username or alias, posts you publish, messages you send, your approximate area in nearby discovery, and your live video/voice during a call you&apos;re on. Content shared publicly or with a circle may be seen, saved, or screenshotted by others outside our control.
-                </p>
-
-                <SubHeading title="8.2 Service Providers (Infrastructure)" />
-                <p className="mt-2">We use trusted providers to operate the app:</p>
-                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-pink-500/60">
-                  <li>Supabase — account authentication (sign-in, email verification codes)</li>
-                  <li>Railway — cloud hosting for our backend services and our application database</li>
-                  <li>Cloudflare R2 — storage and delivery of photos and media you upload</li>
-                  <li>LiveKit — live audio and video call infrastructure</li>
-                  <li>Google Mobile Ads (AdMob) — advertising, where ads are enabled</li>
-                  <li>Google Maps and related mapping services on Android, where applicable</li>
-                  <li>Apple and Google — app distribution, push infrastructure where applicable, and billing for subscriptions and purchases</li>
-                </ul>
-                <p className="mt-2" style={{ color: "var(--text-muted)" }}>
-                  These providers process data only as needed to operate their part of the service.
-                </p>
-
-                <SubHeading title="8.3 Legal, Safety, and Security" />
-                <p className="mt-2">We may disclose information if reasonably necessary to:</p>
-                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-pink-500/60">
-                  <li>Comply with legal obligations or valid legal process</li>
-                  <li>Enforce our terms or protect our rights</li>
-                  <li>Protect the safety, security, and integrity of users, the Services, or the public</li>
-                </ul>
-
-                <SubHeading title="8.4 Business Transfers" />
-                <p className="mt-2">
-                  If Klyq is involved in a merger, acquisition, financing, restructuring, or sale of assets, information may be transferred as part of that transaction.
+                <SectionHeading id="safety" number="04" title="Safety and moderation" />
+                <p className="mt-3">
+                  Users can block or report other users and inappropriate activity in the app, or email{" "}
+                  <a href="mailto:support@calquors.com" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>
+                    support@calquors.com
+                  </a>
+                  . We process reports, account identifiers, relevant content and related activity to investigate concerns and enforce our Terms of Use and Community Guidelines. We may remove content or restrict accounts that violate those rules.
                 </p>
               </section>
 
-              {/* 9. Safety, Moderation & Reporting */}
+              {/* 5. Advertising and tracking */}
               <section>
-                <SectionHeading id="safety" number="09" title="Safety, Moderation &amp; Reporting" />
-                <p className="mt-3">Because Klyq connects you with other people, we provide tools and processes to keep the community safe:</p>
-                <ul className="mt-3 list-disc space-y-1.5 pl-6 marker:text-pink-500/60">
-                  <li><strong style={{ color: "var(--text)" }}>Block:</strong> end or avoid contact with someone at any time.</li>
-                  <li><strong style={{ color: "var(--text)" }}>Report:</strong> flag users or content that violate our rules, including directly from a call, chat, or profile.</li>
-                  <li><strong style={{ color: "var(--text)" }}>Review &amp; enforcement:</strong> we may review reported content and account activity and take action, including warnings, content removal, or account suspension.</li>
-                </ul>
-                <p className="mt-3" style={{ color: "var(--text-muted)" }}>
-                  To operate these protections, we may process and retain reports, block records, and related metadata for as long as needed to investigate abuse, enforce our terms, and comply with the law.
+                <SectionHeading id="ads" number="05" title="Advertising and tracking" />
+                <p className="mt-3">
+                  Free accounts may see interstitial or optional rewarded ads when ads are enabled. Google Mobile Ads may collect or receive device, usage, and advertising information to serve and measure ads. We ask for Apple&apos;s tracking permission before tracking-capable ad flows. You can change tracking permission in iOS Settings. Declining permission does not remove all advertising; it limits tracking-based advertising. We do not provide message contents, call audio or video, or Nearby location to advertisers for ad targeting.
                 </p>
               </section>
 
-              {/* 10. Data Retention */}
+              {/* 6. Retention and account deletion */}
               <section>
-                <SectionHeading id="retention" number="10" title="Data Retention" />
-                <p className="mt-3">We retain personal information only for as long as reasonably necessary to:</p>
-                <ul className="mt-3 list-disc space-y-1.5 pl-6 marker:text-pink-500/60">
-                  <li>Provide the Services and features you use</li>
-                  <li>Maintain your account and content</li>
-                  <li>Keep the community safe and enforce our terms</li>
-                  <li>Comply with legal obligations and resolve disputes</li>
-                </ul>
-                <p className="mt-3" style={{ color: "var(--text-muted)" }}>
-                  Retention varies by data type: account and profile data are kept while your account is active; live presence and discovery state are short-lived and refreshed frequently; and some billing, fraud-prevention, and audit data may be retained longer where required. When you delete your account, we delete or anonymize your associated data within a reasonable period, subject to legal, security, backup, and safety/moderation requirements.
+                <SectionHeading id="retention" number="06" title="Retention and account deletion" />
+                <p className="mt-3">
+                  We keep account and service information while needed to provide Klyq and for security, moderation, dispute resolution, and legal obligations. Live presence is temporary. Subscription ownership identifiers may be retained after account deletion to reconcile purchases and prevent their reassignment. Backups and records required for legal or security reasons may remain for a limited additional period. We do not claim that deleting a Klyq account cancels an Apple subscription.
                 </p>
-              </section>
-
-              {/* 11. Data Storage and Security */}
-              <section>
-                <SectionHeading id="storage" number="11" title="Data Storage and Security" />
-                <p className="mt-3">Your information may be stored:</p>
-                <ul className="mt-2 list-disc space-y-1.5 pl-6 marker:text-pink-500/60">
-                  <li>Locally on your device</li>
-                  <li>In our backend database and secure cloud services used to operate the app (see Section 8.2)</li>
-                </ul>
-                <p className="mt-3" style={{ color: "var(--text-muted)" }}>
-                  We use reasonable administrative, technical, and organizational measures, and communication with our backend uses encryption in transit (HTTPS/TLS, secure WebSockets). However, no method of transmission or storage is 100% secure, and we cannot guarantee absolute security.
+                <p className="mt-3">
+                  You can request account deletion in:
                 </p>
-              </section>
-
-              {/* 12. Your Choices and Controls */}
-              <section>
-                <SectionHeading id="choices" number="12" title="Your Choices and Controls" />
-                <ul className="mt-3 list-disc space-y-1.5 pl-6 marker:text-pink-500/60">
-                  <li><strong style={{ color: "var(--text)" }}>Profile &amp; content:</strong> edit your profile and delete content you have posted within the app.</li>
-                  <li><strong style={{ color: "var(--text)" }}>Camera, microphone &amp; location permissions:</strong> grant or revoke at any time in your device settings.</li>
-                  <li><strong style={{ color: "var(--text)" }}>Ads personalization:</strong> decline the ATT prompt on iOS, or manage the advertising ID on Android; premium subscribers see no third-party ads.</li>
-                  <li><strong style={{ color: "var(--text)" }}>Block &amp; report:</strong> available directly from a call, chat, or profile.</li>
-                </ul>
-                <p className="mt-3"><strong style={{ color: "var(--text)" }}>Account deletion:</strong> delete your account and associated data from within the app:</p>
                 <div className="mt-2 rounded-lg px-4 py-3 font-mono text-sm" style={{ backgroundColor: "var(--code-bg)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>
-                  Profile / Settings → Delete Account
+                  You → Account → Delete account
                 </div>
-                <p className="mt-2" style={{ color: "var(--text-muted)" }}>
-                  Or email{" "}
-                  <a href="mailto:support@calquors.com" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>support@calquors.com</a>{" "}
-                  to request deletion. Account deletion removes your data from our application database and deletes your authentication identity.
-                </p>
-              </section>
-
-              {/* 13. Age Requirement */}
-              <section>
-                <SectionHeading id="age" number="13" title="Age Requirement" />
                 <p className="mt-3">
-                  Klyq is intended for adults. You must be at least 18 years old (or the age of majority in your jurisdiction) to use the Services, and we collect your date of birth at sign-up to enforce this. Klyq is not directed to children, and we do not knowingly collect personal information from anyone under 18. If you believe a minor has provided us personal information, contact us and we will take appropriate steps to remove it.
+                  or contact{" "}
+                  <a href="mailto:support@calquors.com" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>
+                    support@calquors.com
+                  </a>
+                  . The deletion process removes your authentication account and associated application database records, including your profile and messages. Media files stored separately may require additional cleanup; contact{" "}
+                  <a href="mailto:support@calquors.com" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>
+                    support@calquors.com
+                  </a>{" "}
+                  if you want us to check for remaining files. Billing identifiers and records described above may also remain. Content already copied or captured by other users is outside our control.
                 </p>
               </section>
 
-              {/* 14. International Users */}
+              {/* 7. Your choices and rights */}
               <section>
-                <SectionHeading id="international" number="14" title="International Users" />
+                <SectionHeading id="choices" number="07" title="Your choices and rights" />
                 <p className="mt-3">
-                  If you use Klyq from outside the countries where our services are hosted, your information may be processed and stored in other countries where we or our service providers operate. Data protection laws in those countries may differ from the laws in your location.
+                  You can edit your profile, control what you share, block and report users, and manage camera, microphone, contacts, location, notification, and tracking permissions in iOS Settings. You can manage or cancel Klyq Plus through Apple. Depending on where you live, you may have rights to access, correct, delete, or obtain a copy of your information, or to object to certain processing. Contact{" "}
+                  <a href="mailto:support@calquors.com" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>
+                    support@calquors.com
+                  </a>{" "}
+                  to make a request; we may need to verify your identity.
                 </p>
               </section>
 
-              {/* 15. Your Regional Rights */}
+              {/* 8. Age requirement */}
               <section>
-                <SectionHeading id="rights" number="15" title="Your Regional Rights (Where Applicable)" />
-                <p className="mt-3">Depending on your location (for example, under GDPR or CCPA/CPRA), you may have rights to:</p>
-                <ul className="mt-3 list-disc space-y-1.5 pl-6 marker:text-pink-500/60">
-                  <li>Access the personal information we hold about you</li>
-                  <li>Request correction of inaccurate information</li>
-                  <li>Request deletion of your information</li>
-                  <li>Object to or restrict certain processing</li>
-                  <li>Request data portability (where applicable)</li>
-                  <li>Withdraw consent for optional permissions (camera, microphone, location, tracking)</li>
-                </ul>
-                <p className="mt-3" style={{ color: "var(--text-muted)" }}>
-                  To exercise applicable rights, contact us at{" "}
-                  <a href="mailto:support@calquors.com" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>support@calquors.com</a>.
-                  We may need to verify your identity before fulfilling certain requests.
-                </p>
-              </section>
-
-              {/* 16. Changes */}
-              <section>
-                <SectionHeading id="changes" number="16" title="Changes to This Privacy Policy" />
+                <SectionHeading id="age" number="08" title="Age requirement" />
                 <p className="mt-3">
-                  We may update this Privacy Policy from time to time. If we make material changes, we will post the updated version at this URL and update the &quot;Last Updated&quot; date above. Your continued use of Klyq after changes become effective means you accept the updated Privacy Policy.
+                  Klyq is for adults aged 18 or older, or the age of majority in your location if higher. We ask for date of birth during registration and require an adult confirmation before access to community features. Klyq is not directed to children. If you believe someone under the required age has provided us information, contact{" "}
+                  <a href="mailto:support@calquors.com" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>
+                    support@calquors.com
+                  </a>
+                  .
                 </p>
               </section>
 
-              {/* 17. Contact Us */}
+              {/* 9. Security and international processing */}
               <section>
-                <SectionHeading id="contact" number="17" title="Contact Us" />
+                <SectionHeading id="security" number="09" title="Security and international processing" />
                 <p className="mt-3">
-                  If you have questions, requests, or concerns about this Privacy Policy or your data, contact us at:
+                  We use access controls and encrypted connections to protect information, but no system can be guaranteed completely secure. Information may be processed in countries where Klyq and its providers operate, which may have different data protection laws from your country.
                 </p>
-                <div className="mt-4 rounded-xl p-5" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}>
-                  <p className="font-medium" style={{ color: "var(--text)" }}>Klyq — Rivelo Labs</p>
+              </section>
+
+              {/* 10. Changes and contact */}
+              <section>
+                <SectionHeading id="changes" number="10" title="Changes and contact" />
+                <p className="mt-3">
+                  We may update this policy when Klyq or applicable requirements change. We will post the updated policy with a new &quot;Last updated&quot; date and provide any additional notice required by law.
+                </p>
+                <div className="mt-6 rounded-xl p-5 sm:p-6" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)" }}>
+                  <p className="font-semibold text-base" style={{ color: "var(--text)" }}>Klyq — Rivelo Labs</p>
                   <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>Managed by calquors.com</p>
-                  <p className="mt-2 flex items-center gap-2">
+                  <p className="mt-3 flex items-center gap-2 text-sm">
                     <Mail className="h-4 w-4" style={{ color: "var(--accent)" }} />
                     <a href="mailto:support@calquors.com" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>
                       support@calquors.com
                     </a>
                   </p>
-                  <p className="mt-2" style={{ color: "var(--text-muted)" }}>
-                    iOS Privacy Policy URL:{" "}
-                    <span style={{ color: "var(--text-secondary)" }}>https://www.rivelolabs.com/privacy/klyq</span>
-                  </p>
-                  <p className="mt-1" style={{ color: "var(--text-muted)" }}>
-                    Android Privacy Policy URL:{" "}
-                    <Link href="/privacy/klyq-android" className="underline underline-offset-4" style={{ color: "var(--accent)" }}>
-                      rivelolabs.com/privacy/klyq-android
-                    </Link>
-                  </p>
+                  <div className="mt-4 pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs" style={{ borderTop: "1px solid var(--border)", color: "var(--text-muted)" }}>
+                    <p>
+                      iOS Privacy Policy URL:{" "}
+                      <span style={{ color: "var(--text-secondary)" }}>https://www.rivelolabs.com/privacy/klyq</span>
+                    </p>
+                    <p>
+                      <Link href="/privacy/klyq-android" className="underline underline-offset-4 hover:text-white" style={{ color: "var(--accent)" }}>
+                        View Android Privacy Policy →
+                      </Link>
+                    </p>
+                  </div>
                 </div>
-              </section>
-
-              {/* Appendix: Store Disclosure Summary */}
-              <section>
-                <SectionHeading id="summary" number="Appendix" title="App Store / Play Store Disclosure Summary" />
-                <p className="mt-3" style={{ color: "var(--text-muted)" }}>
-                  A practical summary for store privacy questionnaires (App Store &quot;App Privacy&quot; and Play Store &quot;Data safety&quot;). Review against the current build before each submission.
-                </p>
-
-                <SubHeading title="Data collected and linked to identity" />
-                <p className="mt-2">
-                  Email address; user ID, handle, alias; date of birth; optional gender; profile photos; user content (posts, comments, messages, reports); purchase/subscription state; coin, gift, and earnings activity.
-                </p>
-
-                <SubHeading title="Data collected, not used to track (unless ATT consent on iOS)" />
-                <p className="mt-2">
-                  Diagnostics/crash data; first-party usage analytics; advertising identifiers only where ads are enabled and permitted by user choice (ATT on iOS / ads personalization settings on Android).
-                </p>
-
-                <SubHeading title="Ephemeral, not retained as content" />
-                <p className="mt-2">
-                  Live audio/video streams (relayed in real time, not recorded).
-                </p>
-
-                <SubHeading title="User controls in the product" />
-                <p className="mt-2">
-                  In-app account deletion; profile and photo editing; content deletion; block and report actions; permission control via device settings.
-                </p>
               </section>
             </div>
           </article>
