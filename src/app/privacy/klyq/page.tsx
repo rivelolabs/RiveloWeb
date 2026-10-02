@@ -71,6 +71,10 @@ export default function KlyqPrivacyPage() {
                 ))}
               </nav>
               <div className="mt-6 pt-5" style={{ borderTop: "1px solid var(--border)" }}>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>Child Safety Standards:</p>
+                <Link href="/child-safety/klyq" className="text-[13px] font-medium underline underline-offset-4 text-rose-400 block mb-3">
+                  CSAE Standards Policy →
+                </Link>
                 <p className="text-xs" style={{ color: "var(--text-muted)" }}>Using Android?</p>
                 <Link href="/privacy/klyq-android" className="text-[13px] font-medium underline underline-offset-4" style={{ color: "var(--accent)" }}>
                   Klyq Android Privacy Policy →
@@ -222,6 +226,13 @@ export default function KlyqPrivacyPage() {
                     support@calquors.com
                   </a>
                   . We process reports, account identifiers, relevant content and related activity to investigate concerns and enforce our Terms of Use and Community Guidelines. We may remove content or restrict accounts that violate those rules.
+                </p>
+                <p className="mt-3">
+                  <strong style={{ color: "var(--text)" }}>Child Sexual Abuse Material (CSAM) &amp; CSAE Prevention:</strong> We enforce an absolute zero-tolerance policy against any form of child sexual abuse and exploitation. In-app reporting controls allow real-time flagging of safety concerns during live calls, in messages, and on profiles. For complete compliance specifications, please review our published{" "}
+                  <Link href="/child-safety/klyq" className="underline underline-offset-4 text-rose-400 font-medium">
+                    Child Safety Standards (CSAE Prevention Policy)
+                  </Link>
+                  .
                 </p>
               </section>
 

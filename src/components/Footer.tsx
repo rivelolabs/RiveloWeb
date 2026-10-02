@@ -176,6 +176,11 @@ export default function Footer({ onOpenModal }: FooterProps) {
                     Privacy Policy
                   </Link>
                 </li>
+                <li>
+                  <Link href="/child-safety/klyq" className="hover:text-white transition-colors">
+                    Child Safety
+                  </Link>
+                </li>
                 <li className="text-[11px] text-slate-400 pt-1 font-mono">
                   Calquors Pvt Ltd
                 </li>

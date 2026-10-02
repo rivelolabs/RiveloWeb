@@ -69,7 +69,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/safety/klyq-child-safety`,
       lastModified,
       changeFrequency: "monthly",
-      priority: 0.4,
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/child-safety/klyq`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.5,
     },
   ];
 }
