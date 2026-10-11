@@ -94,6 +94,24 @@ const projects: ProjectItem[] = [
     ],
     specs: ["LiveKit WebRTC SFU", "Supabase Realtime", "PostGIS Nearby Map", "Jetpack Compose & SwiftUI"],
   },
+  {
+    id: "boop",
+    name: "BOOP",
+    tagline: "Boop the World. Ride the Wave.",
+    category: "iOS & Android Physics Puzzle Game",
+    accent: "#ffd678",
+    badge: "Real-Time Wave Physics · Metal & OpenGL ES",
+    bgGradient: "linear-gradient(135deg, #0b4f6c 0%, #1f7a5a 50%, #3a6ec8 100%)",
+    description:
+      "A one-touch puzzle with living waves. Tap the water, stomp the meadow or gust through the sky so your cat, dog, bunny, panda or frog rides the wave into the ring. Endless levels, three worlds and a full 3D mode.",
+    image: "/boop-water.jpg",
+    privacyLinks: [
+      { label: "Privacy (iOS)", href: "/privacy/boop" },
+      { label: "Privacy (Android)", href: "/privacy/boop-android" },
+      { label: "Support", href: "/support/boop" },
+    ],
+    specs: ["2D Wave-Equation Engine", "Metal & GLES 3D Renderer", "Procedural Endless Levels", "SwiftUI & Jetpack Compose"],
+  },
 ];
 
 export default function Projects() {
