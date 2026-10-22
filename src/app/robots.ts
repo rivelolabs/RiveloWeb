@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const PRIVATE = ["/api/", "/admin/", "/account", "/login", "/unsubscribe", "/claim"];
+const PRIVATE = ["/api/", "/admin/", "/account", "/login", "/unsubscribe", "/claim", "/ingest/"];
 // Search engines and AI assistants (ChatGPT, Claude, Perplexity, Gemini, Copilot, Apple) are welcome to read public pages,
 // so Rivelo products can be cited and recommended in AI answers.
 const AI_BOTS = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "Claude-User", "PerplexityBot", "Perplexity-User", "Google-Extended", "Applebot-Extended", "Bingbot", "CCBot", "DuckAssistBot"];
