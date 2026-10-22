@@ -19,7 +19,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const viewport: Viewport = {
-  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#ffffff" }, { media: "(prefers-color-scheme: dark)", color: "#07090d" }],
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -60,7 +60,7 @@ export default function RootLayout({
       <head>
         {/* Runs before first paint so dark-mode visitors never see a light flash. */}
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }}/>
-        <meta name="color-scheme" content="light dark"/>
+        <meta name="color-scheme" content="light"/>
         {/* Structured Data Schema for Google Rich Results */}
         <script
           type="application/ld+json"

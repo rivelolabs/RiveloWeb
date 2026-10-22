@@ -13,26 +13,28 @@ test('theme resolver follows the device color scheme',()=>{
   assert.equal(resolveTheme(true),'dark');
   assert.equal(resolveTheme(false),'light');
 });
-test('early theme script restores manual choices and defaults to the system',()=>{
+test('early theme script restores manual choices and defaults to light',()=>{
   const {themeBootstrap,resolveTheme,normalizeThemePreference}=load('src/lib/theme.ts');
   for(const {saved,dark,expected} of [
     {saved:'dark',dark:false,expected:'dark'},
     {saved:'light',dark:true,expected:'light'},
     {saved:'system',dark:true,expected:'dark'},
     {saved:null,dark:false,expected:'light'},
-    {saved:'invalid',dark:true,expected:'dark'},
+    {saved:'invalid',dark:true,expected:'light'},
+    {saved:null,dark:true,expected:'light'},
   ]) {
     const context={document:{documentElement:{dataset:{}}},localStorage:{getItem(){return saved;}},matchMedia:()=>({matches:dark})};
     vm.runInNewContext(themeBootstrap,context);
     assert.equal(context.document.documentElement.dataset.theme,expected);
   }
-  assert.equal(normalizeThemePreference('unknown'),'system');
+  assert.equal(normalizeThemePreference('unknown'),'light');
+  assert.equal(normalizeThemePreference('system'),'system');
   assert.equal(resolveTheme(true,'light'),'light');
   assert.equal(resolveTheme(false,'dark'),'dark');
   assert.equal(resolveTheme(false,'system'),'light');
   const context={document:{documentElement:{dataset:{}}},localStorage:{getItem(){throw Error('Storage unavailable');}},matchMedia:()=>({matches:true})};
   vm.runInNewContext(themeBootstrap,context);
-  assert.equal(context.document.documentElement.dataset.theme,'dark');
+  assert.equal(context.document.documentElement.dataset.theme,'light');
 });
 test('structured directory links and product breadcrumbs agree with actual product routes',()=>{
   const directory=load('src/lib/directory.ts');

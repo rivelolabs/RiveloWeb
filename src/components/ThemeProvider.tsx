@@ -4,8 +4,8 @@ import {normalizeThemePreference,resolveTheme,themeStorageKey,type ThemePreferen
 type ThemeContextValue={preference:ThemePreference;setPreference:(value:ThemePreference)=>void};
 const ThemeContext=createContext<ThemeContextValue|null>(null);
 export function ThemeProvider({children}:{children:React.ReactNode}) {
-  const [preference,setValue]=useState<ThemePreference>('system');
-  const current=useRef<ThemePreference>('system');
+  const [preference,setValue]=useState<ThemePreference>('light');
+  const current=useRef<ThemePreference>('light');
   const setPreference=useCallback((value:ThemePreference)=>{
     current.current=value;setValue(value);
     document.documentElement.dataset.theme=resolveTheme(matchMedia('(prefers-color-scheme: dark)').matches,value);
