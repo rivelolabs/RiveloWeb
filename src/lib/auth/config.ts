@@ -1,0 +1,2 @@
+export function authConfig(){const url=process.env.NEXT_PUBLIC_SUPABASE_URL;const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY||process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;return url&&key?{url,key}:null;}
+export function safeNext(value:unknown){if(typeof value!=='string'||!value.startsWith('/')||value.startsWith('//')||/[\\\r\n]/.test(value))return '/map';try{const target=new URL(value,'https://rivelolabs.com');return target.origin==='https://rivelolabs.com'?target.pathname+target.search+target.hash:'/map';}catch{return '/map';}}

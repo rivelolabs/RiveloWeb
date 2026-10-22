@@ -1,0 +1,46 @@
+/* Maker pages (/makers/[username]) */
+.mk-page{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:22px;padding-bottom:90px}
+.mk-claim-banner{display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:26px;border-radius:20px;background:#1d2128;color:#f2f5f9}
+.mk-claim-banner>div:first-child{flex:1;min-width:260px}
+.mk-claim-banner h2{font-size:22px;letter-spacing:-.02em;color:#fff}
+.mk-claim-banner p{color:#c3cad4;font-size:15px;line-height:1.6;margin-top:6px!important}
+.mk-claim-banner a{color:#fff;text-decoration:underline}
+.mk-claim-banner blockquote{margin:14px 0 0;padding:14px 16px;border-radius:12px;background:#2b3039;color:#e6eaf0;font-size:15px;line-height:1.55;word-break:break-word}
+.mk-claim{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.mk-claim small{font-size:12px;opacity:.7}
+.mk-claim-btn{background:#e2572e!important;border-color:#e2572e!important;color:#fff!important;min-height:48px;padding:0 22px!important;font-size:15px!important}
+.mk-head{display:flex;gap:20px;align-items:center}
+.mk-head img,.mk-avatar{width:96px;height:96px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--rd-soft);display:grid;place-items:center;font-size:34px;font-weight:600}
+.mk-head h1{display:flex;align-items:center;gap:8px;font-size:clamp(26px,3vw,34px);letter-spacing:-.04em}
+.mk-head h1 svg{color:var(--rc-accent)}
+.mk-handle{font-family:ui-monospace,Menlo,monospace;font-size:14px;color:var(--rd-muted);margin-top:4px!important}
+.mk-chips{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+.mk-chips span,.mk-x{display:inline-flex;align-items:center;gap:5px;min-height:34px;padding:0 12px;border:1px solid var(--rd-line);border-radius:10px;font-size:13px;color:var(--rd-secondary)}
+.mk-x{font-size:16px;color:var(--rd-ink)!important}
+.mk-live{color:#1d7a48!important;border-color:#2fb26b55!important}.mk-unclaimed{border-style:dashed!important}
+.mk-card{padding:22px;border:1px solid var(--rd-line);border-radius:18px;background:var(--rd-surface);display:flex;flex-direction:column;gap:10px}
+.mk-card h2{font-size:20px;letter-spacing:-.02em}
+.mk-card p{font-size:15px;line-height:1.65;color:var(--rd-secondary)}
+.mk-muted{color:var(--rd-muted)!important}.mk-small{font-size:13px!important}
+.mk-label{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.12em;color:var(--rd-muted)}
+.mk-links{display:flex;gap:8px;flex-wrap:wrap}
+.mk-links a{display:inline-flex;align-items:center;gap:4px;padding:8px 14px;border-radius:99px;background:var(--rd-soft);font-size:14px;color:var(--rd-ink)}
+.mk-product-dashed{border:2px dashed #e9c27a;background:color-mix(in srgb,#e9a23b 6%,var(--rd-surface))}
+.mk-product-row{display:flex;gap:14px;align-items:center}
+.mk-product-row img{width:56px;height:56px;border-radius:14px;background:var(--rd-soft);padding:6px;object-fit:contain}
+.mk-product-row h3{font-size:20px;letter-spacing:-.02em}
+.mk-product-row a{display:inline-flex;align-items:center;gap:3px;font-family:ui-monospace,Menlo,monospace;font-size:13px;color:var(--rd-muted)}
+.mk-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.mk-actions .mk-claim{flex-direction:row;align-items:center}.mk-actions .mk-claim small{display:none}
+.mk-owner{border-color:var(--rc-accent)}
+.mk-owner-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.mk-form{display:flex;flex-direction:column;gap:14px}
+.mk-form label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:550}
+.mk-form input,.mk-form textarea{padding:10px 12px;border:1px solid var(--rd-control-border);border-radius:10px;background:var(--rd-control);color:var(--rd-ink);font:inherit;font-size:14px}
+.mk-picker{height:260px;border-radius:14px;overflow:hidden}
+.mk-report{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--rd-muted)}
+.mk-report a{text-decoration:underline;color:var(--rd-secondary)}
+.mk-map{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:40;display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:99px;background:#1d2128;color:#fff!important;font-weight:600;box-shadow:0 10px 30px #0000004d}
+[data-theme="dark"] .mk-claim-banner{background:#151a22;border:1px solid #232b38}
+[data-theme="dark"] .mk-product-dashed{border-color:#7a5a20;background:#14110b}
+@media(max-width:600px){.mk-head{flex-direction:column;align-items:flex-start}.mk-head img,.mk-avatar{width:76px;height:76px}}

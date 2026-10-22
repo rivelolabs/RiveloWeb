@@ -2,20 +2,17 @@ import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "RIVENO — AI & Software Engineering at flash speed",
-    short_name: "RIVENO",
-    description:
-      "Riveno by Rivelo Labs crafts high-throughput AI platforms, native mobile apps, and scalable web software. Inquiries to hello@rivelolabs.com.",
+    name: "Rivelo Labs — Discover new apps & websites",
+    short_name: "Rivelo",
+    description: "Discover new apps and websites from independent builders, and list yours to get real users.",
     start_url: "/",
     display: "standalone",
-    background_color: "#090a0f",
-    theme_color: "#090a0f",
+    background_color: "#07090d",
+    theme_color: "#07090d",
     icons: [
-      {
-        src: "/favicon.ico",
-        sizes: "any",
-        type: "image/x-icon",
-      },
+      { src: "/favicon.ico", sizes: "any", type: "image/x-icon" },
+      { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
     ],
   };
 }

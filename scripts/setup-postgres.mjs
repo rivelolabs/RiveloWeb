@@ -1,0 +1,3 @@
+// Run with node --env-file=.env.local scripts/setup-postgres.mjs while Next.js is running.
+const response=await fetch(new URL('/api/catalog/admin',process.env.DISCOVERY_WORKER_ORIGIN||'http://127.0.0.1:3000'),{method:'POST',headers:{Authorization:`Bearer ${process.env.CATALOG_ADMIN_KEY}`,'Content-Type':'application/json'},body:JSON.stringify({action:'initialize-postgres'})});
+const result=await response.json();if(!response.ok)throw Error(result.error);console.log(result.initialized?'Private catalog schema created and local catalog copied.':'Existing database catalog retained; no records overwritten.');

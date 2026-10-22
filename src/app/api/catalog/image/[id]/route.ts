@@ -1,0 +1,4 @@
+import {readCatalog} from '@/lib/catalog/store';
+import {safeFetch} from '@/lib/catalog/safe-fetch';
+export const runtime='nodejs';
+export async function GET(_:Request,{params}:{params:Promise<{id:string}>}){try{const {id}=await params;const state=await readCatalog();const listing=state.listings.find(item=>item.id===id&&item.status==='published');if(!listing?.image)return new Response(null,{status:404});const result=await safeFetch(listing.image,{maxBytes:3_000_000});const mime=String(result.headers['content-type']||'').split(';')[0];if(result.status!==200||!['image/png','image/jpeg','image/webp','image/gif','image/avif'].includes(mime))return new Response(null,{status:404});return new Response(new Uint8Array(result.body),{headers:{'Content-Type':mime,'Cache-Control':'public, max-age=3600','X-Content-Type-Options':'nosniff'}});}catch{return new Response(null,{status:404});}}

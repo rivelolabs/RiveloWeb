@@ -1,0 +1,3 @@
+import type {CatalogState} from './types';
+export function publicPins(state:CatalogState){return state.pins.filter(p=>p.status==='published'&&state.listings.some(l=>l.id===p.productId&&l.status==='published')).map(({id,productId,name,city,lat,lng,genre})=>({id,productId,name,city,lat,lng,genre}));}
+export function publicPosts(state:CatalogState){return state.posts.filter(p=>p.status==='published').map(({id,author,topic,title,body,createdAt,replies})=>({id,author,topic,title,body,createdAt,replies:replies.filter(r=>r.status==='published').map(({id,author,body,createdAt})=>({id,author,body,createdAt}))}));}

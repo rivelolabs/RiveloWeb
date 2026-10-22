@@ -348,3 +348,10 @@ body {
 .legal-document ul { list-style: disc; }
 .legal-document a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 .legal-document strong { color: var(--text); font-weight: 650; }
+
+/* Paint the right background before any component CSS loads (prevents a light flash in dark mode). */
+html{background:#ffffff;color-scheme:light}
+html[data-theme="dark"]{background:#07090d;color-scheme:dark}
+body{background:inherit;color:#18181b}
+html[data-theme="dark"] body{color:#f2f5f9}
+@media (prefers-color-scheme: dark){html:not([data-theme="light"]){background:#07090d;color-scheme:dark}}
