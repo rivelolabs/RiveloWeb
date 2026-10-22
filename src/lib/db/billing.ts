@@ -39,8 +39,10 @@ export async function recordPaymentAndGrant(sub:RzSubscription,payment:RzPayment
     // Start now, or right after this subscription's previous week if it is still running.
     const last=await c.query(`SELECT max(ends_at) e FROM rivelo.featured_placements WHERE subscription_id=$1 AND status='scheduled'`,[row.id]);
     const start=new Date(Math.max(Date.now(),last.rows[0]?.e?new Date(last.rows[0].e).getTime():0));
-    await c.query(`INSERT INTO rivelo.featured_placements (user_id,subscription_id,payment_id,product_id,slot,slot_index,starts_at,ends_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (payment_id) DO NOTHING`,
+    await c.query(`INSERT INTO rivelo.featured_placements (user_id,subscription_id,payment_id,product_id,slot,slot_index,starts_at,ends_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (payment_id,slot) DO NOTHING`,
       [row.user_id,row.id,payment.id,row.product_id,slot,row.slot_index,start,new Date(start.getTime()+days*86400000)]);
+    // Growth includes a free yacht for the whole billing month.
+    if(row.plan_id==='growth'&&row.slot_index)await c.query(`INSERT INTO rivelo.featured_placements (user_id,subscription_id,payment_id,product_id,slot,slot_index,starts_at,ends_at) VALUES ($1,$2,$3,$4,'yacht',$5,now(),now()+interval '31 days') ON CONFLICT (payment_id,slot) DO NOTHING`,[row.user_id,row.id,payment.id,row.product_id,row.slot_index]);
     if(row.plan_id==='growth')await c.query(`INSERT INTO rivelo.ai_reports (user_id,subscription_id,product_id,kind) SELECT $1,$2,$3,'monthly' WHERE NOT EXISTS (SELECT 1 FROM rivelo.ai_reports WHERE subscription_id=$2 AND kind='monthly' AND created_at>now()-interval '20 days')`,[row.user_id,row.id,row.product_id]);
     return true;
   });
@@ -74,6 +76,42 @@ export async function countSpotlightImpressions(ids:string[]){if(ids.length)awai
 /** Which yachts are taken right now (live placement or an active booking), and by which product. */
 export async function yachtBookings(){
   const r=await db().query(`SELECT slot_index,product_id FROM rivelo.featured_placements WHERE slot='yacht' AND status='scheduled' AND now() BETWEEN starts_at AND ends_at
-    UNION SELECT slot_index,product_id FROM rivelo.subscriptions WHERE plan_id='yacht' AND status IN ('authenticated','active','pending')`);
+    UNION SELECT slot_index,product_id FROM rivelo.subscriptions WHERE slot_index IS NOT NULL AND plan_id IN ('yacht','growth') AND status IN ('authenticated','active','pending')`);
   const map=new Map<number,string>();for(const x of r.rows)if(x.slot_index&&!map.has(x.slot_index))map.set(x.slot_index,x.product_id);return map;
 }
+
+/* ───────── Dodo Payments ───────── */
+const DODO_STATUS:Record<string,string>={active:'active',pending:'pending',on_hold:'halted',paused:'halted',cancelled:'cancelled',failed:'expired',expired:'expired'};
+/** Create or update our subscription row from a Dodo webhook (keyed by Dodo's subscription id). */
+export async function upsertDodoSubscription(input:{subscriptionId:string;userId:string;plan:PlanId;listingId:string;yacht?:number|null;status:string;periodEnd?:string|null}){
+  const status=DODO_STATUS[input.status]||'pending';
+  const r=await db().query(`INSERT INTO rivelo.subscriptions (user_id,plan_id,product_id,status,razorpay_subscription_id,provider,slot_index,current_period_end)
+      VALUES ($1,$2,$3,$4,$5,'dodo',$6,$7)
+      ON CONFLICT (razorpay_subscription_id) DO UPDATE SET status=EXCLUDED.status,current_period_end=COALESCE(EXCLUDED.current_period_end,rivelo.subscriptions.current_period_end)
+      RETURNING id,user_id,plan_id,product_id,slot_index`,[input.userId,input.plan,input.listingId,status,input.subscriptionId,input.yacht||null,input.periodEnd?new Date(input.periodEnd):null]);
+  return r.rows[0] as {id:string;user_id:string;plan_id:PlanId;product_id:string;slot_index:number|null};
+}
+/** Record a Dodo payment for a subscription and grant that cycle's placements (idempotent per payment id). */
+export async function grantDodoCycle(subscriptionId:string,payment:{id:string;amountCents:number;currency:string}){
+  return withTx(async c=>{
+    const s=await c.query(`SELECT id,user_id,plan_id,product_id,slot_index FROM rivelo.subscriptions WHERE razorpay_subscription_id=$1`,[subscriptionId]);
+    const row=s.rows[0];if(!row)return false;
+    const ins=await c.query(`INSERT INTO rivelo.payments (user_id,subscription_id,razorpay_payment_id,amount_cents,currency,status) VALUES ($1,$2,$3,$4,$5,'captured') ON CONFLICT (razorpay_payment_id) DO NOTHING RETURNING id`,[row.user_id,row.id,payment.id,payment.amountCents,payment.currency]);
+    if(!ins.rowCount)return true; // already granted
+    const plan=await c.query(`SELECT spotlight_days,placement_slot FROM rivelo.plans WHERE id=$1`,[row.plan_id]);
+    const days=plan.rows[0]?.spotlight_days||0,slot=plan.rows[0]?.placement_slot||'header';
+    if(days){
+      const last=await c.query(`SELECT max(ends_at) e FROM rivelo.featured_placements WHERE subscription_id=$1 AND slot=$2 AND status='scheduled'`,[row.id,slot]);
+      const start=new Date(Math.max(Date.now(),last.rows[0]?.e?new Date(last.rows[0].e).getTime():0));
+      await c.query(`INSERT INTO rivelo.featured_placements (user_id,subscription_id,payment_id,product_id,slot,slot_index,starts_at,ends_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (payment_id,slot) DO NOTHING`,[row.user_id,row.id,payment.id,row.product_id,slot,slot==='yacht'?row.slot_index:null,start,new Date(start.getTime()+days*86400000)]);
+    }
+    if(row.plan_id==='growth'&&row.slot_index)await c.query(`INSERT INTO rivelo.featured_placements (user_id,subscription_id,payment_id,product_id,slot,slot_index,starts_at,ends_at) VALUES ($1,$2,$3,$4,'yacht',$5,now(),now()+interval '31 days') ON CONFLICT (payment_id,slot) DO NOTHING`,[row.user_id,row.id,payment.id,row.product_id,row.slot_index]);
+    if(row.plan_id==='growth')await c.query(`INSERT INTO rivelo.ai_reports (user_id,subscription_id,product_id,kind) SELECT $1,$2,$3,'monthly' WHERE NOT EXISTS (SELECT 1 FROM rivelo.ai_reports WHERE subscription_id=$2 AND kind='monthly' AND created_at>now()-interval '20 days')`,[row.user_id,row.id,row.product_id]);
+    return true;
+  });
+}
+export async function setDodoStatus(subscriptionId:string,status:string){
+  await db().query(`UPDATE rivelo.subscriptions SET status=$2 WHERE razorpay_subscription_id=$1`,[subscriptionId,DODO_STATUS[status]||'pending']);
+  if(['cancelled','failed','expired','on_hold'].includes(status))await stopPlacements(subscriptionId);
+}
+export async function subscriptionProvider(id:string){const r=await db().query(`SELECT provider,razorpay_subscription_id FROM rivelo.subscriptions WHERE id=$1`,[id]);return r.rows[0] as {provider:string;razorpay_subscription_id:string}|undefined;}

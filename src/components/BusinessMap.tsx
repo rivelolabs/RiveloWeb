@@ -10,7 +10,7 @@ function yachtPopup(y:YachtSpot){
   const tag=document.createElement('span');tag.className='ra-yacht-tag';tag.textContent=y.product?`Sponsored · Premium yacht ${y.index}`:`Premium yacht ${y.index} · ${y.sea}`;
   const h=document.createElement('strong');const p=document.createElement('p');const a=document.createElement('a');a.className='ra-yacht-cta';
   if(y.product){h.textContent=y.product.name;p.textContent=`Sailing the ${y.sea}.`;a.href=y.product.url;a.target='_blank';a.rel='sponsored noopener noreferrer';a.textContent=`Visit ${y.product.name} ↗`;}
-  else{h.textContent='This premium yacht is available';p.textContent=`Put your product on it. Every map visitor sees it. ${YACHT_PRICE}/month, cancel anytime.`;a.href=`/premium?yacht=${y.index}#rc-plans-title`;a.textContent='Book this yacht →';}
+  else{h.textContent='This premium yacht is available';p.textContent=`Put your product on it. Every map visitor sees it. ${YACHT_PRICE} a week, cancel anytime. Free with the Growth plan.`;a.href=`/premium?yacht=${y.index}#rc-plans-title`;a.textContent='Book this yacht →';}
   box.append(tag,h,p,a);return box;
 }
 export type PublicPin={id:string;productId:string;name:string;city:string;lat:number;lng:number;genre:string;pending?:boolean;href?:string;avatar?:string|null};
@@ -81,7 +81,7 @@ export default function BusinessMap({pins=emptyPins,selected,onSelect,pick,onPic
         if(y.product){const badge=document.createElement('b');if(y.product.logo){const img=document.createElement('img');img.src=y.product.logo;img.alt='';img.referrerPolicy='no-referrer';badge.append(img);}else badge.textContent=y.product.name.slice(0,2).toUpperCase();face.append(badge);}
         else{const free=document.createElement('i');free.innerHTML='<svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true"><path d="M3 18h18l-1.5-9-4.5 4-3-7-3 7-4.5-4z" fill="currentColor"/></svg> Premium · Book';face.append(free);}
         const glow=document.createElement('s');face.prepend(glow);
-        L.marker([y.lat,y.lng],{icon:L.divIcon({className:'ra-yacht-pin',html:face,iconSize:[104,58],iconAnchor:[52,48]}),title:y.product?`${y.product.name} (sponsored)`:`Yacht ${y.index}: available to book`,keyboard:true,zIndexOffset:500}).addTo(yachtLayer.current).bindPopup(yachtPopup(y),{offset:[0,-36],className:'ra-yacht-popup',autoPanPaddingTopLeft:[window.innerWidth>900?400:20,90],autoPanPaddingBottomRight:[30,90]});
+        L.marker([y.lat,y.lng],{icon:L.divIcon({className:'ra-yacht-pin',html:face,iconSize:[72,42],iconAnchor:[36,34]}),title:y.product?`${y.product.name} (sponsored)`:`Yacht ${y.index}: available to book`,keyboard:true,zIndexOffset:500}).addTo(yachtLayer.current).bindPopup(yachtPopup(y),{offset:[0,-26],className:'ra-yacht-popup',autoPanPaddingTopLeft:[window.innerWidth>900?400:20,90],autoPanPaddingBottomRight:[30,90]});
       }
     });
     return()=>{disposed=true;};

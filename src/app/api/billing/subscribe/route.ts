@@ -17,7 +17,8 @@ export async function POST(request:NextRequest){
     if(!PLAN_IDS.includes(plan))return NextResponse.json({error:'Choose a plan.'},{status:400});
     if(!await ownsPublishedProduct(user.email,productId))return NextResponse.json({error:'Choose a published product that you listed or claimed with this email.'},{status:403});
     let slotIndex:number|undefined;
-    if(plan==='yacht'){slotIndex=Number(body.yacht);if(!Number.isInteger(slotIndex)||slotIndex<1||slotIndex>5)return NextResponse.json({error:'Choose a yacht on the map.'},{status:400});if((await yachtBookings()).has(slotIndex))return NextResponse.json({error:`Yacht ${slotIndex} was just booked. Pick another one on the map.`},{status:409});}
+    // Yacht plan needs a yacht; Growth includes one free yacht if the buyer picks one.
+    if(plan==='yacht'||(plan==='growth'&&body.yacht)){slotIndex=Number(body.yacht);if(!Number.isInteger(slotIndex)||slotIndex<1||slotIndex>5)return NextResponse.json({error:'Choose a yacht on the map.'},{status:400});if((await yachtBookings()).has(slotIndex))return NextResponse.json({error:`Yacht ${slotIndex} was just booked. Pick another one on the map.`},{status:409});}
     await upsertProfile(user);
     const sub=await createSubscription({plan,userId:user.id,productId,email:user.email,slotIndex});
     await recordNewSubscription({userId:user.id,plan,productId,sub,slotIndex});

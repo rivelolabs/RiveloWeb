@@ -53,3 +53,20 @@
 [data-theme="dark"] .ra-yacht-cta{background:#e9a23b;color:#1b1306!important}
 .ra-account-me{gap:8px!important}
 .ra-account-me img,.ra-account-initial{width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--rd-soft,#eee);display:grid;place-items:center;font-size:12px;font-weight:600;color:var(--rd-ink,#222);box-shadow:0 0 0 2px var(--rd-surface,#fff),0 0 0 3px var(--rd-line,#ddd)}
+
+/* Smaller yachts (compact on the world map) */
+.ra-yacht{width:72px;height:42px;filter:drop-shadow(0 5px 6px #0b1a3352)}
+.ra-yacht>svg{width:72px;height:34px;margin-top:7px}
+.ra-yacht s{left:8px;right:8px;bottom:1px;height:9px}
+.ra-yacht i{top:-16px;font-size:8px;padding:3px 7px;gap:3px;letter-spacing:.04em}
+.ra-yacht i svg{width:9px;height:9px}
+.ra-yacht b{left:30px;top:-4px;width:20px;height:20px;font-size:8px;border-width:1.5px}
+.ra-yacht-booked::before{font-size:7px;padding:1px 5px;top:-8px;right:-2px}
+@media(max-width:760px){.ra-yacht{transform:scale(.85)}}
+/* Search boxes: one clean focus ring on the box, none on the text field inside it */
+.ra-atlas-search input:focus,.ra-atlas-search input:focus-visible,
+.rd-search input:focus,.rd-search input:focus-visible,
+.rc-search input:focus,.rc-search input:focus-visible,
+.rc-locsearch-field input:focus-visible{outline:none!important;box-shadow:none!important}
+.ra-atlas-search:focus-within{outline:none;border-color:var(--rc-accent,#2f6fd6);box-shadow:0 0 0 3px color-mix(in srgb,var(--rc-accent,#2f6fd6) 22%,transparent)}
+.ra-atlas-search input::placeholder{color:var(--rd-muted)}

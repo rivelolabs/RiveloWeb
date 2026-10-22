@@ -4,8 +4,8 @@ export type PlanId='spotlight'|'growth'|'yacht';
 export const PLAN_IDS:PlanId[]=['spotlight','growth','yacht'];
 
 /** Razorpay plan ids are created once in the Razorpay dashboard (USD, monthly) and set in env. */
-export function razorpayPlanId(plan:PlanId){return plan==='spotlight'?process.env.RAZORPAY_PLAN_SPOTLIGHT:plan==='growth'?process.env.RAZORPAY_PLAN_GROWTH:process.env.RAZORPAY_PLAN_YACHT;}
-export function billingConfigured(){return !!(process.env.RAZORPAY_KEY_ID&&process.env.RAZORPAY_KEY_SECRET&&process.env.RAZORPAY_PLAN_SPOTLIGHT&&process.env.RAZORPAY_PLAN_GROWTH);}
+export function razorpayPlanId(plan:PlanId){return {spotlight:process.env.RAZORPAY_PLAN_SPOTLIGHT,growth:process.env.RAZORPAY_PLAN_GROWTH,yacht:process.env.RAZORPAY_PLAN_YACHT}[plan];}
+export function billingConfigured(){return !!(process.env.RAZORPAY_KEY_ID&&process.env.RAZORPAY_KEY_SECRET&&process.env.RAZORPAY_PLAN_SPOTLIGHT&&process.env.RAZORPAY_PLAN_GROWTH&&process.env.RAZORPAY_PLAN_YACHT);}
 
 async function call<T>(method:'GET'|'POST',path:string,body?:unknown):Promise<T>{
   const auth=Buffer.from(`${process.env.RAZORPAY_KEY_ID}:${process.env.RAZORPAY_KEY_SECRET}`).toString('base64');
