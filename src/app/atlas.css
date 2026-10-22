@@ -70,3 +70,24 @@
 .rc-locsearch-field input:focus-visible{outline:none!important;box-shadow:none!important}
 .ra-atlas-search:focus-within{outline:none;border-color:var(--rc-accent,#2f6fd6);box-shadow:0 0 0 3px color-mix(in srgb,var(--rc-accent,#2f6fd6) 22%,transparent)}
 .ra-atlas-search input::placeholder{color:var(--rd-muted)}
+
+/* ── Map on phones & small tablets ── */
+@media(max-width:900px){
+  /* results open as a bottom sheet over the map instead of covering it */
+  .ra-results-panel{top:auto!important;left:10px!important;right:10px!important;bottom:76px!important;width:auto!important;max-height:min(58vh,520px)!important;border-radius:20px!important;padding:16px 16px 0!important;box-shadow:0 -10px 40px #0000002e}
+  .ra-panel-heading h1{font-size:24px!important}
+  .ra-panel-intro,.ra-panel-divider{display:none}
+  /* clear, full-width actions at the bottom */
+  .ra-map-bottom{left:10px!important;right:10px!important;bottom:14px!important;gap:0!important}
+  .ra-map-signature{display:none!important}
+  .ra-atlas{min-height:480px!important}
+  .ra-map-cta{position:static!important;width:100%;margin:0!important;display:grid!important;grid-template-columns:1fr 1fr;gap:8px;pointer-events:auto}
+  .ra-add-pin,.ra-find-matches{justify-content:center;gap:6px!important;min-height:50px!important;height:50px;padding:0 10px!important;font-size:13.5px!important;border-radius:16px!important;white-space:nowrap;overflow:hidden;width:100%!important;min-width:0}
+  .ra-add-pin svg,.ra-find-matches svg{flex:none;width:17px;height:17px}
+  .ra-add-pin>span{display:inline!important}
+  .ra-add-pin{background:var(--rd-surface);color:var(--rd-ink)}
+  .ra-find-matches>svg:last-child{display:none}
+  /* keep zoom buttons clear of the action bar */
+  .ra-map-canvas .leaflet-bottom.leaflet-right{bottom:72px}
+}
+@media(max-width:360px){.ra-add-pin,.ra-find-matches{font-size:12.5px!important;padding:0 6px!important}}

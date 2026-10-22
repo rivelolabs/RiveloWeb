@@ -23,6 +23,7 @@ export default function MapExplorer({pins:publicPins,yachts=[]}:{pins:PublicPin[
       ()=>{setLocating(false);setMatching(true);setPanel(true);search.current?.focus();},{timeout:10000,maximumAge:300000});
   }
   const km=(a:{lat:number;lng:number},b:{lat:number;lng:number})=>{const r=Math.PI/180,d=Math.sin((b.lat-a.lat)*r/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin((b.lng-a.lng)*r/2)**2;return 12742*Math.asin(Math.sqrt(d));};
+  useEffect(()=>{if(window.matchMedia('(max-width: 900px)').matches){const t=setTimeout(()=>setPanel(false),0);return()=>clearTimeout(t);}},[]);
   const needle=query.trim().toLowerCase();
   const filtered=pins.filter(pin=>(!genre||pin.genre===genre)&&`${pin.name} ${pin.city} ${pin.genre}`.toLowerCase().includes(needle)).sort((a,b)=>near?km(near,a)-km(near,b):0);
   const chosen=filtered.find(pin=>pin.id===selected);
