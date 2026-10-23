@@ -27,6 +27,8 @@ export async function GET(){
     `- [Community](${SITE}/community): builders asking questions and sharing launch lessons`,
     `- [List your product](${SITE}/register): free listing for apps and websites (reviewed within 1–2 days)`,
     `- [Promotion plans](${SITE}/premium): Spotlight, map yacht placements and Growth plan`,
+    `- [Free Visibility Check](${SITE}/tools/visibility-check): free SEO, social preview and AI-search readiness score for any website`,
+    `- [Launch guide](${SITE}/launch-guide): free places to launch an app or website, Product Hunt alternatives and a launch-week plan`,
     '',
     ...[...byGenre.entries()].flatMap(([genre,list])=>[`## ${genre}`,...list.slice(0,60).map(p=>`- [${p.name}](${SITE}/products/${p.id}): ${line(p.tagline||p.description).slice(0,180)} (${p.type}; ${p.platforms.join(', ')})`),'']),
     ...(makers.length?['## Makers',...makers.map(m=>`- [${m.name} (@${m.username})](${SITE}/makers/${m.username})${m.product_name?`: building ${m.product_name}`:''}${m.city?`, ${m.city}`:''}`),'']:[]),

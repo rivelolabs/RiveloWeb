@@ -1,0 +1,51 @@
+/* Free tools + launch guide */
+.tl-page{max-width:980px}
+.tl-page h2{font-size:24px;letter-spacing:-.02em;margin-bottom:12px}
+.vc{margin:8px 0 34px}
+.vc-form{border:1px solid var(--rd-line);background:var(--rd-surface);border-radius:20px;padding:22px}
+.vc-row{display:flex;gap:10px;margin:10px 0 8px}
+.vc-row input{flex:1;min-width:0;padding:14px 16px;border-radius:14px;border:1px solid var(--rd-control-border,var(--rd-line));background:var(--rd-control,#f6f6f5);color:var(--rd-ink);font:inherit;font-size:16px}
+.vc-row .rd-button{white-space:nowrap}
+.vc-result{margin-top:22px;display:grid;gap:18px}
+.vc-score{display:flex;align-items:center;gap:22px;border:1px solid var(--rd-line);background:var(--rd-surface);border-radius:20px;padding:22px}
+.vc-score h2{margin:4px 0}
+.vc-score p{color:var(--rd-muted);font-size:14px}
+.vc-ring{--vc:0deg;flex:none;width:112px;height:112px;border-radius:50%;display:grid;place-content:center;text-align:center;background:radial-gradient(closest-side,var(--rd-surface) 78%,transparent 80%),conic-gradient(#c43e19 var(--vc),#e9e6e1 0)}
+.vc-ring b{font-size:34px;line-height:1}.vc-ring small{color:var(--rd-muted);font-size:12px}
+.vc-todo{border:1px solid #f0cfc8;background:#fdf3f1;border-radius:20px;padding:20px 22px}
+.vc-todo h3{margin-bottom:10px}
+.vc-todo ol{display:grid;gap:10px;padding-left:20px}
+.vc-todo li b{display:block}.vc-todo li span{color:var(--rd-secondary,#4b5563);font-size:14px}
+.vc-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.vc-group{border:1px solid var(--rd-line);background:var(--rd-surface);border-radius:18px;padding:18px}
+.vc-group h3{font-size:15px;margin-bottom:10px}
+.vc-group ul{list-style:none;display:grid;gap:10px;padding:0}
+.vc-group li{display:flex;gap:10px;align-items:flex-start}
+.vc-group li svg{flex:none;margin-top:2px;border-radius:50%;padding:2px}
+.vc-ok svg{color:#2f6b3a;background:#eaf5ec}.vc-bad svg{color:#9a2f1c;background:#fbecea}
+.vc-group li b{display:block;font-size:14px}.vc-group li small{color:var(--rd-muted);font-size:12.5px;overflow-wrap:anywhere}
+.vc-cta{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;border:1px solid var(--rd-line);background:var(--rd-feature,#f2dfce);border-radius:20px;padding:22px}
+.vc-cta h3{font-size:22px;margin:6px 0}
+.vc-cta p{color:var(--rd-secondary,#4b5563)}
+.vc-cta-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.vc-badge{display:grid;gap:10px;align-content:start}
+.vc-badge code{display:block;font-size:11px;padding:10px;border-radius:10px;background:#fff;border:1px solid var(--rd-line);overflow-wrap:anywhere;color:#374151}
+.tl-steps,.tl-list,.tl-faq,.tl-next{margin:30px 0}
+.tl-steps ol{display:grid;gap:10px;padding:0;list-style:none;counter-reset:s;margin-bottom:16px}
+.tl-steps li{counter-increment:s;display:grid;grid-template-columns:140px 1fr;gap:12px;border:1px solid var(--rd-line);background:var(--rd-surface);border-radius:14px;padding:14px 16px}
+.tl-steps li b::before{content:counter(s) ". ";color:#c43e19}
+.tl-intro{color:var(--rd-muted);margin:-4px 0 14px}
+.tl-list ol{display:grid;gap:10px;padding:0;list-style:none}
+.tl-list li{border:1px solid var(--rd-line);background:var(--rd-surface);border-radius:14px;padding:14px 16px}
+.tl-list a{font-weight:700;display:inline-flex;align-items:center;gap:4px;text-decoration:underline;text-underline-offset:3px}
+.tl-list p{margin:4px 0;color:var(--rd-secondary,#4b5563)}
+.tl-list small{color:var(--rd-muted)}
+.tl-faq details{border:1px solid var(--rd-line);background:var(--rd-surface);border-radius:14px;padding:14px 16px;margin-bottom:10px}
+.tl-faq summary{cursor:pointer;font-weight:650}
+.tl-faq details p{margin-top:8px;color:var(--rd-secondary,#4b5563)}
+.tl-faq a{text-decoration:underline}
+.tl-next>div{display:flex;flex-wrap:wrap;gap:10px}
+.tl-next a{display:inline-flex;align-items:center;gap:5px;padding:10px 14px;border:1px solid var(--rd-line);border-radius:12px;background:var(--rd-surface)}
+[data-theme="dark"] .vc-todo{background:#2a1714;border-color:#5a2a20}
+[data-theme="dark"] .vc-badge code{background:#11161d;color:#cbd5e1}
+@media(max-width:760px){.vc-row{flex-direction:column}.vc-groups,.vc-cta{grid-template-columns:1fr}.vc-score{flex-direction:column;text-align:center}.tl-steps li{grid-template-columns:1fr}}
