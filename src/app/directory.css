@@ -460,3 +460,14 @@ body:has(.rd-app){background:#f7f8f3}
 /* Search boxes: single focus ring on the box only */
 .rd-search input:focus,.rd-search input:focus-visible,.rc-search input:focus,.rc-search input:focus-visible,.ra-atlas-search input:focus-visible{outline:none!important;box-shadow:none!important}
 .rd-search:focus-within,.rc-search:focus-within{outline:none;border-color:var(--rc-accent,var(--rd-focus));box-shadow:0 0 0 3px color-mix(in srgb,var(--rc-accent,var(--rd-focus)) 22%,transparent)}
+
+/* My submissions: account listings with live status */
+.rd-live,.rd-rejected{font-size:12px;padding:8px 11px;border-radius:5px;display:flex;align-items:center;gap:6px;white-space:nowrap;border:1px solid}
+.rd-live{color:#2f6b3a;background:#eaf5ec;border-color:#cfe6d4}
+.rd-rejected{color:#9a2f1c;background:#fbecea;border-color:#f0cfc8}
+.rd-live>span,.rd-rejected>span{height:5px;width:5px;border-radius:50%;background:currentColor}
+.rd-submissions-list img.rd-submission-initial{object-fit:cover;border-radius:12px}
+.rd-submission-actions{display:flex;gap:12px;font-size:13px;white-space:nowrap}
+.rd-submission-actions a{display:inline-flex;align-items:center;gap:3px;text-decoration:underline;text-underline-offset:3px}
+.rd-empty .rd-outline{margin-top:10px}
+@media(max-width:700px){.rd-submissions-list article{flex-wrap:wrap}.rd-submission-actions{width:100%}}

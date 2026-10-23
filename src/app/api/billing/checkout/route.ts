@@ -21,7 +21,8 @@ export async function POST(request:NextRequest){
     let yacht:number|undefined;
     if(plan==='yacht'||(plan==='growth'&&body.yacht)){yacht=Number(body.yacht);if(!Number.isInteger(yacht)||yacht<1||yacht>5)return NextResponse.json({error:'Choose a yacht.'},{status:400});if((await yachtBookings()).has(yacht))return NextResponse.json({error:`Yacht ${yacht} was just booked. Pick another one.`},{status:409});}
     await upsertProfile(user);
-    const origin=process.env.APP_PUBLIC_URL||new URL(request.url).origin;
+    // On localhost, come back to localhost after checkout; in production use the public site URL.
+    const origin=process.env.NODE_ENV==='development'?new URL(request.url).origin:(process.env.APP_PUBLIC_URL||new URL(request.url).origin);
     const url=checkoutUrl({plan,email:user.email,name:typeof user.user_metadata?.full_name==='string'?user.user_metadata.full_name:null,userId:user.id,listingId,yacht,returnUrl:`${origin}/premium?paid=${plan}`});
     return NextResponse.json({url},{headers:{'Cache-Control':'no-store'}});
   }catch(error){return NextResponse.json({error:error instanceof Error?error.message:'Could not start checkout.'},{status:400});}

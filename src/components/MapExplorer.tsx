@@ -1,4 +1,5 @@
 "use client";
+import {findMe} from '@/lib/locate';
 import {useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -16,11 +17,11 @@ export default function MapExplorer({pins:publicPins,yachts=[]}:{pins:PublicPin[
   const search=useRef<HTMLInputElement>(null);
   useEffect(()=>{const shortcut=(event:KeyboardEvent)=>{const target=event.target;if(event.key==='/'&&!(target instanceof HTMLInputElement)&&!(target instanceof HTMLTextAreaElement)&&!(target instanceof HTMLSelectElement)&&!(target instanceof HTMLElement&&target.isContentEditable)){event.preventDefault();setPanel(true);search.current?.focus();}};window.addEventListener('keydown',shortcut);return()=>window.removeEventListener('keydown',shortcut);},[]);
   // "Explore near me": zoom to the visitor's area and list the closest products first.
-  function nearMe(){
-    if(!('geolocation' in navigator)){setPanel(true);search.current?.focus();return;}
+  async function nearMe(){
     setLocating(true);
-    navigator.geolocation.getCurrentPosition(p=>{const here={lat:p.coords.latitude,lng:p.coords.longitude};setNear(here);setMatching(true);setPanel(true);setFocus({...here,zoom:9,key:Date.now()});setLocating(false);},
-      ()=>{setLocating(false);setMatching(true);setPanel(true);search.current?.focus();},{timeout:10000,maximumAge:300000});
+    try{const here=await findMe();const p={lat:here.lat,lng:here.lng};setNear(p);setMatching(true);setPanel(true);setFocus({...p,zoom:here.approx?8:9,key:Date.now()});}
+    catch{setMatching(true);setPanel(true);search.current?.focus();}
+    finally{setLocating(false);}
   }
   const km=(a:{lat:number;lng:number},b:{lat:number;lng:number})=>{const r=Math.PI/180,d=Math.sin((b.lat-a.lat)*r/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin((b.lng-a.lng)*r/2)**2;return 12742*Math.asin(Math.sqrt(d));};
   useEffect(()=>{if(window.matchMedia('(max-width: 900px)').matches){const t=setTimeout(()=>setPanel(false),0);return()=>clearTimeout(t);}},[]);

@@ -30,6 +30,14 @@ async function photon(path:string){
 export async function GET(request:NextRequest){
   try{
     rateLimit(request,'geocode',60);
+    // Approximate city from the visitor's network, used when browser location is blocked or unavailable.
+    if(request.nextUrl.searchParams.has('ip')){
+      const h=request.headers,lat=Number(h.get('x-vercel-ip-latitude')),lng=Number(h.get('x-vercel-ip-longitude'));
+      if(!h.get('x-vercel-ip-latitude')||!Number.isFinite(lat)||!Number.isFinite(lng))return NextResponse.json({error:'Approximate location unavailable.'},{status:404});
+      const dec=(v:string|null)=>{try{return v?decodeURIComponent(v):'';}catch{return v||'';}};
+      const city=[dec(h.get('x-vercel-ip-city')),h.get('x-vercel-ip-country')||''].filter(Boolean).join(', ');
+      return NextResponse.json({place:{lat:Number(lat.toFixed(2)),lng:Number(lng.toFixed(2)),city}},{headers:{'Cache-Control':'private, no-store'}});
+    }
     const q=request.nextUrl.searchParams.get('q')?.trim().slice(0,120)||'';
     const lat=Number(request.nextUrl.searchParams.get('lat')),lng=Number(request.nextUrl.searchParams.get('lng'));
     if(q){if(q.length<2)return NextResponse.json({places:[]});return NextResponse.json({places:await photon(`/api/?q=${encodeURIComponent(q)}&limit=8&lang=en`)},{headers:{'Cache-Control':'private, max-age=300'}});}

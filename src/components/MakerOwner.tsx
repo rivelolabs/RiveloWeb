@@ -8,11 +8,13 @@ type Fields={name:string;bio:string;productName:string;productUrl:string;product
 /** Claim button (mode=claim) or the owner's edit panel (mode=edit, only rendered for the owner). */
 export default function MakerOwner({username,mode,label,initial}:{username:string;mode:'claim'|'edit';label?:string;initial?:Fields}){
   const [busy,setBusy]=useState(false),[error,setError]=useState(''),[owner,setOwner]=useState(false),[open,setOpen]=useState(false),[f,setF]=useState<Fields|undefined>(initial),[saved,setSaved]=useState(false),[focus,setFocus]=useState<{lat:number;lng:number;zoom:number;key:number}>();
-  useEffect(()=>{if(mode!=='edit')return;fetch(`/api/makers/me?username=${encodeURIComponent(username)}`,{cache:'no-store'}).then(r=>r.json()).then(d=>setOwner(!!d.owner)).catch(()=>{});},[mode,username]);
+  useEffect(()=>{if(mode!=='edit')return;fetch(`/api/makers/me?username=${encodeURIComponent(username)}`,{cache:'no-store'}).then(r=>r.json()).then(d=>{setOwner(!!d.owner);
+    // Right after claiming (or while not on the map yet), open the editor so the maker can add a location.
+    if(d.owner&&(new URLSearchParams(window.location.search).has('setup')||initial?.lat==null))setOpen(true);}).catch(()=>{});},[mode,username,initial?.lat]);
   async function claim(){setBusy(true);setError('');
     try{const r=await fetch('/api/makers/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})});const d=await r.json();
       if(r.status===401||(d.signIn&&r.status===403)){window.location.assign(`/login?next=${encodeURIComponent(`/makers/${username}`)}`);return;}
-      if(!r.ok)throw Error(d.error);window.location.reload();}
+      if(!r.ok)throw Error(d.error);window.location.assign(`/makers/${username}?setup=1#edit`);}
     catch(e){setError(e instanceof Error?e.message:'Could not claim.');setBusy(false);}}
   async function save(e:React.FormEvent){e.preventDefault();if(!f)return;setBusy(true);setError('');
     try{const r=await fetch('/api/makers/me',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,...f})});const d=await r.json();if(!r.ok)throw Error(d.error);setSaved(true);setTimeout(()=>window.location.reload(),600);}
@@ -20,8 +22,8 @@ export default function MakerOwner({username,mode,label,initial}:{username:strin
   async function remove(){if(!confirm('Remove your page from Rivelo? It will disappear from the map.'))return;await fetch('/api/makers/me',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,remove:true})});window.location.assign('/map');}
   if(mode==='claim')return <div className="mk-claim"><button type="button" className="rd-button mk-claim-btn" disabled={busy} onClick={claim}>{busy?<LoaderCircle className="rd-spin" size={16}/>:null}{label||'Claim your page'}</button><small>Sign in with X as @{username}</small>{error&&<p className="rd-error" role="alert">{error}</p>}</div>;
   if(!owner||!f)return null;
-  return <section className="mk-card mk-owner">
-    <div className="mk-owner-head"><div><h2>Your page</h2><p className="mk-muted">Edit your details and add a location to appear on the map.</p></div>{!open&&<button className="rd-button rd-primary" onClick={()=>setOpen(true)}><Pencil size={15}/> Edit page</button>}</div>
+  return <section className="mk-card mk-owner" id="edit">
+    <div className="mk-owner-head"><div><h2>Your page</h2>{f.lat==null||f.lng==null?<p className="rd-error" role="status">You’re not on the map yet. Search your city (or tap the map) and save — your pin shows your product name and X photo.</p>:<p className="mk-muted">Edit your details, location, product link and description anytime.</p>}</div>{!open&&<button className="rd-button rd-primary" onClick={()=>setOpen(true)}><Pencil size={15}/> Edit page</button>}</div>
     {open&&<form onSubmit={save} className="mk-form">
       <div className="rd-form-row"><label>Name<input value={f.name} onChange={e=>setF({...f,name:e.target.value})} maxLength={120} required/></label><label>Product name<input value={f.productName} onChange={e=>setF({...f,productName:e.target.value})} maxLength={120}/></label></div>
       <label>Bio<textarea value={f.bio} onChange={e=>setF({...f,bio:e.target.value})} maxLength={400} rows={2}/></label>

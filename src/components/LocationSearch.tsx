@@ -1,6 +1,7 @@
 "use client";
 import {useEffect,useId,useRef,useState} from 'react';
 import {LoaderCircle,LocateFixed,MapPin,Search} from 'lucide-react';
+import {findMe} from '@/lib/locate';
 type Place={label:string;detail:string;city:string;lat:number;lng:number;kind:string};
 /** City / address search with suggestions, plus "Use my current location". */
 export default function LocationSearch({value,onChange,onPlace}:{value:string;onChange:(v:string)=>void;onPlace:(p:{lat:number;lng:number;city:string;zoom:number})=>void}){
@@ -16,16 +17,17 @@ export default function LocationSearch({value,onChange,onPlace}:{value:string;on
   },[value]);
   useEffect(()=>{const close=(e:MouseEvent)=>{if(!box.current?.contains(e.target as Node))setOpen(false);};document.addEventListener('mousedown',close);return()=>document.removeEventListener('mousedown',close);},[]);
   function choose(p:Place){typed.current=false;onChange(p.city||p.label);onPlace({lat:p.lat,lng:p.lng,city:p.city,zoom:['city','town','state','county','district'].includes(p.kind)?11:15});setOpen(false);setResults([]);setMessage('');}
-  function locate(){
-    if(!('geolocation' in navigator)){setMessage('Your browser can’t share location. Search for your city instead.');return;}
+  async function locate(){
     setLocating(true);setMessage('');
-    navigator.geolocation.getCurrentPosition(async pos=>{
+    try{
+      const here=await findMe();
       // Rounded to ~100 m: precise enough for an office, not a doorstep.
-      const lat=Number(pos.coords.latitude.toFixed(3)),lng=Number(pos.coords.longitude.toFixed(3));
-      let city='';try{const r=await fetch(`/api/geocode?lat=${lat}&lng=${lng}`);const d=await r.json();city=d.places?.[0]?.city||'';}catch{}
-      typed.current=false;if(city)onChange(city);onPlace({lat,lng,city,zoom:14});setLocating(false);
-      setMessage(city?`Pinned near ${city}. Drag the map or click to fine-tune.`:'Pinned to your location. Add your city above.');
-    },err=>{setLocating(false);setMessage(err.code===err.PERMISSION_DENIED?'Location permission was blocked. Allow it in your browser, or search for your city.':'Couldn’t get your location. Search for your city instead.');},{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
+      const lat=Number(here.lat.toFixed(3)),lng=Number(here.lng.toFixed(3));
+      let city=here.city||'';if(!here.approx){try{const r=await fetch(`/api/geocode?lat=${lat}&lng=${lng}`);const d=await r.json();city=d.places?.[0]?.city||'';}catch{}}
+      typed.current=false;if(city)onChange(city);onPlace({lat,lng,city,zoom:here.approx?11:14});
+      setMessage(here.approx?`Approximate location${city?` (${city})`:''} from your network. Drag the map or click to fine-tune.`:city?`Pinned near ${city}. Drag the map or click to fine-tune.`:'Pinned to your location. Add your city above.');
+    }catch(e){setMessage(e instanceof Error?e.message:'Couldn’t get your location. Search for your city instead.');}
+    finally{setLocating(false);}
   }
   return <div className="rc-locsearch" ref={box}>
     <label htmlFor={`${list}-input`}>City, area or office address</label>
