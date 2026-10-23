@@ -1,12 +1,12 @@
 "use client";
 import {useCallback,useMemo,useState} from 'react';
 import Link from 'next/link';
-import {ArrowLeft,ArrowUpRight,Check,ChevronDown,Clock,Download,Inbox,LoaderCircle,Lock,MapPin,MessagesSquare,Play,Plus,RefreshCw,Send,ShieldCheck,Sparkles,UserCheck,X,History,Layers3,Mail,AtSign} from 'lucide-react';
+import {ArrowLeft,ArrowUpRight,Check,ChevronDown,Clock,Download,Inbox,LoaderCircle,Lock,MapPin,MessagesSquare,Play,Plus,RefreshCw,Send,ShieldCheck,Sparkles,UserCheck,X,History,Layers3,Mail,AtSign,Rocket,Search} from 'lucide-react';
 import MakersDesk from './MakersDesk';
 import {genres} from '@/lib/directory';
 import type {CatalogState,Listing} from '@/lib/catalog/types';
 type Desk=CatalogState&{storageConfigured:boolean;storageBackend?:string;playConfigured:boolean;mailConfigured:boolean};
-type Tab='review'|'makers'|'pins'|'community'|'claims'|'invites'|'leads'|'sources'|'runs';
+type Tab='prospects'|'review'|'makers'|'pins'|'community'|'claims'|'invites'|'leads'|'sources'|'runs';
 type Filter='pending'|'published'|'rejected'|'all';
 const KIND:Record<string,string>={website:'Website','appstore':'App Store','appstore-search':'App Store search',googleplay:'Google Play'};
 const host=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'');}catch{return u;}};
@@ -18,12 +18,12 @@ export default function DiscoveryDesk(){
   const [tab,setTab]=useState<Tab>('review'),[filter,setFilter]=useState<Filter>('pending');
   async function refresh(){const response=await fetch('/api/catalog/admin',{headers:{Authorization:`Bearer ${key}`},cache:'no-store'});const result=await response.json();if(!response.ok)throw Error(result.error);setData(result);}
   async function connect(event:React.FormEvent){event.preventDefault();setError('');setBusy(true);try{await refresh();}catch(error){setError(error instanceof Error?error.message:'Could not connect.');}finally{setBusy(false);}}
-  async function action(body:Record<string,unknown>){setBusy(true);setError('');setNotice('');try{const response=await fetch('/api/catalog/admin',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},body:JSON.stringify(body)});const result=await response.json();if(!response.ok)throw Error(result.error);await refresh();setNotice(body.action==='run'?'Import completed. New candidates are in the review queue.':body.action==='review'&&body.status==='published'?'Listing published.':'Changes saved.');setTimeout(()=>setNotice(''),3500);return result;}catch(error){setError(error instanceof Error?error.message:'The action failed.');}finally{setBusy(false);}}
+  async function action(body:Record<string,unknown>){setBusy(true);setError('');setNotice('');try{const response=await fetch('/api/catalog/admin',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},body:JSON.stringify(body)});const result=await response.json();if(!response.ok)throw Error(result.error);await refresh();setNotice(body.action==='run'?'Import completed. New candidates are in the review queue.':body.action==='import-producthunt'?'Product Hunt launches imported. Press “Find contacts” next.':body.action==='find-contacts'?'Contact lookup finished.':body.action==='review'&&body.status==='published'?'Listing published.':'Changes saved.');setTimeout(()=>setNotice(''),3500);return result;}catch(error){setError(error instanceof Error?error.message:'The action failed.');}finally{setBusy(false);}}
 
   const counts=useMemo(()=>data?{
     pending:data.listings.filter(l=>l.status==='pending').length,published:data.listings.filter(l=>l.status==='published').length,rejected:data.listings.filter(l=>l.status==='rejected').length,
     pins:data.pins.filter(p=>p.status==='pending').length,posts:data.posts.filter(p=>p.status==='pending').length+data.posts.reduce((n,p)=>n+p.replies.filter(r=>r.status==='pending').length,0),
-    claims:data.claims.filter(c=>c.status!=='approved'&&c.status!=='rejected').length,drafts:data.invites.filter(i=>i.status==='draft').length,leads:data.leads.length,
+    claims:data.claims.filter(c=>c.status!=='approved'&&c.status!=='rejected').length,drafts:data.invites.filter(i=>i.status==='draft').length,leads:data.leads.length,prospects:data.listings.filter(l=>l.sourceKey.startsWith('producthunt:')&&l.status!=='rejected'&&!!l.contactEmail&&!data.invites.some(i=>i.productId===l.id)).length,
   }:null,[data]);
 
   if(!data||!counts)return <main className="rd-app dk">
@@ -40,7 +40,7 @@ export default function DiscoveryDesk(){
     </form>
   </main>;
 
-  const nav:[Tab,string,typeof Inbox,number?][]=[['review','Review queue',Inbox,counts.pending],['makers','X makers',AtSign],['pins','Map pins',MapPin,counts.pins],['community','Community',MessagesSquare,counts.posts],['claims','Owner claims',UserCheck,counts.claims],['invites','Invitations',Mail,counts.drafts],['leads','Premium enquiries',Sparkles,counts.leads],['sources','Sources & imports',Layers3],['runs','Run history',History]];
+  const nav:[Tab,string,typeof Inbox,number?][]=[['review','Review queue',Inbox,counts.pending],['prospects','Claim outreach',Rocket,counts.prospects],['makers','X makers',AtSign],['pins','Map pins',MapPin,counts.pins],['community','Community',MessagesSquare,counts.posts],['claims','Owner claims',UserCheck,counts.claims],['invites','Invitations',Mail,counts.drafts],['leads','Premium enquiries',Sparkles,counts.leads],['sources','Sources & imports',Layers3],['runs','Run history',History]];
   const listings=data.listings.filter(l=>filter==='all'||l.status===filter).sort((a,b)=>Number(b.id.startsWith('owner-'))-Number(a.id.startsWith('owner-'))||b.importedAt.localeCompare(a.importedAt));
 
   return <main className="rd-app dk">
@@ -92,6 +92,8 @@ export default function DiscoveryDesk(){
             <div className="dk-actions"><button className="rd-button rd-primary dk-sm" disabled={busy||claim.status==='approved'}>Approve claim</button><button type="button" className="rd-button rd-outline dk-sm" disabled={busy} onClick={()=>action({action:'claim-review',id:claim.id,status:'rejected'})}>Reject</button></div>
           </form>)}</div>:<Empty icon={UserCheck} title="No claims" text="Product owners can request a claim from a product page."/>}
         </section>}
+
+        {tab==='prospects'&&<Prospects data={data} busy={busy} action={action}/>}
 
         {tab==='invites'&&<section className="dk-panel"><div className="dk-panel-head"><div><h2>Owner invitations</h2><p>Prepare one professional invitation for a business contact. Nothing is sent automatically.</p></div></div>
           <form className="dk-form" onSubmit={event=>{event.preventDefault();const form=new FormData(event.currentTarget);action({action:'invite',productId:form.get('productId'),to:form.get('email'),businessContactConfirmed:form.get('business')==='on'});}}>
@@ -182,4 +184,43 @@ function ClaimOutreach({listing}:{listing:Listing}){
     <button type="button" className="rd-button rd-outline dk-sm" onClick={()=>copy(email,'email')}>{copied==='email'?'Copied':'Copy email text'}</button>
     {listing.developerWebsite&&<a className="dk-link" href={listing.developerWebsite} target="_blank" rel="noopener noreferrer">Find their contact page →</a>}
   </div></div>;
+}
+
+/** New Product Hunt launches with the public contact found on their own website, ready for a reviewed claim invitation. */
+function Prospects({data,busy,action}:{data:Desk;busy:boolean;action:(b:Record<string,unknown>)=>Promise<unknown>}){
+  const [show,setShow]=useState<'all'|'email'|'none'>('all');
+  const rows=data.listings.filter(l=>l.sourceKey.startsWith('producthunt:')&&l.status!=='rejected').sort((a,b)=>(b.releasedAt||b.importedAt).localeCompare(a.releasedAt||a.importedAt));
+  const list=rows.filter(l=>show==='all'||(show==='email'?!!l.contactEmail:!l.contactEmail));
+  const invited=(id:string)=>data.invites.find(i=>i.productId===id);
+  const unchecked=rows.filter(l=>l.developerWebsite&&!l.contactCheckedAt).length;
+  function csv(){const q=(v:unknown)=>`"${String(v??'').replace(/"/g,'""')}"`;
+    const out=[['Product','Tagline','Description','Website','Contact email','Found on','Product Hunt','Votes','Launched','Listing status','Invitation'].join(','),...rows.map(l=>[l.name,l.tagline,l.description,l.developerWebsite,l.contactEmail,l.contactFoundOn,l.launchUrl||l.sourceUrl,l.votes,(l.releasedAt||'').slice(0,10),l.status,invited(l.id)?.status||''].map(q).join(','))].join('\n');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([out],{type:'text/csv'}));a.download=`rivelo-producthunt-prospects-${new Date().toISOString().slice(0,10)}.csv`;a.click();}
+  return <section className="dk-panel">
+    <div className="dk-panel-head"><div><h2>Claim outreach</h2><p>New Product Hunt launches, with the business email published on each product’s own website. Publish the listing, check the contact, then draft an invitation — nothing is sent without your confirmation.</p></div>
+      <div className="dk-actions">
+        <button className="rd-button rd-primary dk-sm" disabled={busy} onClick={()=>action({action:'import-producthunt',days:2})}><Rocket size={15}/> Import new launches</button>
+        <button className="rd-button rd-outline dk-sm" disabled={busy||!unchecked} onClick={()=>action({action:'find-contacts'})}><Search size={15}/> Find contacts{unchecked?` (${unchecked})`:''}</button>
+        <button className="rd-button rd-outline dk-sm" disabled={!rows.length} onClick={csv}><Download size={15}/> CSV</button>
+      </div></div>
+    <div className="dk-chips" role="tablist">{(['all','email','none'] as const).map(f=><button key={f} role="tab" aria-selected={show===f} className={show===f?'dk-chip-on':''} onClick={()=>setShow(f)}>{f==='all'?'All':f==='email'?'With email':'No email'} <span>{f==='all'?rows.length:f==='email'?rows.filter(l=>l.contactEmail).length:rows.filter(l=>!l.contactEmail).length}</span></button>)}</div>
+    {list.length?<div className="dk-cards">{list.map(l=>{const inv=invited(l.id);return <article className="dk-card" key={l.id}>
+      <div className="dk-card-head">{l.image?<img className="dk-avatar" src={l.image} alt="" width={36} height={36} style={{objectFit:'cover'}}/>:<span className="dk-avatar"><Rocket size={16}/></span>}
+        <div className="dk-card-title"><h3>{l.name}</h3><p>{l.tagline||host(l.developerWebsite||l.sourceUrl)}{l.votes?` · ${l.votes} upvotes`:''}{l.releasedAt?` · ${new Date(l.releasedAt).toLocaleDateString()}`:''}</p></div><Status value={l.status}/></div>
+      <p className="dk-body">{l.description.length>260?l.description.slice(0,259)+'…':l.description}</p>
+      <div className="dk-body" style={{display:'grid',gap:4,fontSize:13}}>
+        {l.developerWebsite&&<span>Website: <a href={l.developerWebsite} target="_blank" rel="noreferrer">{host(l.developerWebsite)} <ArrowUpRight size={12}/></a> · <a href={l.launchUrl||l.sourceUrl} target="_blank" rel="noreferrer">Product Hunt <ArrowUpRight size={12}/></a></span>}
+        {l.contactEmail?<span>Contact: <strong>{l.contactEmail}</strong>{l.contactFoundOn&&<> · found on {/^https?:/.test(l.contactFoundOn)?<a href={l.contactFoundOn} target="_blank" rel="noreferrer">{l.contactFoundOn.replace(/^https?:\/\/(www\.)?/,'')}</a>:l.contactFoundOn}</>}</span>
+          :<span style={{color:'var(--rd-muted)'}}>{l.contactCheckedAt?(l.contactError||'No public business email found.'):'Contact not checked yet.'}</span>}
+        {inv&&<span>Invitation: <Status value={inv.status}/> to {inv.to}</span>}
+      </div>
+      <div className="dk-actions">
+        {l.developerWebsite&&<button className="rd-button rd-outline dk-sm" disabled={busy} onClick={()=>action({action:'find-contacts',ids:[l.id]})}><Search size={14}/> {l.contactCheckedAt?'Re-check':'Find contact'}</button>}
+        <button className="rd-button rd-outline dk-sm" disabled={busy} onClick={()=>{const email=window.prompt('Public business email for '+l.name+' (leave empty to clear):',l.contactEmail||'');if(email!==null)action({action:'set-contact',id:l.id,email});}}><Mail size={14}/> Edit email</button>
+        {l.contactEmail&&!inv&&(l.status==='published'
+          ?<button className="rd-button rd-primary dk-sm" disabled={busy} onClick={()=>{if(window.confirm(`Draft a claim invitation for ${l.name} to ${l.contactEmail}?\n\nOnly continue if this is a business contact published by the product.`))action({action:'invite',productId:l.id,to:l.contactEmail,businessContactConfirmed:true});}}><Send size={14}/> Draft invitation</button>
+          :<span className="rd-fine-print">Publish the listing in the Review queue first, then draft the invitation.</span>)}
+      </div>
+    </article>;})}</div>:<Empty icon={Rocket} title="No Product Hunt launches yet" text="Add PRODUCTHUNT_TOKEN to .env.local, restart the dev server, then press “Import new launches”."/>}
+  </section>;
 }

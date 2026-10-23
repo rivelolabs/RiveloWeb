@@ -24,7 +24,7 @@ export async function importProductHunt(days=2){
       if(!n.name||desc.length<20||!n.thumbnail?.url)continue;
       const topic=(n.topics?.edges||[]).map(t=>t.node.name.toLowerCase()).join(' ');
       const genre:Genre=/game/.test(topic)?'Games':/health|fitness/.test(topic)?'Health & fitness':/productiv/.test(topic)?'Productivity':/social|community/.test(topic)?'Social & community':'AI & developer tools';
-      state.listings.push({id:'import-'+createHash('sha256').update(key).digest('hex').slice(0,20),sourceKey:key,sourceKind:'website',sourceUrl:n.url,name:n.name.slice(0,120),description:desc,image:n.thumbnail.url,developerWebsite:n.website||undefined,genre,type:'Website',platforms:['Web'],importedAt:new Date().toISOString(),releasedAt:n.createdAt,status:'pending'});added++;
+      state.listings.push({id:'import-'+createHash('sha256').update(key).digest('hex').slice(0,20),sourceKey:key,sourceKind:'website',sourceUrl:n.url,name:n.name.slice(0,120),description:desc,image:n.thumbnail.url,developerWebsite:n.website||undefined,genre,type:'Website',platforms:['Web'],importedAt:new Date().toISOString(),releasedAt:n.createdAt,status:'pending',tagline:(n.tagline||'').slice(0,200),launchUrl:n.url,votes:n.votesCount||0});added++;
     }return added;}).catch(()=>0);
   return {source:'producthunt',imported,queued};
 }

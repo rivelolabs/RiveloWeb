@@ -39,6 +39,14 @@ export async function updateOwnMaker(id:string,userId:string,f:{name:string;bio:
   const r=await db().query(`UPDATE rivelo.maker_pages SET name=$3,bio=$4,product_name=$5,product_url=$6,product_description=$7,city=$8,lat=$9,lng=$10,logo_url=$11 WHERE id=$1 AND claimed_by=$2 AND status='claimed' RETURNING ${COLS}`,[id,userId,f.name,f.bio,f.productName,f.productUrl,f.productDescription,f.city,f.lat,f.lng,f.logo]);
   return r.rows[0]?map(r.rows[0]):null;
 }
+/** A signed-in X user adds themselves: creates (or takes over their own unclaimed) page, already claimed. */
+export async function joinAsMaker(userId:string,x:{username:string;id:string;avatar:string|null},name:string){bust('makers');
+  const r=await db().query(`INSERT INTO rivelo.maker_pages (x_user_id,username,name,avatar_url,status,claimed_by,claimed_at) VALUES (NULLIF($1,''),$2,$3,$4,'claimed',$5,now())
+    ON CONFLICT (lower(username)) DO UPDATE SET status='claimed',claimed_by=EXCLUDED.claimed_by,claimed_at=COALESCE(rivelo.maker_pages.claimed_at,now()),avatar_url=COALESCE(EXCLUDED.avatar_url,rivelo.maker_pages.avatar_url)
+      WHERE rivelo.maker_pages.claimed_by IS NULL OR rivelo.maker_pages.claimed_by=EXCLUDED.claimed_by
+    RETURNING username`,[x.id,x.username,name.slice(0,120)||x.username,x.avatar,userId]);
+  return r.rows[0]?.username as string|undefined;
+}
 export async function removeOwnMaker(id:string,userId:string){bust('makers');await db().query(`UPDATE rivelo.maker_pages SET status='hidden' WHERE id=$1 AND claimed_by=$2`,[id,userId]);}
 /** Claimed makers with a location appear on the world map. */
 export async function makerPins(){

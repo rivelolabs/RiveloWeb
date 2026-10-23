@@ -22,7 +22,7 @@ export default async function Page({params}:Props){
   const {username}=await params;const m=await load(username);if(!m)notFound();
   const claimed=m.status==='claimed',first=m.name.split(' ')[0];
   const ld={'@context':'https://schema.org','@type':'ProfilePage',url:`https://www.rivelolabs.com/makers/${m.username}`,mainEntity:{'@type':'Person',name:m.name,alternateName:`@${m.username}`,description:m.bio||undefined,image:m.avatar||undefined,sameAs:[`https://x.com/${m.username}`,...(m.website?[m.website]:[])],...(m.city?{homeLocation:{'@type':'Place',name:m.city}}:{}),...(m.productUrl?{owns:{'@type':'SoftwareApplication',name:m.productName||host(m.productUrl),url:m.productUrl}}:{})}};
-  return <CommunityShell active="/map"><main className="rc-content mk-page"><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(ld).replace(/</g,'\\u003c')}}/>
+  return <CommunityShell active="/makers"><main className="rc-content mk-page"><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(ld).replace(/</g,'\\u003c')}}/>
     {!claimed&&<section className="mk-claim-banner" aria-label="Claim this page">
       <div><h2>{first}, this is your page</h2><p>Built from your X profile and the link you dropped{m.sourceAuthor?<> under <a href={m.sourcePostUrl||`https://x.com/${m.sourceAuthor}`} target="_blank" rel="noopener noreferrer">@{m.sourceAuthor}’s post</a></>:null}. Claim it to go live on the map.</p>
         {m.replyText&&<blockquote>“{m.replyText}”</blockquote>}</div>

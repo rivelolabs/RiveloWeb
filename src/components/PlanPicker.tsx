@@ -10,7 +10,7 @@ const PLANS:Plan[]=[
   {id:'yacht',name:'Map yacht',price:'$20',per:'/ week',blurb:'Sail your product across the Rivelo world map. Only 5 yachts exist.',features:['Your logo and name on one of 5 premium yachts on the world map','Every map visitor can click through to your product','Sponsored label, renews weekly, cancel anytime']},
   {id:'growth',name:'Growth',price:'$50',per:'/ month',blurb:'Everything in Spotlight, a free yacht, and an AI growth team on your side.',features:['More on-demand SEO checks','Everything in Spotlight (7 days in the homepage header every month)','1 map yacht free all month','AI analysis of your product page and positioning','SEO tracking, monitored for you, with AI suggestions you can apply','Reddit communities and threads where your users are','Monthly growth report']},
 ];
-type Me={signedIn:boolean;takenYachts?:number[];billingReady?:boolean;provider?:'dodo'|'razorpay'|null;testMode?:boolean;email?:string;products?:{id:string;name:string}[];subscriptions?:{id:string;plan_id:string;product_id:string;status:string;cancel_at_period_end:boolean;current_period_end:string|null}[]};
+type Me={signedIn:boolean;takenYachts?:number[];yachts?:{index:number;free:boolean;until:string|null;reserved:boolean}[];spotlight?:{capacity:number;used:number;open:number;nextOpening:string|null}|null;billingReady?:boolean;provider?:'dodo'|'razorpay'|null;testMode?:boolean;email?:string;products?:{id:string;name:string}[];subscriptions?:{id:string;plan_id:string;product_id:string;status:string;cancel_at_period_end:boolean;current_period_end:string|null}[]};
 type RazorpayCtor=new(o:Record<string,unknown>)=>{open:()=>void;on:(e:string,cb:(r:{error?:{description?:string}})=>void)=>void};
 declare global{interface Window{Razorpay?:RazorpayCtor}}
 
@@ -22,12 +22,16 @@ export default function PlanPicker(){
   useEffect(()=>{const paid=new URLSearchParams(window.location.search).get('paid');if(paid){setDone('Payment received. Your plan switches on within a minute; this page updates automatically.');let n=0;const t=setInterval(()=>{n++;void refresh();if(n>=12)clearInterval(t);},5000);return()=>clearInterval(t);}},[]);
   useEffect(()=>{void refresh();const n=Number(new URLSearchParams(window.location.search).get('yacht'));if(n>=1&&n<=5)setYacht(n);},[]);
   const taken=me?.takenYachts||[];
+  const day=(iso:string|null)=>iso?new Date(iso).toLocaleDateString('en',{weekday:'short',month:'short',day:'numeric'}):'';
+  const yachtInfo=(i:number)=>me?.yachts?.find(y=>y.index===i);
+  const spot=me?.spotlight||null,spotFull=!!spot&&spot.open<=0;
   const ready=!!me?.billingReady;
   async function choose(plan:Plan){
     setError('');setDone('');
     if(!ready){setWaitFor(plan);return;}
     if(!me?.signedIn){window.location.assign('/login?next=/premium');return;}
     if(!product){setError('List or claim a product first, then choose a plan for it.');return;}
+    if((plan.id==='spotlight'||plan.id==='growth')&&spotFull){setError(`All ${spot!.capacity} homepage Spotlight spots are taken. The next one opens ${day(spot!.nextOpening)||'soon'}.`);return;}
     if(plan.id==='yacht'&&(!yacht||taken.includes(yacht))){setError('Choose an available yacht first.');return;}
     if(plan.id==='growth'&&yacht&&taken.includes(yacht)){setError('That yacht is booked. Pick another free one.');return;}
     setBusy(plan.id);
@@ -59,7 +63,10 @@ export default function PlanPicker(){
     <div className="rc-plan-grid">{PLANS.map(plan=><article key={plan.id} id={`plan-${plan.id}`} className={`rc-plan${plan.id==='growth'?' rc-plan-featured':''}`}>
       <div className="rc-plan-top">{plan.id==='growth'?<Sparkles size={22}/>:plan.id==='yacht'?<Sailboat size={22}/>:<Megaphone size={22}/>}{plan.id==='growth'&&<span className="rc-plan-tag">MOST VALUE</span>}</div>
       <h3>{plan.name}</h3><p className="rc-plan-price"><b>{plan.price}</b> {plan.per}</p><p className="rc-plan-blurb">{plan.blurb}</p>
-      <ul>{plan.features.map(f=><li key={f}><Check size={15}/>{f}</li>)}</ul>{plan.id!=='spotlight'&&<label className="rc-yacht-pick">{plan.id==='growth'?'Choose your free yacht':'Choose your yacht'}<select value={yacht} onChange={e=>setYacht(Number(e.target.value))}><option value={0}>Pick a yacht…</option>{YACHTS.map(y=><option key={y.index} value={y.index} disabled={taken.includes(y.index)}>Yacht {y.index} · {y.sea}{taken.includes(y.index)?' (booked)':''}</option>)}</select><a href="/map">See them on the map ↗</a></label>}
+      <ul>{plan.features.map(f=><li key={f}><Check size={15}/>{f}</li>)}</ul>
+      {(plan.id==='spotlight'||plan.id==='growth')&&spot&&<p className={`rc-avail${spotFull?' rc-avail-full':''}`}><span/>{spotFull?<>Homepage fully booked · next spot opens <b>{day(spot.nextOpening)}</b></>:<><b>{spot.open} of {spot.capacity}</b> homepage spots open now</>}</p>}
+      {plan.id==='yacht'&&me?.yachts&&<p className={`rc-avail${me.yachts.every(y=>!y.free)?' rc-avail-full':''}`}><span/>{me.yachts.every(y=>!y.free)?<>All 5 yachts booked · next free <b>{day(me.yachts.map(y=>y.until||'').sort()[0]||null)}</b></>:<><b>{me.yachts.filter(y=>y.free).length} of 5</b> yachts available now</>}</p>}
+      {plan.id==='spotlight'&&<ol className="rc-steps"><li>Pick the product to promote</li><li>Pay securely with Dodo Payments</li><li>Goes live on the homepage within minutes, for 7 days</li></ol>}{plan.id!=='spotlight'&&<label className="rc-yacht-pick">{plan.id==='growth'?'Choose your free yacht':'Choose your yacht'}<select value={yacht} onChange={e=>setYacht(Number(e.target.value))}><option value={0}>Pick a yacht…</option>{YACHTS.map(y=><option key={y.index} value={y.index} disabled={taken.includes(y.index)}>Yacht {y.index} · {y.sea} — {!taken.includes(y.index)?'available now':yachtInfo(y.index)?.reserved?'being booked right now':`booked until ${day(yachtInfo(y.index)?.until||null)||'later'}`}</option>)}</select><a href="/map">See them on the map ↗</a></label>}
       <button type="button" className={`rd-button ${plan.id==='growth'?'rd-primary':'rd-dark'}`} disabled={!!busy||!me} onClick={()=>choose(plan)}>{busy===plan.id?<><LoaderCircle className="rd-spin" size={15}/> Opening checkout…</>:!ready&&me?<>Join the waitlist <ArrowUpRight size={15}/></>:me?.signedIn?<>Choose {plan.name} <ArrowUpRight size={15}/></>:<>Sign in to choose <ArrowUpRight size={15}/></>}</button>
     </article>)}</div>
     {waitFor&&<Waitlist plan={waitFor} email={me?.email||''} yacht={waitFor.id!=='spotlight'?yacht:0} onClose={()=>setWaitFor(null)} onDone={msg=>{setWaitFor(null);setDone(msg);}}/>}

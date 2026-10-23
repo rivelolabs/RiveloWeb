@@ -9,6 +9,8 @@ import {adminAuthorized,jsonBody,shortText,validEmail} from '@/lib/catalog/http'
 import {genres} from '@/lib/directory';
 import {runDiscovery} from '@/lib/catalog/jobs';
 import {draftInvitation,sendInvitation} from '@/lib/catalog/outreach';
+import {enrichContacts} from '@/lib/catalog/contacts';
+import {importProductHunt} from '@/lib/launches/producthunt';
 import {publicUrl} from '@/lib/catalog/safe-fetch';
 import type {Source} from '@/lib/catalog/types';
 export const runtime='nodejs';export const dynamic='force-dynamic';
@@ -33,6 +35,9 @@ export async function POST(request:Request){if(!adminAuthorized(request))return 
   }
   if(body.action==='claim-review'){await updateCatalog(state=>{const claim=state.claims.find(item=>item.id===body.id);if(!claim)throw Error('Claim not found.');if(!['approved','rejected'].includes(body.status))throw Error('Choose a claim outcome.');if(body.status==='approved'&&claim.status!=='domain-verified'&&body.manualEvidenceConfirmed!==true)throw Error('Verify the domain or confirm that ownership evidence was reviewed.');claim.status=body.status;if(body.status==='approved'){const listing=state.listings.find(item=>item.id===claim.productId);if(listing)listing.claimed=true;}});return NextResponse.json({success:true});}
   if(body.action==='invite'){if(!validEmail(body.to)||body.businessContactConfirmed!==true)throw Error('Confirm an appropriate business contact before preparing an invitation.');return NextResponse.json(await draftInvitation(shortText(body.productId,100),body.to));}
+  if(body.action==='import-producthunt')return NextResponse.json(await importProductHunt(Math.max(1,Math.min(7,Number(body.days)||2))));
+  if(body.action==='find-contacts')return NextResponse.json(await enrichContacts(12,Array.isArray(body.ids)?body.ids.map(String).slice(0,12):undefined));
+  if(body.action==='set-contact'){const email=String(body.email||'').trim().toLowerCase();if(email&&!validEmail(email))throw Error('Enter a valid email.');await updateCatalog(state=>{const l=state.listings.find(x=>x.id===body.id);if(!l)throw Error('Listing not found.');if(email){l.contactEmail=email;l.contactFoundOn='Added manually';delete l.contactError;}else{delete l.contactEmail;delete l.contactFoundOn;}l.contactCheckedAt=new Date().toISOString();});return NextResponse.json({success:true});}
   if(body.action==='send-invite'){if(body.confirm!==true)throw Error('Confirm this recipient and message before sending.');return NextResponse.json(await sendInvitation(shortText(body.id,100)));}
   if(body.action==='pin-review'){await updateCatalog(state=>{const pin=state.pins.find(p=>p.id===body.id);if(!pin||!['published','rejected'].includes(body.status))throw Error('Choose a pin and status.');if(body.status==='published'&&!state.listings.some(l=>l.id===pin.productId&&l.status==='published'))throw Error('Publish the reviewed product first.');pin.status=body.status;});return NextResponse.json({success:true});}
   if(body.action==='reject-stale'){const days=Math.max(1,Math.min(90,Number(body.days)||7));const since=Date.now()-days*86400000;const n=await updateCatalog(state=>{let c=0;for(const l of state.listings){if(l.status==='pending'&&!l.id.startsWith('owner-')&&!(l.releasedAt&&Date.parse(l.releasedAt)>=since)){l.status='rejected';c++;}}return c;});return NextResponse.json({success:true,rejected:n});}

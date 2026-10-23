@@ -28,4 +28,4 @@ export async function upsertLaunches(items:LaunchInput[]){bust('launches');
   return n;
 }
 
-export const cachedRecentLaunches=cached((limit:number,days:number)=>recentLaunches(limit,days),'recent-launches',['launches'],300);
+export const cachedRecentLaunches=cached((limit:number,days:number)=>recentLaunches(limit,days),'recent-launches',['launches'],120);
