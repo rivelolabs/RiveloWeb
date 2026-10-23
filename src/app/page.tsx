@@ -5,16 +5,17 @@ import { preload } from "react-dom";
 import { dbEnabled } from "@/lib/db";
 import { cachedSpotlights, countSpotlightImpressions } from "@/lib/db/billing";
 import { after } from "next/server";
+import { promotedMakers } from "@/lib/db/makers";
 import { cachedRecentLaunches, type Launch } from "@/lib/db/trending";
 import { directorySchema, serializeSchema, shareImage, siteUrl } from "@/lib/seo";
 import "./directory.css";
 
 export const metadata: Metadata = {
-  title: { absolute: "Rivelo Labs — Discover Apps & Websites" },
+  title: { absolute: "Discover New Apps & Websites — List Yours Free | Rivelo Labs" },
   alternates: { canonical: siteUrl },
-  description: "Discover new apps and websites from independent builders, or list your product with Rivelo Labs and get real users.",
-  openGraph: { title: "Rivelo Labs — Discover what’s next", description: "Independent ideas. Thoughtful apps. Your next favorite thing.", url: siteUrl, type: "website", images: [{ url: shareImage, width: 1200, height: 630, alt: "Rivelo Labs — A home for good ideas" }] },
-  twitter: { card: "summary_large_image", title: "Rivelo Labs — Discover what’s next", description: "Discover independent apps and websites.", images: [shareImage] },
+  description: "Explore a free app and website directory from independent builders. Discover new products or submit your app, website or startup for others to find.",
+  openGraph: { title: "Discover New Apps & Websites — List Yours Free", description: "Discover independent apps and websites, or list your own product for free.", url: siteUrl, type: "website", images: [{ url: shareImage, width: 1200, height: 630, alt: "Rivelo Labs — A home for good ideas" }] },
+  twitter: { card: "summary_large_image", title: "Discover New Apps & Websites — List Yours Free", description: "Discover independent apps and websites, or list your own product for free.", images: [shareImage] },
 };
 export const dynamic="force-dynamic";
 export default async function Home() {
@@ -24,7 +25,8 @@ export default async function Home() {
   const db=dbEnabled();
   const [catalog,spots,launches]=await Promise.all([publicProducts(),db?cachedSpotlights().catch(()=>[]):Promise.resolve([]),db?cachedRecentLaunches(12,14).catch(()=>[] as Launch[]):Promise.resolve([] as Launch[])]);
   if(db){
-    sponsored=spots.flatMap(s=>{const p=catalog.find(x=>x.id===s.productId);return p?[{id:p.id,name:p.name,tagline:s.headline||p.tagline,url:p.url||`${siteUrl}/products/${p.id}`,image:s.image||null}]:[];});
+    const makerSpots=await promotedMakers(spots.map(s=>s.productId)).catch(()=>new Map());
+    sponsored=spots.flatMap(s=>{const p=catalog.find(x=>x.id===s.productId);if(p)return [{id:p.id,name:p.name,tagline:s.headline||p.tagline,url:p.url||`${siteUrl}/products/${p.id}`,image:s.image||null}];const m=makerSpots.get(s.productId.toLowerCase());return m?[{id:m.id,name:m.name,tagline:s.headline||m.tagline,url:m.url,image:s.image||m.logo}]:[];});
     after(()=>countSpotlightImpressions(spots.map(s=>s.id)));
   }
   const schema={...directorySchema,mainEntity:{...directorySchema.mainEntity,numberOfItems:catalog.length,itemListElement:catalog.map((product,index)=>({"@type":"ListItem",position:index+1,name:product.name,url:`${siteUrl}/products/${product.id}`}))}};

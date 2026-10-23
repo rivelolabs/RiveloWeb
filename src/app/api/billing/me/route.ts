@@ -12,7 +12,7 @@ export async function GET(request:NextRequest){
   const billingReady=!!provider&&dbEnabled();const testMode=provider==='dodo'&&dodoMode()==='test';
   const user=await currentUser(request);if(!user)return NextResponse.json({signedIn:false,takenYachts,billingReady,provider,testMode},{headers:{'Cache-Control':'no-store'}});
   try{
-    const [subscriptions,products]=await Promise.all([dbEnabled()?userSubscriptions(user.id):[],promotableProducts(user.email)]);
+    const [subscriptions,products]=await Promise.all([dbEnabled()?userSubscriptions(user.id):[],promotableProducts({id:user.id,email:user.email})]);
     return NextResponse.json({signedIn:true,email:user.email,subscriptions,products,takenYachts,billingReady,provider,testMode},{headers:{'Cache-Control':'no-store'}});
   }catch{return NextResponse.json({signedIn:true,email:user.email,subscriptions:[],products:[],billingReady,provider,testMode},{headers:{'Cache-Control':'no-store'}});}
 }

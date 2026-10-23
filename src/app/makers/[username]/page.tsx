@@ -13,15 +13,15 @@ type Props={params:Promise<{username:string}>};
 async function load(username:string){if(!dbEnabled())return null;const m=await makerByUsername(username).catch(()=>null);return m&&(m.status==='published'||m.status==='claimed')?m:null;}
 export async function generateMetadata({params}:Props):Promise<Metadata>{
   const {username}=await params;const m=await load(username);if(!m)return {title:'Maker not found',robots:{index:false}};
-  return {title:`${m.name} (@${m.username}) — Rivelo maker`,description:m.productDescription||m.bio||`${m.name} is building ${m.productName||'something new'}.`,robots:m.status==='claimed'?undefined:{index:false,follow:false},alternates:{canonical:`https://rivelolabs.com/makers/${m.username}`},
-    openGraph:{type:'profile',title:`${m.name} (@${m.username}) on the Rivelo map`,description:m.productDescription||m.bio||`${m.name} is building ${m.productName||'something new'}.`,url:`https://rivelolabs.com/makers/${m.username}`,siteName:'Rivelo Labs'},
+  return {title:`${m.name} (@${m.username}) — Rivelo maker`,description:m.productDescription||m.bio||`${m.name} is building ${m.productName||'something new'}.`,robots:m.status==='claimed'?undefined:{index:false,follow:false},alternates:{canonical:`https://www.rivelolabs.com/makers/${m.username}`},
+    openGraph:{type:'profile',title:`${m.name} (@${m.username}) on the Rivelo map`,description:m.productDescription||m.bio||`${m.name} is building ${m.productName||'something new'}.`,url:`https://www.rivelolabs.com/makers/${m.username}`,siteName:'Rivelo Labs'},
     twitter:{card:'summary_large_image',title:`${m.name} (@${m.username}) on the Rivelo map`,description:m.productDescription||m.bio||`${m.name} is building ${m.productName||'something new'}.`,creator:`@${m.username}`}};
 }
 const host=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'');}catch{return u;}};
 export default async function Page({params}:Props){
   const {username}=await params;const m=await load(username);if(!m)notFound();
   const claimed=m.status==='claimed',first=m.name.split(' ')[0];
-  const ld={'@context':'https://schema.org','@type':'ProfilePage',url:`https://rivelolabs.com/makers/${m.username}`,mainEntity:{'@type':'Person',name:m.name,alternateName:`@${m.username}`,description:m.bio||undefined,image:m.avatar||undefined,sameAs:[`https://x.com/${m.username}`,...(m.website?[m.website]:[])],...(m.city?{homeLocation:{'@type':'Place',name:m.city}}:{}),...(m.productUrl?{owns:{'@type':'SoftwareApplication',name:m.productName||host(m.productUrl),url:m.productUrl}}:{})}};
+  const ld={'@context':'https://schema.org','@type':'ProfilePage',url:`https://www.rivelolabs.com/makers/${m.username}`,mainEntity:{'@type':'Person',name:m.name,alternateName:`@${m.username}`,description:m.bio||undefined,image:m.avatar||undefined,sameAs:[`https://x.com/${m.username}`,...(m.website?[m.website]:[])],...(m.city?{homeLocation:{'@type':'Place',name:m.city}}:{}),...(m.productUrl?{owns:{'@type':'SoftwareApplication',name:m.productName||host(m.productUrl),url:m.productUrl}}:{})}};
   return <CommunityShell active="/map"><main className="rc-content mk-page"><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(ld).replace(/</g,'\\u003c')}}/>
     {!claimed&&<section className="mk-claim-banner" aria-label="Claim this page">
       <div><h2>{first}, this is your page</h2><p>Built from your X profile and the link you dropped{m.sourceAuthor?<> under <a href={m.sourcePostUrl||`https://x.com/${m.sourceAuthor}`} target="_blank" rel="noopener noreferrer">@{m.sourceAuthor}’s post</a></>:null}. Claim it to go live on the map.</p>

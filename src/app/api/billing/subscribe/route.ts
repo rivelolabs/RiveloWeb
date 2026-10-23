@@ -15,7 +15,7 @@ export async function POST(request:NextRequest){
     const user=await currentUser(request);if(!user)return NextResponse.json({error:'Sign in to choose a plan.',signIn:true},{status:401});
     const body=await jsonBody(request,1000);const plan=body.plan as PlanId,productId=typeof body.productId==='string'?body.productId:'';
     if(!PLAN_IDS.includes(plan))return NextResponse.json({error:'Choose a plan.'},{status:400});
-    if(!await ownsPublishedProduct(user.email,productId))return NextResponse.json({error:'Choose a published product that you listed or claimed with this email.'},{status:403});
+    if(!await ownsPublishedProduct({id:user.id,email:user.email},productId))return NextResponse.json({error:'Choose a published product that you listed or claimed with this email.'},{status:403});
     let slotIndex:number|undefined;
     // Yacht plan needs a yacht; Growth includes one free yacht if the buyer picks one.
     if(plan==='yacht'||(plan==='growth'&&body.yacht)){slotIndex=Number(body.yacht);if(!Number.isInteger(slotIndex)||slotIndex<1||slotIndex>5)return NextResponse.json({error:'Choose a yacht on the map.'},{status:400});if((await yachtBookings()).has(slotIndex))return NextResponse.json({error:`Yacht ${slotIndex} was just booked. Pick another one on the map.`},{status:409});}

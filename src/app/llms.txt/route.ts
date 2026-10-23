@@ -1,9 +1,10 @@
 import {publicProducts} from '@/lib/catalog/store';
 import {db,dbEnabled} from '@/lib/db';
+import {categories} from '@/lib/categories';
 
 // llms.txt: a plain-text guide that AI assistants (ChatGPT, Claude, Perplexity…) read to understand and cite the site.
 export const revalidate=3600;
-const SITE='https://rivelolabs.com';
+const SITE='https://www.rivelolabs.com';
 const line=(s:string)=>s.replace(/\s+/g,' ').trim();
 
 export async function GET(){
@@ -27,8 +28,9 @@ export async function GET(){
     `- [Community](${SITE}/community): builders asking questions and sharing launch lessons`,
     `- [List your product](${SITE}/register): free listing for apps and websites (reviewed within 1–2 days)`,
     `- [Promotion plans](${SITE}/premium): Spotlight, map yacht placements and Growth plan`,
-    `- [Free Visibility Check](${SITE}/tools/visibility-check): free SEO, social preview and AI-search readiness score for any website`,
+    `- [Free Visibility Check](${SITE}/tools/visibility-check): SEO, social preview and AI-search readiness score; first successful check free, more checks with Growth`,
     `- [Launch guide](${SITE}/launch-guide): free places to launch an app or website, Product Hunt alternatives and a launch-week plan`,
+    ...categories.map(category=>`- [${category.title}](${SITE}/categories/${category.slug}): ${category.description}`),
     '',
     ...[...byGenre.entries()].flatMap(([genre,list])=>[`## ${genre}`,...list.slice(0,60).map(p=>`- [${p.name}](${SITE}/products/${p.id}): ${line(p.tagline||p.description).slice(0,180)} (${p.type}; ${p.platforms.join(', ')})`),'']),
     ...(makers.length?['## Makers',...makers.map(m=>`- [${m.name} (@${m.username})](${SITE}/makers/${m.username})${m.product_name?`: building ${m.product_name}`:''}${m.city?`, ${m.city}`:''}`),'']:[]),

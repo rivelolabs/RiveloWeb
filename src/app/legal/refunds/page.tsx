@@ -5,7 +5,7 @@ import RiveloLegal, { LEGAL_CONTACT, type LegalSection } from "@/components/Rive
 export const metadata: Metadata = {
   title: "Refund & Cancellation Policy | Rivelo Labs",
   description: "How cancellations and refunds work for Rivelo Labs paid plans: Spotlight, Map yacht and Growth.",
-  alternates: { canonical: "https://rivelolabs.com/legal/refunds" },
+  alternates: { canonical: "https://www.rivelolabs.com/legal/refunds" },
 };
 
 const mail = <a href={`mailto:${LEGAL_CONTACT}`}>{LEGAL_CONTACT}</a>;

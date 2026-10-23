@@ -38,15 +38,30 @@ test('early theme script restores manual choices and defaults to light',()=>{
 });
 test('structured directory links and product breadcrumbs agree with actual product routes',()=>{
   const directory=load('src/lib/directory.ts');
-  const seo=load('src/lib/seo.ts',{'@/lib/directory':directory});
+  const categories=load('src/lib/categories.ts');
+  const seo=load('src/lib/seo.ts',{'@/lib/directory':directory,'@/lib/categories':categories});
+  assert.equal(seo.siteUrl,'https://www.rivelolabs.com');
   assert.equal(seo.directorySchema.mainEntity.numberOfItems,directory.products.length);
-  for(const product of directory.products) {
+  for(const product of directory.ecosystemProducts) {
     const schema=seo.productSchema(product);
-    assert.equal(schema['@graph'][0].url,`https://rivelolabs.com/products/${product.id}`);
+    assert.equal(schema['@graph'][0].url,`${seo.siteUrl}/products/${product.id}`);
     assert.equal(schema['@graph'][0].name,product.name);
-    assert.equal(schema['@graph'][1].itemListElement[1].item,seo.productUrl(product));
+    assert.equal(schema['@graph'][1].itemListElement[1].item,`${seo.siteUrl}${categories.categoryPath(product.genre)}`);
+    assert.equal(schema['@graph'][1].itemListElement[2].item,seo.productUrl(product));
     assert.equal(schema['@graph'][0].aggregateRating,undefined);
     assert.equal(schema['@graph'][0].offers,undefined);
   }
   assert.doesNotMatch(seo.serializeSchema({name:'</script><script>unsafe</script>'}), /</);
+});
+test('every product genre has a unique, routable category',()=>{
+  const {genres}=load('src/lib/directory.ts');
+  const {categories,categoryPath}=load('src/lib/categories.ts');
+  assert.equal(categories.length,genres.length);
+  assert.equal(new Set(categories.map(category=>category.slug)).size,genres.length);
+  for(const genre of genres) {
+    const category=categories.find(item=>item.genre===genre);
+    assert.ok(category);
+    assert.match(category.slug,/^[a-z]+(?:-[a-z]+)*$/);
+    assert.equal(categoryPath(genre),`/categories/${category.slug}`);
+  }
 });

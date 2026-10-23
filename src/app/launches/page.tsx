@@ -6,7 +6,7 @@ import {dbEnabled} from '@/lib/db';
 import {cachedRecentLaunches,type Launch} from '@/lib/db/trending';
 import '../directory.css';
 export const dynamic='force-dynamic';
-export const metadata:Metadata={title:'New launches — Apps & websites launching this week',description:'Fresh app and website launches from Product Hunt and the Rivelo Labs community, updated through the day.',alternates:{canonical:'https://rivelolabs.com/launches'}};
+export const metadata:Metadata={title:'New launches — Apps & websites launching this week',description:'Fresh app and website launches from Product Hunt and the Rivelo Labs community, updated through the day.',alternates:{canonical:'https://www.rivelolabs.com/launches'}};
 const SOURCE:Record<Launch['source'],string>={producthunt:'Product Hunt',indiehackers:'Indie Hackers',rivelo:'Rivelo',hackernews:'Show HN'};
 export default async function Page(){
   const launches=dbEnabled()?await cachedRecentLaunches(100,14).catch(()=>[]):[];

@@ -28,17 +28,15 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://rivelolabs.com"),
-  title: { default: "Rivelo Labs — Discover new apps & websites, get real users", template: "%s | Rivelo Labs" },
+  metadataBase: new URL("https://www.rivelolabs.com"),
+  title: { default: "Discover New Apps & Websites — List Yours Free | Rivelo Labs", template: "%s | Rivelo Labs" },
   description: "Discover new apps and websites from independent builders. List your product for free, get upvotes and real users, and put your startup on the world map.",
   applicationName: "Rivelo Labs",
-  alternates: { canonical: "/" },
   icons: { icon: [{ url: "/favicon.ico", sizes: "any" }, { url: "/icon.png", type: "image/png", sizes: "512x512" }], apple: "/apple-icon.png" },
   category: "technology",
-  keywords: ["Rivelo Labs", "new apps", "app directory", "website directory", "startup launch", "indie hackers", "product launch", "get users for my app", "list my app", "startup map"],
   publisher: "Rivelo Labs",
   formatDetection: { email: false, address: false, telephone: false },
-  openGraph: { title: "Rivelo Labs — Discover new apps & websites", description: "New apps and websites from independent builders. List yours and get real users.", url: "https://rivelolabs.com", siteName: "Rivelo Labs", type: "website", locale: "en_US" },
+  openGraph: { title: "Rivelo Labs — Discover new apps & websites", description: "New apps and websites from independent builders. List yours and get real users.", url: "https://www.rivelolabs.com", siteName: "Rivelo Labs", type: "website", locale: "en_US" },
   twitter: { card: "summary_large_image", title: "Rivelo Labs — Discover new apps & websites", description: "New apps and websites from independent builders. List yours and get real users." },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
 };
@@ -47,12 +45,12 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Rivelo Labs",
-  url: "https://rivelolabs.com",
+  url: "https://www.rivelolabs.com",
   email: "hello@rivelolabs.com",
-  logo: "https://rivelolabs.com/icon-512.png",
+  logo: "https://www.rivelolabs.com/icon-512.png",
   description: "A discovery space for new apps, websites and independent builders.",
 };
-const siteLd = { "@context": "https://schema.org", "@type": "WebSite", name: "Rivelo Labs", url: "https://rivelolabs.com", potentialAction: { "@type": "SearchAction", target: "https://rivelolabs.com/?q={search_term_string}", "query-input": "required name=search_term_string" } };
+const siteLd = { "@context": "https://schema.org", "@type": "WebSite", name: "Rivelo Labs", url: "https://www.rivelolabs.com", description: "A free app and website directory for discovering independent products and listing your own." };
 
 export default function RootLayout({
   children,

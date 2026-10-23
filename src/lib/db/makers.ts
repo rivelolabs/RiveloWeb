@@ -54,3 +54,10 @@ export const cachedMakerPins=cached(async()=>{const [pins,avatars]=await Promise
 
 /** Maker pages this signed-in user has claimed (for their account page). */
 export async function myMakerPages(userId:string){const r=await db().query(`SELECT ${COLS} FROM rivelo.maker_pages WHERE claimed_by=$1 AND status='claimed' ORDER BY created_at DESC`,[userId]);return r.rows.map(map);}
+
+/** Display info for promoted maker pages (homepage Spotlight, map yachts), keyed by "maker:<username>". */
+export async function promotedMakers(ids:string[]){
+  const names=[...new Set(ids.filter(i=>i.startsWith('maker:')).map(i=>i.slice(6).toLowerCase()))];if(!names.length)return new Map<string,{id:string;name:string;tagline:string;url:string;logo:string|null}>();
+  const r=await db().query(`SELECT ${COLS} FROM rivelo.maker_pages WHERE lower(username)=ANY($1) AND status='claimed'`,[names]);
+  return new Map(r.rows.map(map).map(m=>[`maker:${m.username.toLowerCase()}`,{id:`maker:${m.username}`,name:productLabel(m.productName,m.name),tagline:m.productDescription||m.bio||`Built by @${m.username}`,url:m.productUrl||`/makers/${m.username}`,logo:m.logo||xPhoto(m.avatar,m.username)}]));
+}

@@ -17,7 +17,7 @@ export async function POST(request:NextRequest){
     const user=await currentUser(request);if(!user)return NextResponse.json({error:'Sign in to choose a plan.',signIn:true},{status:401});
     const body=await jsonBody(request,1000);const plan=body.plan as PlanId,listingId=typeof body.productId==='string'?body.productId:'';
     if(!PLAN_IDS.includes(plan))return NextResponse.json({error:'Choose a plan.'},{status:400});
-    if(!await ownsPublishedProduct(user.email,listingId))return NextResponse.json({error:'Choose a published product that you listed or claimed with this email.'},{status:403});
+    if(!await ownsPublishedProduct({id:user.id,email:user.email},listingId))return NextResponse.json({error:'Choose a published product that you listed or claimed with this email.'},{status:403});
     let yacht:number|undefined;
     if(plan==='yacht'||(plan==='growth'&&body.yacht)){yacht=Number(body.yacht);if(!Number.isInteger(yacht)||yacht<1||yacht>5)return NextResponse.json({error:'Choose a yacht.'},{status:400});if((await yachtBookings()).has(yacht))return NextResponse.json({error:`Yacht ${yacht} was just booked. Pick another one.`},{status:409});}
     await upsertProfile(user);

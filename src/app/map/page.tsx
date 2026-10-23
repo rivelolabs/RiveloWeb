@@ -3,12 +3,12 @@ import MapExplorer from '@/components/MapExplorer';
 import {readCatalog,readPublicCatalog} from '@/lib/catalog/store';
 import {avatarsByEmail,dbEnabled} from '@/lib/db';
 import {cachedYachtSlots} from '@/lib/db/billing';
-import {cachedMakerPins} from '@/lib/db/makers';
+import {cachedMakerPins,promotedMakers} from '@/lib/db/makers';
 import {cached} from '@/lib/cache';
 import {YACHTS,type YachtSpot} from '@/lib/yachts';
 import '../directory.css';
 export const dynamic='force-dynamic';
-export const metadata:Metadata={title:'Business map — Find apps & websites near you',description:'Explore owner-registered apps and websites by location and category on the Rivelo Labs business map.',alternates:{canonical:'https://rivelolabs.com/map'}};
+export const metadata:Metadata={title:'Business map — Find apps & websites near you',description:'Explore owner-registered apps and websites by location and category on the Rivelo Labs business map.',alternates:{canonical:'https://www.rivelolabs.com/map'}};
 // Pin photos need lister emails, which stay on the server; cache the resulting id -> photo map.
 const pinAvatars=cached(async()=>{
   const full=await readCatalog().catch(()=>null);
@@ -25,7 +25,8 @@ export default async function Page(){
     dbEnabled()?pinAvatars().catch(()=>[] as [string,string][]):Promise.resolve([] as [string,string][]),
   ]);
   const booked=new Map(slots),photo=new Map(photos);
-  const yachts:YachtSpot[]=YACHTS.map(y=>{const id=booked.get(y.index);const p=id?products.find(x=>x.id===id):undefined;return {...y,product:p?{id:p.id,name:p.name,url:p.url||`/products/${p.id}`,logo:p.logo||null}:undefined};});
+  const makerYachts=dbEnabled()?await promotedMakers([...booked.values()]).catch(()=>new Map()):new Map();
+  const yachts:YachtSpot[]=YACHTS.map(y=>{const id=booked.get(y.index);const p=id?products.find(x=>x.id===id):undefined;const m=id&&!p?makerYachts.get(id.toLowerCase()):undefined;return {...y,product:p?{id:p.id,name:p.name,url:p.url||`/products/${p.id}`,logo:p.logo||null}:m?{id:m.id,name:m.name,url:m.url,logo:m.logo}:undefined};});
   const withPhotos=pins.map(p=>{const product=products.find(x=>x.id===p.productId);return {...p,avatar:product?.logo||photo.get(p.id)||null,joinedAt:product?.importedAt||''};});
   // Every product and maker gets a member number in the order they joined Rivelo (#1 = first on the map).
   const all=[...withPhotos,...makers].sort((a,b)=>(a.joinedAt||'9').localeCompare(b.joinedAt||'9'));

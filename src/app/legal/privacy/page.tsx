@@ -5,7 +5,7 @@ import RiveloLegal, { LEGAL_CONTACT, type LegalSection } from "@/components/Rive
 export const metadata: Metadata = {
   title: "Privacy Policy | Rivelo Labs",
   description: "How Rivelo Labs collects, uses, shares and protects information, including account, listing and location data.",
-  alternates: { canonical: "https://rivelolabs.com/legal/privacy" },
+  alternates: { canonical: "https://www.rivelolabs.com/legal/privacy" },
 };
 
 const mail = <a href={`mailto:${LEGAL_CONTACT}`}>{LEGAL_CONTACT}</a>;

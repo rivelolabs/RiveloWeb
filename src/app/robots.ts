@@ -11,7 +11,7 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "*", allow: "/", disallow: PRIVATE },
       { userAgent: AI_BOTS, allow: ["/", "/llms.txt"], disallow: PRIVATE },
     ],
-    sitemap: "https://rivelolabs.com/sitemap.xml",
-    host: "https://rivelolabs.com",
+    sitemap: "https://www.rivelolabs.com/sitemap.xml",
+    host: "https://www.rivelolabs.com",
   };
 }

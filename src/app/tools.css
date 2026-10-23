@@ -3,6 +3,13 @@
 .tl-page h2{font-size:24px;letter-spacing:-.02em;margin-bottom:12px}
 .vc{margin:8px 0 34px}
 .vc-form{border:1px solid var(--rd-line);background:var(--rd-surface);border-radius:20px;padding:22px}
+.vc-premium{display:flex;align-items:flex-start;gap:18px;border:1px solid var(--rd-control-border,var(--rd-line));background:var(--rd-feature,#f2dfce);border-radius:20px;padding:28px}
+.vc-premium-icon{display:grid;place-items:center;flex:none;width:48px;height:48px;border-radius:14px;background:var(--rd-surface);color:var(--rd-coral)}
+.vc-premium h2{margin:8px 0 12px}.vc-premium p{color:var(--rd-secondary);line-height:1.7}
+.vc-premium ul{list-style:none;padding:0;display:grid;gap:10px;margin:20px 0;color:var(--rd-secondary);font-size:14px}
+.vc-premium li{display:flex;align-items:center;gap:9px}.vc-premium li svg{flex:none;color:var(--rd-coral)}
+.vc-premium-signin{display:block;width:fit-content;font-size:13px;margin-top:16px;text-decoration:underline!important;text-underline-offset:3px}
+@media(max-width:760px){.vc-premium{flex-direction:column;padding:22px}.vc-premium .rd-button{width:100%;justify-content:center}}
 .vc-row{display:flex;gap:10px;margin:10px 0 8px}
 .vc-row input{flex:1;min-width:0;padding:14px 16px;border-radius:14px;border:1px solid var(--rd-control-border,var(--rd-line));background:var(--rd-control,#f6f6f5);color:var(--rd-ink);font:inherit;font-size:16px}
 .vc-row .rd-button{white-space:nowrap}
