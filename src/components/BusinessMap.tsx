@@ -13,7 +13,7 @@ function yachtPopup(y:YachtSpot){
   else{h.textContent='This premium yacht is available';p.textContent=`Put your product on it. Every map visitor sees it. ${YACHT_PRICE} a week, cancel anytime. Free with the Growth plan.`;a.href=`/premium?yacht=${y.index}#rc-plans-title`;a.textContent='Book this yacht →';}
   box.append(tag,h,p,a);return box;
 }
-export type PublicPin={id:string;productId:string;name:string;city:string;lat:number;lng:number;genre:string;pending?:boolean;href?:string;avatar?:string|null};
+export type PublicPin={id:string;productId:string;name:string;city:string;lat:number;lng:number;genre:string;pending?:boolean;href?:string;avatar?:string|null;badge?:string|null;rank?:number};
 const emptyPins:PublicPin[]=[];
 export default function BusinessMap({pins=emptyPins,selected,onSelect,pick,onPick,world=false,resetKey=0,focus,yachts}:{yachts?:YachtSpot[];focus?:{lat:number;lng:number;zoom:number;key:number};pins?:PublicPin[];selected?:string;onSelect?:(id:string)=>void;pick?:{lat:number;lng:number};onPick?:(point:{lat:number;lng:number})=>void;world?:boolean;resetKey?:number}){
   const [ready,setReady]=useState(false);
@@ -54,10 +54,17 @@ export default function BusinessMap({pins=emptyPins,selected,onSelect,pick,onPic
         for(const group of cells.values()){
           const pin=group[0],cluster=group.length>1;
           const point=cluster?L.latLng(group.reduce((sum,item)=>sum+item.lat,0)/group.length,group.reduce((sum,item)=>sum+item.lng,0)/group.length):L.latLng(pin.lat,pin.lng);
-          const face=document.createElement('span');face.className=`ra-pin-face${cluster?' ra-pin-cluster':''}${pin.id===selected?' ra-pin-selected':''}${!cluster&&pin.pending?' ra-pin-pending':''}`;
-          if(!cluster&&pin.avatar){const img=document.createElement('img');img.src=pin.avatar;img.alt='';img.referrerPolicy='no-referrer';img.className='ra-pin-photo';img.onerror=()=>{img.remove();face.prepend(document.createTextNode(pin.name.slice(0,2).toUpperCase()));face.classList.remove('ra-pin-has-photo');};face.append(img);face.classList.add('ra-pin-has-photo');}else face.textContent=cluster?String(group.length):pin.name.slice(0,2).toUpperCase();
-          const dot=document.createElement('i');face.append(dot);
-          const marker=L.marker(point,{icon:L.divIcon({className:'ra-product-pin',html:face,iconSize:[48,48],iconAnchor:[24,46]}),title:cluster?`${group.length} registered products`:pin.name,keyboard:true,zIndexOffset:pin.id===selected?1000:0}).addTo(layer.current);
+          // Round photo pin (X photo or product logo), optional product-logo badge, "+N" pill for nearby pins.
+          const lead=group.find(item=>item.id===selected)||group.find(item=>item.avatar)||pin;
+          const face=document.createElement('span');face.className=`ra-pin2${cluster?' ra-pin2-cluster':''}${lead.id===selected?' ra-pin2-selected':''}${!cluster&&pin.pending?' ra-pin2-pending':''}`;
+          const disc=document.createElement('span');disc.className='ra-pin2-disc';disc.textContent=lead.name.slice(0,2).toUpperCase();
+          if(lead.avatar){const img=document.createElement('img');img.src=lead.avatar;img.alt='';img.referrerPolicy='no-referrer';img.onerror=()=>img.remove();disc.append(img);}
+          face.append(disc);
+          if(lead.badge){const badge=document.createElement('span');badge.className='ra-pin2-badge';const img=document.createElement('img');img.src=lead.badge;img.alt='';img.referrerPolicy='no-referrer';img.onerror=()=>badge.remove();badge.append(img);face.append(badge);}
+          if(cluster){const count=document.createElement('b');count.className='ra-pin2-count';count.textContent=`+${group.length-1}`;face.append(count);}
+          if(lead.rank){const rank=document.createElement('b');rank.className='ra-pin2-rank';rank.textContent=`#${lead.rank}`;face.append(rank);}
+          const tip=document.createElement('i');tip.className='ra-pin2-tip';face.append(tip);
+          const marker=L.marker(point,{icon:L.divIcon({className:'ra-product-pin',html:face,iconSize:[60,66],iconAnchor:[30,64]}),title:cluster?`${group.length} registered products`:pin.name,keyboard:true,zIndexOffset:pin.id===selected?1000:0}).addTo(layer.current);
           const label=document.createElement('div'),strong=document.createElement('strong');strong.textContent=cluster?`${group.length} products nearby`:pin.name;label.append(strong,document.createElement('br'),document.createTextNode(cluster?'Zoom in to explore':pin.pending?`${pin.city} · Pending review (only you see this)`:pin.city));marker.bindTooltip(label,{direction:'top',offset:[0,-40]});
           marker.on('click',()=>{if(cluster)instance.fitBounds(L.latLngBounds(group.map(item=>[item.lat,item.lng] as [number,number])),{padding:[90,90],maxZoom:Math.max(10,instance.getZoom()+2)});else callbacks.current.onSelect?.(pin.id);});
         }

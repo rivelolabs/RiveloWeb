@@ -6,7 +6,7 @@ import {readCatalog,updateCatalog} from '@/lib/catalog/store';
 import {imageUrl,type CatalogState,type Listing} from '@/lib/catalog/types';
 import {genres} from '@/lib/directory';
 import {dbEnabled} from '@/lib/db';
-import {myMakerPages,productLabel} from '@/lib/db/makers';
+import {myMakerPages,productLabel,xPhoto} from '@/lib/db/makers';
 export const runtime='nodejs';export const dynamic='force-dynamic';
 
 /** A signed-in person owns a listing they submitted, a pin they registered, or an approved claim — all matched by their sign-in email. */
@@ -19,7 +19,7 @@ const view=(state:CatalogState,l:Listing)=>{const pin=state.pins.find(p=>p.produ
 export async function GET(request:NextRequest){
   const user=await currentUser(request);if(!user)return NextResponse.json({signedIn:false,listings:[],makers:[]},{headers:{'Cache-Control':'no-store'}});
   try{const [state,pages]=await Promise.all([readCatalog(),dbEnabled()?myMakerPages(user.id).catch(()=>[]):Promise.resolve([])]);
-    const makers=pages.map(m=>({username:m.username,name:m.name,product:productLabel(m.productName,m.name),image:m.logo||(m.avatar?m.avatar.replace(/_normal(\.\w+)$/,'_200x200$1'):''),city:m.city||'',onMap:m.lat!=null&&m.lng!=null}));
+    const makers=pages.map(m=>({username:m.username,name:m.name,product:productLabel(m.productName,m.name),image:m.logo||xPhoto(m.avatar,m.username),city:m.city||'',onMap:m.lat!=null&&m.lng!=null}));
     return NextResponse.json({signedIn:true,listings:state.listings.filter(l=>!!user.email&&owns(state,l,user.email)).map(l=>view(state,l)),makers},{headers:{'Cache-Control':'no-store'}});}
   catch{return NextResponse.json({signedIn:true,listings:[],error:'Your listings are unavailable right now.'});}
 }

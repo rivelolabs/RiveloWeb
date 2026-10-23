@@ -7,5 +7,6 @@ export function xIdentity(user:User){
   if(!viaX)return null;
   const username=String(meta.user_name||meta.preferred_username||'').replace(/^@/,'');
   const id=String(ident?.id||meta.provider_id||meta.sub||'');
-  return {username,id};
+  const avatar=String(meta.avatar_url||meta.picture||'').replace(/_normal(\.\w+)$/,'_400x400$1')||null;
+  return {username,id,avatar};
 }

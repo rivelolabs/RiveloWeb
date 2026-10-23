@@ -7,6 +7,8 @@ const map=(r:Record<string,unknown>):Maker=>({id:r.id as string,username:r.usern
 const host=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'');}catch{return u;}};
 /** App-store hosts are not product names ("play.google.com"); fall back to the maker's name. */
 const STORE_HOSTS=new Set(['play.google.com','apps.apple.com','itunes.apple.com','github.com','x.com','twitter.com','linktr.ee']);
+/** X profile photo for a maker: the stored one (larger size), else a public lookup by @username. */
+export const xPhoto=(avatar:string|null,username:string)=>avatar?avatar.replace(/_normal(\.\w+)$/,'_200x200$1'):`https://unavatar.io/x/${encodeURIComponent(username)}`;
 export const productLabel=(productName:string|null,name:string)=>productName&&!STORE_HOSTS.has(productName.toLowerCase())?productName:name;
 
 /** Drafts from an X thread. Existing pages are refreshed but never overwrite what an owner claimed and edited. */
@@ -26,7 +28,7 @@ export async function upsertFromReplies(items:ReplyMaker[],post:{url:string;auth
 }
 export async function addManualMaker(input:{username:string;name:string;productUrl:string|null;replyText:string;sourcePostUrl:string|null}){bust('makers');
   await db().query(`INSERT INTO rivelo.maker_pages (username,name,product_url,product_name,reply_text,source_post_url,source_author) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-    [input.username,input.name,input.productUrl,input.productUrl?host(input.productUrl):null,input.replyText,input.sourcePostUrl,input.sourcePostUrl?.match(/(?:x|twitter)\.com\/([A-Za-z0-9_]+)/)?.[1]||null]);
+    [input.username,input.name,input.productUrl,input.productUrl&&!STORE_HOSTS.has(host(input.productUrl))?host(input.productUrl):null,input.replyText,input.sourcePostUrl,input.sourcePostUrl?.match(/(?:x|twitter)\.com\/([A-Za-z0-9_]+)/)?.[1]||null]);
 }
 export async function listMakers(){const r=await db().query(`SELECT ${COLS} FROM rivelo.maker_pages ORDER BY created_at DESC LIMIT 500`);return r.rows.map(map);}
 export async function makerByUsername(username:string){const r=await db().query(`SELECT ${COLS} FROM rivelo.maker_pages WHERE lower(username)=lower($1)`,[username]);return r.rows[0]?map(r.rows[0]):null;}
@@ -40,13 +42,15 @@ export async function updateOwnMaker(id:string,userId:string,f:{name:string;bio:
 export async function removeOwnMaker(id:string,userId:string){bust('makers');await db().query(`UPDATE rivelo.maker_pages SET status='hidden' WHERE id=$1 AND claimed_by=$2`,[id,userId]);}
 /** Claimed makers with a location appear on the world map. */
 export async function makerPins(){
-  const r=await db().query(`SELECT id,username,name,product_name,city,lat,lng FROM rivelo.maker_pages WHERE status='claimed' AND lat IS NOT NULL AND lng IS NOT NULL`);
-  return r.rows.map(x=>({id:`maker-${x.id}`,productId:`maker:${x.username}`,name:productLabel(x.product_name,x.name),city:x.city||'',lat:x.lat,lng:x.lng,genre:'Makers',href:`/makers/${x.username}`}));
+  const r=await db().query(`SELECT id,username,name,product_name,city,lat,lng,COALESCE(claimed_at,created_at) joined FROM rivelo.maker_pages WHERE status='claimed' AND lat IS NOT NULL AND lng IS NOT NULL`);
+  return r.rows.map(x=>({id:`maker-${x.id}`,productId:`maker:${x.username}`,name:productLabel(x.product_name,x.name),city:x.city||'',lat:x.lat,lng:x.lng,genre:'Makers',href:`/makers/${x.username}`,joinedAt:new Date(x.joined).toISOString()}));
 }
 /** Pin photo per claimed maker: their product logo if they added one, otherwise their X profile photo (larger size). */
-export async function makerAvatarMap(){const r=await db().query(`SELECT id,COALESCE(NULLIF(logo_url,''),avatar_url) img FROM rivelo.maker_pages WHERE status='claimed' AND (logo_url IS NOT NULL OR avatar_url IS NOT NULL)`);return new Map<string,string>(r.rows.map(x=>[`maker-${x.id}`,String(x.img).replace(/_normal(\.\w+)$/,'_200x200$1')]));}
+export async function makerAvatarMap(){const r=await db().query(`SELECT id,username,NULLIF(logo_url,'') logo,avatar_url FROM rivelo.maker_pages WHERE status='claimed'`);return new Map<string,{photo:string;logo:string|null}>(r.rows.map(x=>[`maker-${x.id}`,{photo:xPhoto(x.avatar_url,x.username),logo:x.logo||null}]));}
+/** Keep the stored X photo fresh from the signed-in owner's X account. */
+export async function setMakerAvatar(id:string,avatar:string){bust('makers');await db().query(`UPDATE rivelo.maker_pages SET avatar_url=$2 WHERE id=$1`,[id,avatar]);}
 
-export const cachedMakerPins=cached(async()=>{const [pins,avatars]=await Promise.all([makerPins(),makerAvatarMap()]);return pins.map(p=>({...p,avatar:avatars.get(p.id)||null}));},'maker-pins',['makers'],120);
+export const cachedMakerPins=cached(async()=>{const [pins,avatars]=await Promise.all([makerPins(),makerAvatarMap()]);return pins.map(p=>{const a=avatars.get(p.id);return {...p,avatar:a?.photo||null,badge:a?.logo||null};});},'maker-pins',['makers'],120);
 
 /** Maker pages this signed-in user has claimed (for their account page). */
 export async function myMakerPages(userId:string){const r=await db().query(`SELECT ${COLS} FROM rivelo.maker_pages WHERE claimed_by=$1 AND status='claimed' ORDER BY created_at DESC`,[userId]);return r.rows.map(map);}

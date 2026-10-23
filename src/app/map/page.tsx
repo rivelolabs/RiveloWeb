@@ -26,6 +26,9 @@ export default async function Page(){
   ]);
   const booked=new Map(slots),photo=new Map(photos);
   const yachts:YachtSpot[]=YACHTS.map(y=>{const id=booked.get(y.index);const p=id?products.find(x=>x.id===id):undefined;return {...y,product:p?{id:p.id,name:p.name,url:p.url||`/products/${p.id}`,logo:p.logo||null}:undefined};});
-  const withPhotos=pins.map(p=>({...p,avatar:products.find(x=>x.id===p.productId)?.logo||photo.get(p.id)||null}));
-  return <MapExplorer pins={[...withPhotos,...makers]} yachts={yachts}/>;
+  const withPhotos=pins.map(p=>{const product=products.find(x=>x.id===p.productId);return {...p,avatar:product?.logo||photo.get(p.id)||null,joinedAt:product?.importedAt||''};});
+  // Every product and maker gets a member number in the order they joined Rivelo (#1 = first on the map).
+  const all=[...withPhotos,...makers].sort((a,b)=>(a.joinedAt||'9').localeCompare(b.joinedAt||'9'));
+  const ranked=all.map((p,i)=>{const {joinedAt:_j,...rest}=p;return {...rest,rank:i+1};});
+  return <MapExplorer pins={ranked} yachts={yachts}/>;
 }

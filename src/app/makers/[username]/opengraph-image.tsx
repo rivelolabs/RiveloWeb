@@ -1,6 +1,6 @@
 import {ImageResponse} from 'next/og';
 import {dbEnabled} from '@/lib/db';
-import {makerByUsername,type Maker} from '@/lib/db/makers';
+import {makerByUsername,xPhoto,type Maker} from '@/lib/db/makers';
 import {WORLD_PNG,WORLD_W,WORLD_H,WORLD_SCALE,WORLD_TOP} from '@/lib/og-world';
 
 export const runtime='nodejs';
@@ -26,7 +26,7 @@ export default async function Image({params}:{params:Promise<{username:string}>}
   const {username}=await params;
   let m:Maker|null=null;
   if(dbEnabled()){const x=await makerByUsername(username).catch(()=>null);if(x&&(x.status==='published'||x.status==='claimed'))m=x;}
-  const avatar=await avatarData(m?.avatar??null);
+  const avatar=await avatarData(m?xPhoto(m.avatar,m.username):null);
   const hasPin=m?.lat!=null&&m?.lng!=null;
   // Slide the world strip so the maker's pin sits at ~68% of the width.
   const px=hasPin?(m!.lng!+180)*WORLD_SCALE:WORLD_W/2,py=hasPin?(WORLD_TOP-m!.lat!)*WORLD_SCALE:WORLD_H/2;

@@ -5,7 +5,7 @@ import {ArrowUpRight,MapPin,ShieldCheck,BadgeCheck} from 'lucide-react';
 import CommunityShell from '@/components/CommunityShell';
 import MakerOwner from '@/components/MakerOwner';
 import {dbEnabled} from '@/lib/db';
-import {makerByUsername,productLabel} from '@/lib/db/makers';
+import {makerByUsername,productLabel,xPhoto} from '@/lib/db/makers';
 import '../../directory.css';
 import '../../makers.css';
 export const dynamic='force-dynamic';
@@ -29,7 +29,7 @@ export default async function Page({params}:Props){
       <MakerOwner username={m.username} mode="claim"/>
     </section>}
     <header className="mk-head">
-      {m.avatar?/* eslint-disable-next-line @next/next/no-img-element */<img src={m.avatar} alt="" width={96} height={96} referrerPolicy="no-referrer"/>:<span className="mk-avatar">{m.name.slice(0,1)}</span>}
+      {/* eslint-disable-next-line @next/next/no-img-element */}<img src={xPhoto(m.avatar,m.username)} alt="" width={96} height={96} referrerPolicy="no-referrer"/>
       <div><h1>{m.name}{claimed&&<BadgeCheck size={22} aria-label="Claimed by its owner"/>}</h1><p className="mk-handle">@{m.username}{typeof m.followers==='number'&&<> · {m.followers.toLocaleString()} followers</>}</p>
         <div className="mk-chips"><a className="mk-x" href={`https://x.com/${m.username}`} target="_blank" rel="noopener noreferrer" aria-label={`@${m.username} on X`}>𝕏</a>{m.city&&<span><MapPin size={14}/> {m.city}</span>}<span className={claimed?'mk-live':'mk-unclaimed'}>{claimed?'Live on the map':'Not claimed yet'}</span></div></div>
     </header>

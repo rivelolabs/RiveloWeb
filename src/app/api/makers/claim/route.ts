@@ -2,7 +2,7 @@ import {NextRequest,NextResponse} from 'next/server';
 import {currentUser} from '@/lib/auth/server';
 import {jsonBody,sameOrigin} from '@/lib/catalog/http';
 import {dbEnabled,upsertProfile} from '@/lib/db';
-import {claimMaker,makerByUsername} from '@/lib/db/makers';
+import {claimMaker,makerByUsername,setMakerAvatar} from '@/lib/db/makers';
 import {xIdentity} from '@/lib/x/identity';
 import {rateLimit} from '@/lib/catalog/limit';
 export const runtime='nodejs';export const dynamic='force-dynamic';
@@ -20,6 +20,7 @@ export async function POST(request:NextRequest){
     if(x.username.toLowerCase()!==maker.username.toLowerCase())return NextResponse.json({error:`You’re signed in as @${x.username}. Only @${maker.username} can claim this page.`},{status:403});
     await upsertProfile(user);
     if(!await claimMaker(maker.id,user.id))return NextResponse.json({error:'This page can’t be claimed right now.'},{status:409});
+    if(x.avatar)await setMakerAvatar(maker.id,x.avatar).catch(()=>{});
     return NextResponse.json({success:true});
   }catch(error){return NextResponse.json({error:error instanceof Error?error.message:'Could not claim.'},{status:400});}
 }
