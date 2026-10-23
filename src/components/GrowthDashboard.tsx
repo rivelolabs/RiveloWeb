@@ -14,19 +14,19 @@ function sample(days:number):Day[]{
   return out;
 }
 const KEYWORDS=[
-  {q:'random video chat app',clicks:212,imp:5810,pos:6.4,delta:2.1},
-  {q:'omegle alternative',clicks:164,imp:9320,pos:11.8,delta:3.4},
-  {q:'talk to strangers online',clicks:98,imp:4110,pos:9.2,delta:-0.6},
-  {q:'group video chat free',clicks:61,imp:2780,pos:14.5,delta:1.2},
-  {q:'live voice rooms app',clicks:37,imp:1490,pos:8.1,delta:0.4},
-  {q:'meet new people app india',clicks:22,imp:1980,pos:17.3,delta:4.0},
+  {q:'simple note taking app',clicks:212,imp:5810,pos:6.4,delta:2.1},
+  {q:'notion alternative',clicks:164,imp:9320,pos:11.8,delta:3.4},
+  {q:'best notes app for students',clicks:98,imp:4110,pos:9.2,delta:-0.6},
+  {q:'free markdown editor',clicks:61,imp:2780,pos:14.5,delta:1.2},
+  {q:'xyz notes',clicks:37,imp:1490,pos:8.1,delta:0.4},
+  {q:'offline notes app android',clicks:22,imp:1980,pos:17.3,delta:4.0},
 ];
 const AI=[{name:'Your product',share:24,you:true},{name:'Competitor A',share:41},{name:'Competitor B',share:19},{name:'Competitor C',share:11},{name:'Others',share:5}];
 const PROMPTS=[
-  {p:'What is the best Omegle alternative?',claude:true,chatgpt:false,rank:3},
-  {p:'Apps to video chat with strangers safely',claude:true,chatgpt:true,rank:2},
-  {p:'Free group video chat apps',claude:false,chatgpt:false,rank:null},
-  {p:'How can I meet new people online?',claude:false,chatgpt:true,rank:5},
+  {p:'What is the best Notion alternative?',claude:true,chatgpt:false,rank:3},
+  {p:'Simple note taking apps for students',claude:true,chatgpt:true,rank:2},
+  {p:'Free markdown editors',claude:false,chatgpt:false,rank:null},
+  {p:'Which notes apps work offline?',claude:false,chatgpt:true,rank:5},
 ];
 const SCORE=[58,61,61,66,72,74,81,84];
 const fmt=(n:number)=>n>=1000?`${(n/1000).toFixed(1)}k`:String(n);
@@ -132,7 +132,7 @@ export default function GrowthDashboard(){
     {!isReal&&<div className="gd-preview"><Sparkles size={16}/><span>{status?.growth&&status.configured?(status.connection?<><b>Choose your website below</b> to load your real Search Console data.</>:<><b>Connect Google Search Console</b> to replace this sample data with your real clicks, impressions and keywords. Read-only access; disconnect anytime.</>):<><b>Preview with sample data.</b> {status?.signedIn?'Connect Google Search Console for free to see your real clicks, keywords and quick wins.':'Sign in and connect Google Search Console for free to see your real clicks, keywords and quick wins.'} The Claude SEO agent and AI-search tracking come with Growth and are set up within 2–6 hours during working hours.</>}</span>{!status?.connection&&(status?.signedIn?connectBtn:<a className="rd-button rd-primary" href="/login?next=/growth">Sign in to connect</a>)}</div>}
     {status?.connection&&!site&&<div className="gd-card gd-pick"><h2>Which website?</h2><p className="gd-muted">Signed in to Google as {status.connection.googleEmail||'your account'}. Pick the Search Console property to show.</p>{status.sites.length?<div className="gd-pick-list">{status.sites.map(s=><button key={s.siteUrl} className="rd-button rd-outline" onClick={()=>chooseSite(s.siteUrl)}>{siteName(s.siteUrl)}{s.siteUrl.startsWith('sc-domain:')&&<small> · whole domain</small>}</button>)}</div>:<p>No verified properties on this Google account. <a href="https://search.google.com/search-console" target="_blank" rel="noopener">Add your site in Search Console</a>, then reconnect.</p>}</div>}
     {error&&<p className="rd-error" role="alert">{error}</p>}
-    <div className="gd-toolbar"><div className="gd-site"><span className="gd-site-dot" style={isReal?undefined:{background:'#9aa3ad'}}/> {site?siteName(site):'omeglevc.com'} <small>{isReal?`Search Console · ${status?.connection?.googleEmail||'Connected'}`:loading?'Loading Search Console…':'Sample data'}</small>{status?.connection&&<button type="button" className="gd-link" onClick={disconnect}>Disconnect</button>}{status?.connection&&status.sites.length>1&&site&&<select className="gd-site-select" value={site} onChange={e=>chooseSite(e.target.value)} aria-label="Switch website">{status.sites.map(s=><option key={s.siteUrl} value={s.siteUrl}>{siteName(s.siteUrl)}</option>)}</select>}</div><div className="gd-seg" role="group" aria-label="Date range">{([28,90] as const).map(r=><button key={r} aria-pressed={range===r} onClick={()=>setRange(r)}>Last {r} days</button>)}</div></div>
+    <div className="gd-toolbar"><div className="gd-site"><span className="gd-site-dot" style={isReal?undefined:{background:'#9aa3ad'}}/> {site?siteName(site):'xyz.app'} <small>{isReal?`Search Console · ${status?.connection?.googleEmail||'Connected'}`:loading?'Loading Search Console…':'Sample data'}</small>{status?.connection&&<button type="button" className="gd-link" onClick={disconnect}>Disconnect</button>}{status?.connection&&status.sites.length>1&&site&&<select className="gd-site-select" value={site} onChange={e=>chooseSite(e.target.value)} aria-label="Switch website">{status.sites.map(s=><option key={s.siteUrl} value={s.siteUrl}>{siteName(s.siteUrl)}</option>)}</select>}</div><div className="gd-seg" role="group" aria-label="Date range">{([28,90] as const).map(r=><button key={r} aria-pressed={range===r} onClick={()=>setRange(r)}>Last {r} days</button>)}</div></div>
 
     <section className={`gd-kpis${loading?' gd-loading':''}`} aria-label="Search performance">
       {([['clicks','Clicks',fmt(view.totals.clicks),cClicks],['impressions','Impressions',fmt(view.totals.impressions),cImpr],['ctr','Click-through rate',`${(view.totals.ctr*100).toFixed(1)}%`,null],['position','Average position',view.totals.position?String(view.totals.position):'—',null]] as const).map(([k,l,v,c])=>
@@ -144,7 +144,7 @@ export default function GrowthDashboard(){
 
     <div className="gd-two">
       <section className="gd-card"><div className="gd-card-head"><h2><Search size={17}/> Keywords</h2><div className="gd-tabs" role="tablist">{(['all','wins','brand'] as const).map(t=><button key={t} role="tab" aria-selected={kwTab===t} onClick={()=>setKwTab(t)}>{t==='all'?'Top':t==='wins'?'Almost page 1':'Brand vs other'}</button>)}</div></div>
-        {kwTab==='brand'?<BrandSplit rows={view.queries} site={site||'omeglevc.com'}/>:(()=>{const rows=(kwTab==='wins'?view.queries.filter(k=>k.position>=8&&k.position<=20).sort((a,b)=>b.impressions-a.impressions):view.queries).slice(0,isReal?15:6);
+        {kwTab==='brand'?<BrandSplit rows={view.queries} site={site||'xyz.app'}/>:(()=>{const rows=(kwTab==='wins'?view.queries.filter(k=>k.position>=8&&k.position<=20).sort((a,b)=>b.impressions-a.impressions):view.queries).slice(0,isReal?15:6);
           return rows.length?<table className="gd-table"><thead><tr><th>Keyword</th><th>Clicks</th><th>Impr.</th><th>CTR</th><th>Position</th></tr></thead><tbody>{rows.map(k=>{const d=k.prevPosition!=null?Number((k.prevPosition-k.position).toFixed(1)):null;const ctr=k.ctr??(k.impressions?k.clicks/k.impressions:0);return <tr key={k.key}><td>{k.key}</td><td>{fmt(k.clicks)}</td><td>{fmt(k.impressions)}</td><td>{(ctr*100).toFixed(1)}%</td><td><span className={`gd-pos ${k.position<=3?'gd-pos-top':k.position<=10?'gd-pos-p1':k.position<=20?'gd-pos-p2':'gd-pos-far'}`}>{k.position}</span>{d!=null&&Math.abs(d)>=0.5&&<span className={d>0?'gd-up':'gd-down'}>{d>0?<ArrowUp size={12}/>:<ArrowDown size={12}/>}{Math.abs(d)}</span>}</td></tr>;})}</tbody></table>:<p className="gd-muted">{kwTab==='wins'?'No keywords between positions 8 and 20 right now.':'No keywords yet for this period.'}</p>;})()}
         <p className="gd-legend"><span className="gd-pos gd-pos-top">1–3</span><span className="gd-pos gd-pos-p1">4–10</span><span className="gd-pos gd-pos-p2">11–20</span><span className="gd-pos gd-pos-far">20+</span> Google position · arrows show change vs previous {range} days</p></section>
       <section className="gd-card"><div className="gd-card-head"><h2><Link2 size={17}/> Top pages</h2><span className="gd-muted">Where Google sends people</span></div>
@@ -155,7 +155,7 @@ export default function GrowthDashboard(){
       <section className="gd-card gd-agent"><div className="gd-card-head"><h2><Wand2 size={17}/> Claude SEO agent</h2>{isReal?<span className="gd-tag">Activates within 2–6 hours</span>:<span className="gd-credit" title="Resets on your billing date">AI credit <b>${(credit.total-credit.used).toFixed(2)}</b> of ${credit.total.toFixed(2)} left</span>}</div>
         {!isReal&&<div className="gd-meter" aria-label={`$${credit.used} of $${credit.total} AI credit used`}><i style={{width:`${credit.used/credit.total*100}%`}}/></div>}
         <h3>{isReal?'Your top moves, from your Search Console data':'This week’s top 3 moves'}</h3>
-        {isReal?<Moves view={view}/>:<ol className="gd-moves"><li><b>Target “omegle alternative” on your home page.</b> You rank #11.8 with 9.3k impressions; adding it to your title and H1 could move you onto page 1.</li><li><b>Add an FAQ section.</b> Questions like “Is it safe to video chat with strangers?” appear in 3 of the AI answers where you are missing.</li><li><b>Get listed on 2 more directories.</b> Competitor A is mentioned by AI assistants because AlternativeTo and Product Hunt both link to it.</li></ol>}
+        {isReal?<Moves view={view}/>:<ol className="gd-moves"><li><b>Target “notion alternative” on your home page.</b> You rank #11.8 with 9.3k impressions; adding it to your title and H1 could move you onto page 1.</li><li><b>Add an FAQ section.</b> Questions like “Does it work offline?” appear in 3 of the AI answers where you are missing.</li><li><b>Get listed on 2 more directories.</b> Competitor A is mentioned by AI assistants because AlternativeTo and Product Hunt both link to it.</li></ol>}
         <div className="gd-actions"><button className="rd-button rd-primary" type="button" disabled={isReal} title={isReal?'Activates within 2–6 hours of subscribing':undefined}><Sparkles size={15}/> Rewrite my title &amp; description</button><button className="rd-button rd-outline" type="button" disabled={isReal}>Suggest new keywords</button><button className="rd-button rd-outline" type="button" disabled={isReal}>Write an article outline</button></div>
         <p className="gd-muted gd-small">Activated within 2–6 hours of subscribing (during working hours). Each run uses a few cents of credit; weekly audits run automatically.</p></section>
       <section className="gd-card"><div className="gd-card-head"><h2><Bot size={17}/> AI search share of voice</h2>{isReal?<span className="gd-tag">Preview · tracking starts soon</span>:<span className="gd-muted">How often AI assistants mention you for 20 buyer questions</span>}</div>
