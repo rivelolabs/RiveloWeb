@@ -6,8 +6,9 @@ import {rateLimit} from '@/lib/catalog/limit';
 import {dbEnabled,upsertProfile} from '@/lib/db';
 import {addComment,deleteOwnComment,listComments} from '@/lib/db/comments';
 import {publicProducts} from '@/lib/catalog/store';
+import {builderProducts,cachedBuilders} from '@/lib/db/builders';
 export const runtime='nodejs';export const dynamic='force-dynamic';
-const validId=(v:unknown):v is string=>typeof v==='string'&&/^[\w.:-]{1,120}$/.test(v);
+const validId=(v:unknown):v is string=>typeof v==='string'&&/^[\w.:\/-]{1,120}$/.test(v);
 export async function GET(request:NextRequest){
   const productId=request.nextUrl.searchParams.get('productId');
   if(!validId(productId))return NextResponse.json({comments:[],signedIn:false});
@@ -25,7 +26,9 @@ export async function POST(request:NextRequest){
     const b=await jsonBody(request,3000);
     if(b.delete&&typeof b.delete==='string'){return NextResponse.json({deleted:await deleteOwnComment(b.delete,user.id)});}
     const text=shortText(b.body,1000).replace(/\s+\n/g,'\n');
-    if(!validId(b.productId)||!(await publicProducts()).some(p=>p.id===b.productId))return NextResponse.json({error:'Product not found.'},{status:404});
+    // Builder-page products ("maker:<username>[/key]") are not in the catalog, so check them separately.
+    const exists=validId(b.productId)&&(b.productId.startsWith('maker:')?builderProducts(await cachedBuilders()).some(p=>p.id.toLowerCase()===String(b.productId).toLowerCase()):(await publicProducts()).some(p=>p.id===b.productId));
+    if(!exists)return NextResponse.json({error:'Product not found.'},{status:404});
     if(text.length<2)return NextResponse.json({error:'Write a comment first.'},{status:400});
     await upsertProfile(user);
     const avatar=typeof user.user_metadata?.avatar_url==='string'?user.user_metadata.avatar_url:typeof user.user_metadata?.picture==='string'?user.user_metadata.picture:null;

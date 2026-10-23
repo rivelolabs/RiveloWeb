@@ -14,12 +14,15 @@ const TABS:[Sort,string][]=[['top','Top'],['trending','Trending'],['rising','Ris
 const host=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'');}catch{return u;}};
 const STORE:Record<string,string>={'play.google.com':'Google Play','apps.apple.com':'App Store','itunes.apple.com':'App Store'};
 const compact=(n:number)=>n>=1000?`${(n/1000).toFixed(n>=10000?0:1).replace(/\.0$/,'')}K`:String(n);
-type Props={searchParams:Promise<{sort?:string;q?:string}>};
+type Props={searchParams:Promise<{sort?:string;q?:string;n?:string}>};
+const PAGE=25;
 
 export default async function Page({searchParams}:Props){
   const sp=await searchParams;const sort=(TABS.some(t=>t[0]===sp.sort)?sp.sort:'top') as Sort;const q=(sp.q||'').slice(0,80);
   const all:Builder[]=dbEnabled()?await cachedBuilders().catch(()=>[]):[];
-  const top=rankBuilders(all,'top'),list=rankBuilders(all,sort,q).slice(0,100);
+  const top=rankBuilders(all,'top'),ranked=rankBuilders(all,sort,q);
+  // 25 at a time; "Show more" adds the next 25 (plain links, so every builder page stays crawlable).
+  const shown=Math.min(Math.max(PAGE,Math.floor(Number(sp.n)||PAGE)),ranked.length||PAGE),list=ranked.slice(0,shown);
   const ranks=Object.fromEntries(top.map((b,i)=>[b.username.toLowerCase(),{rank:i+1,points:b.points}]));
   const href=(s:Sort,query=q)=>`/makers?${new URLSearchParams({...(s!=='top'?{sort:s}:{}),...(query?{q:query}:{})})}`;
   const heading=q?`Results for “${q}”`:sort==='top'?'Top builders':sort==='trending'?'Trending this week':sort==='rising'?'Rising fast':'Newest builders';
@@ -60,7 +63,9 @@ export default async function Page({searchParams}:Props){
         </div>
         <div className="bl-points"><strong>{compact(b.points)}</strong>{b.week>0?<span className="bl-up"><TrendingUp size={12}/>{compact(b.week)}</span>:<small>points</small>}</div>
       </li>;})}</ol>
-      :<div className="bl-empty"><h3>{q?'No builders match that yet':'No builders yet'}</h3><p>{q?'Try a city, a country or what they build — like “AI” or “games”.':'Be the first: sign in with X and add yourself.'}</p></div>}
+      :null}
+    {list.length>0&&<div className="bl-more-row"><span>Showing {list.length} of {ranked.length} builders</span>{shown<ranked.length&&<Link scroll={false} href={`${href(sort)}${href(sort).endsWith('?')?'':'&'}n=${shown+PAGE}#more`} className="rd-button rd-outline" id="more">Show {Math.min(PAGE,ranked.length-shown)} more</Link>}</div>}
+    {list.length===0&&<div className="bl-empty"><h3>{q?'No builders match that yet':'No builders yet'}</h3><p>{q?'Try a city, a country or what they build — like “AI” or “games”.':'Be the first: sign in with X and add yourself.'}</p></div>}
 
     <section id="points" className="bl-points-help"><h2>How points work</h2><p>Points show how much a builder has shared and shipped on Rivelo. Nobody can buy them.</p>
       <ul>
