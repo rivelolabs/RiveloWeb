@@ -2,6 +2,7 @@ import {db} from './index';
 import {cached} from '@/lib/cache';
 import {productLabel,xPhoto} from './makers';
 import {countryCode} from '@/lib/flags';
+import type {Genre,Product} from '@/lib/directory';
 
 /**
  * Builders leaderboard. Points are earned on Rivelo, and the rules are public on /makers#points:
@@ -12,9 +13,9 @@ export const POINTS={claimed:100,map:50,product:50,bio:20,logo:10,upvote:25,post
 export type Builder={username:string;name:string;bio:string;photo:string;logo:string|null;claimed:boolean;city:string;country:string|null;lat:number|null;lng:number|null;
   product:string|null;productUrl:string|null;productDescription:string;category:string;points:number;week:number;joinedAt:string;upvotes:number;posts:number};
 
-const CATS:[string,RegExp][]=[['AI',/\b(ai|gpt|llm|agent|machine learning|ml|chatbot|copilot|genai)\b/],['Games',/\b(game|gaming|puzzle|arcade)\b/],['Health',/\b(health|fitness|workout|gym|sleep|habit|meditat|diet|calorie)\b/],
+const CATS:[string,RegExp][]=[['AI',/\b(ai|gpt|llm|agent|machine learning|ml|chatbot|copilot|genai)\b/],['Games',/\b(game|gaming|puzzle|arcade)\b/],['Social',/\b(social|community|chat|chats|friends|dating|video calls?|live calls?|calls|meet|nearby|waves)\b/],['Health',/\b(health|fitness|workout|gym|sleep|habit|meditat|diet|calorie)\b/],
   ['Finance',/\b(finance|budget|invoice|payment|crypto|money|expense|trading|tax)\b/],['Dev tools',/\b(api|developer|devtool|sdk|code|coding|github|deploy|database|open source|cli)\b/],['Design',/\b(design|figma|ui|ux|logo|font|icon)\b/],
-  ['Marketing',/\b(seo|marketing|growth|newsletter|ads|social media|outreach|leads)\b/],['Social',/\b(social|community|chat|friends|dating|video call|meet)\b/],['Productivity',/\b(productiv|todo|task|notes?|calendar|focus|email|workflow|automation)\b/],['Education',/\b(learn|course|study|student|teach|education|quiz)\b/]];
+  ['Marketing',/\b(seo|marketing|growth|newsletter|ads|social media|outreach|leads)\b/],['Productivity',/\b(productiv|todo|task|notes?|calendar|focus|email|workflow|automation)\b/],['Education',/\b(learn|course|study|student|teach|education|quiz)\b/]];
 export const categoryOf=(text:string)=>{const s=text.toLowerCase();return CATS.find(([,re])=>re.test(s))?.[0]||'Indie';};
 
 async function load():Promise<Builder[]>{
@@ -62,4 +63,17 @@ export function suggestions(all:Builder[]){
   const countries=top(b=>b.country).slice(0,2).map(c=>dn.of(c)||c),cats=top(b=>b.category==='Indie'?null:b.category).slice(0,2);
   const out=[cats[0]&&`${cats[0]} builders${countries[0]?` in ${countries[0]}`:''}`,countries[1]&&`Builders in ${countries[1]}`,cats[1]&&`${cats[1]} makers`,'Makers on the map'].filter(Boolean) as string[];
   return [...new Set(out)].slice(0,4);
+}
+
+/** Claimed builder pages with a product link, as directory products (Apps / Websites). Id "maker:<username>". */
+const GENRE:Record<string,Genre>={AI:'AI & developer tools','Dev tools':'AI & developer tools',Games:'Games',Health:'Health & fitness',Social:'Social & community'};
+export function builderProducts(all:Builder[]):Product[]{
+  return all.filter(b=>b.claimed&&b.productUrl).map(b=>{
+    const u=b.productUrl!,store=/play\.google\.com/.test(u)?'Android':/apps\.apple\.com|itunes\.apple\.com/.test(u)?'iOS':null;
+    const text=(b.productDescription||b.bio||`Built by @${b.username}`).replace(/\s+/g,' ').trim();
+    const name=b.product&&b.product!==b.name?b.product:b.name;
+    return {id:`maker:${b.username}`,name,tagline:text.length>150?text.slice(0,149)+'…':text,description:text,genre:GENRE[b.category]||'Productivity',
+      platforms:store?[store]:['Web'],type:store?'App':'Website',color:['lilac','lime','peach','butter','blue'][b.username.length%5],letter:name.slice(0,1).toLowerCase(),
+      url:u,logo:b.logo||b.photo,claimed:true} as Product;
+  });
 }

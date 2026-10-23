@@ -2,7 +2,7 @@ import ProductComments from '@/components/ProductComments';
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, Globe2, Smartphone } from "lucide-react";
 import {publicProducts} from "@/lib/catalog/store";
 import { categoryForGenre, categoryPath } from "@/lib/categories";
@@ -28,6 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
+  if(decodeURIComponent(slug).startsWith('maker:'))redirect(`/makers/${decodeURIComponent(slug).slice(6)}`);
   const products=await publicProducts();
   const product = products.find(item => item.id === slug);
   if (!product) notFound();

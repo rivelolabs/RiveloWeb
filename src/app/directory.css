@@ -511,3 +511,7 @@ body:has(.rd-app){background:#f7f8f3}
 .rd-trend-promoted{background:color-mix(in srgb,var(--rd-coral) 6%,transparent);border-radius:10px}
 .rd-trend-promoted .rd-trend-rank{color:var(--rd-coral)}
 a.rd-trend-main{color:inherit;text-decoration:none}
+.ra-plans{margin-top:20px}.ra-plans-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.ra-plans-head h2{margin:0;font-size:20px}.ra-plans-head a{display:inline-flex;align-items:center;gap:5px;font-size:14px;color:var(--rd-secondary)}
+.ra-plans ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}.ra-plans li{display:flex;align-items:center;gap:14px;padding:12px 14px;border:1px solid var(--rd-line);border-radius:12px;flex-wrap:wrap}
+.ra-plans li>div{flex:1;min-width:0;display:flex;flex-direction:column}.ra-plans li span{color:var(--rd-secondary);font-size:14px}.ra-plans li small{color:var(--rd-muted);font-size:13px}.ra-plans .rd-button{min-height:36px;padding:6px 14px}
+.rc-owned{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,#1f9d55 10%,var(--rd-surface));color:#1a7f46;font-size:14px;font-weight:600;margin:0 0 10px}

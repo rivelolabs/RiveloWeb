@@ -8,7 +8,7 @@ import { after } from "next/server";
 import { promotedMakers } from "@/lib/db/makers";
 import { cachedRecentLaunches, type Launch } from "@/lib/db/trending";
 import { directorySchema, serializeSchema, shareImage, siteUrl } from "@/lib/seo";
-import { cachedBuilders, rankBuilders } from "@/lib/db/builders";
+import { cachedBuilders, rankBuilders, builderProducts } from "@/lib/db/builders";
 import { flag, shortPlace } from "@/lib/flags";
 import type { BuilderCard } from "@/components/TopBuilders";
 import "./directory.css";
@@ -26,8 +26,13 @@ export default async function Home() {
   preload("/hero/hero-omeglevc-800.webp",{as:"image",fetchPriority:"high",imageSrcSet:"/hero/hero-omeglevc-800.webp 800w, /hero/hero-omeglevc-1600.webp 1600w",imageSizes:"(max-width: 760px) 92vw, 860px"});
   let sponsored:{id:string;name:string;tagline:string;url:string;image:string|null}[]=[];
   const db=dbEnabled();
-  const [catalog,spots,launches]=await Promise.all([publicProducts(),db?cachedSpotlights().catch(()=>[]):Promise.resolve([]),db?cachedRecentLaunches(12,14).catch(()=>[] as Launch[]):Promise.resolve([] as Launch[])]);
-  const builders:BuilderCard[]=db?rankBuilders(await cachedBuilders().catch(()=>[]),'top').slice(0,6).map(b=>({username:b.username,name:b.name,photo:b.photo,logo:b.logo,claimed:b.claimed,place:shortPlace(b.city),flag:flag(b.country),product:b.product&&b.product!==b.name?b.product:null,points:b.points,week:b.week,bio:b.bio.slice(0,120)})):[];
+  const [baseCatalog,spots,launches]=await Promise.all([publicProducts(),db?cachedSpotlights().catch(()=>[]):Promise.resolve([]),db?cachedRecentLaunches(12,14).catch(()=>[] as Launch[]):Promise.resolve([] as Launch[])]);
+  const catalog=[...baseCatalog];
+  const allBuilders=db?await cachedBuilders().catch(()=>[]):[];
+  // Products added through X builder pages appear in Apps / Websites too (unless already listed by URL).
+  const listedUrls=new Set(catalog.map(p=>p.url).filter(Boolean));
+  catalog.push(...builderProducts(allBuilders).filter(p=>!listedUrls.has(p.url)));
+  const builders:BuilderCard[]=db?rankBuilders(allBuilders,'top').slice(0,6).map(b=>({username:b.username,name:b.name,photo:b.photo,logo:b.logo,claimed:b.claimed,place:shortPlace(b.city),flag:flag(b.country),product:b.product&&b.product!==b.name?b.product:null,points:b.points,week:b.week,bio:b.bio.slice(0,120)})):[];
   if(db){
     const makerSpots=await promotedMakers(spots.map(s=>s.productId)).catch(()=>new Map());
     sponsored=spots.flatMap(s=>{const p=catalog.find(x=>x.id===s.productId);if(p)return [{id:p.id,name:p.name,tagline:s.headline||p.tagline,url:p.url||`${siteUrl}/products/${p.id}`,image:s.image||null,logo:p.logo||null}];const m=makerSpots.get(s.productId.toLowerCase());return m?[{id:m.id,name:m.name,tagline:s.headline||m.tagline,url:m.url,image:s.image||null,logo:m.logo}]:[];});

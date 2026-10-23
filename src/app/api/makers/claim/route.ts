@@ -13,7 +13,7 @@ export async function POST(request:NextRequest){
     if(!sameOrigin(request)||!dbEnabled())return NextResponse.json({error:'Unavailable.'},{status:403});
     rateLimit(request,'maker-claim',10);
     const user=await currentUser(request);if(!user)return NextResponse.json({error:'Sign in with X to claim your page.',signIn:true},{status:401});
-    const b=await jsonBody(request,1000);let productUrl:string;try{productUrl=httpsUrl(String(b.productUrl||''))||'';if(!productUrl)throw 0;}catch{return NextResponse.json({error:'Add the link to your app or website (starting with https://) to claim this page.'},{status:400});}const maker=await makerByUsername(String(b.username||''));
+    const b=await jsonBody(request,1000);let productUrl='';try{productUrl=b.productUrl?httpsUrl(String(b.productUrl))||'':'';}catch{productUrl='';}const maker=await makerByUsername(String(b.username||''));
     if(!maker||maker.status==='hidden')return NextResponse.json({error:'Page not found.'},{status:404});
     if(maker.status==='claimed')return NextResponse.json({error:'This page has already been claimed.'},{status:409});
     const x=xIdentity(user);
@@ -22,7 +22,7 @@ export async function POST(request:NextRequest){
     await upsertProfile(user);
     if(!await claimMaker(maker.id,user.id))return NextResponse.json({error:'This page can’t be claimed right now.'},{status:409});
     if(x.avatar)await setMakerAvatar(maker.id,x.avatar).catch(()=>{});
-    await setMakerProductUrl(maker.id,productUrl);
+    if(productUrl)await setMakerProductUrl(maker.id,productUrl);
     return NextResponse.json({success:true});
   }catch(error){return NextResponse.json({error:error instanceof Error?error.message:'Could not claim.'},{status:400});}
 }

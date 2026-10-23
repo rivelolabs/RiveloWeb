@@ -2,7 +2,7 @@ import {NextRequest,NextResponse} from 'next/server';
 import {currentUser} from '@/lib/auth/server';
 import {jsonBody,sameOrigin} from '@/lib/catalog/http';
 import {rateLimit} from '@/lib/catalog/limit';
-import {dbEnabled,upsertProfile} from '@/lib/db';
+import {db,dbEnabled,upsertProfile} from '@/lib/db';
 import {holdSlots,spotlightAvailability,yachtSchedule} from '@/lib/db/availability';
 import {PLAN_IDS,type PlanId} from '@/lib/billing/razorpay';
 import {checkoutUrl,dodoConfigured} from '@/lib/billing/dodo';
@@ -18,6 +18,9 @@ export async function POST(request:NextRequest){
     const body=await jsonBody(request,1000);const plan=body.plan as PlanId,listingId=typeof body.productId==='string'?body.productId:'';
     if(!PLAN_IDS.includes(plan))return NextResponse.json({error:'Choose a plan.'},{status:400});
     if(!await ownsPublishedProduct({id:user.id,email:user.email},listingId))return NextResponse.json({error:'Choose a published product that you listed or claimed with this email.'},{status:403});
+    // One of each plan per product: a second purchase would only charge twice.
+    const dup=await db().query(`SELECT 1 FROM rivelo.subscriptions WHERE user_id=$1 AND plan_id=$2 AND product_id=$3 AND status IN ('active','authenticated','pending') LIMIT 1`,[user.id,plan,listingId]).catch(()=>({rowCount:0}));
+    if(dup.rowCount)return NextResponse.json({error:'You already have this plan for this product. Manage it in your account.'},{status:409});
     let yacht:number|undefined;
     if(plan==='yacht'||(plan==='growth'&&body.yacht)){yacht=Number(body.yacht);if(!Number.isInteger(yacht)||yacht<1||yacht>5)return NextResponse.json({error:'Choose a yacht.'},{status:400});const y=(await yachtSchedule(user.id)).find(x=>x.index===yacht);if(y&&!y.free)return NextResponse.json({error:`Yacht ${yacht} is booked until ${new Date(y.until!).toLocaleDateString('en',{month:'short',day:'numeric'})}. Pick another one.`},{status:409});}
     if(plan==='spotlight'||plan==='growth'){const sp=await spotlightAvailability(user.id);if(sp.open<=0)return NextResponse.json({error:`All ${sp.capacity} homepage Spotlight spots are taken. The next one opens ${sp.nextOpening?new Date(sp.nextOpening).toLocaleDateString('en',{weekday:'short',month:'short',day:'numeric'}):'soon'}.`},{status:409});}
