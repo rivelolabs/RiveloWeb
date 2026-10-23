@@ -506,3 +506,5 @@ body:has(.rd-app){background:#f7f8f3}
 .tb-points em{font-style:normal;display:inline-flex;align-items:center;gap:2px;color:#1f9d55;font-size:11px;font-weight:600}
 .tb-join{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:14px;color:var(--rd-secondary)}.tb-join b{color:var(--rd-ink)}
 @media(max-width:570px){.tb{padding:18px 14px}.tb-head{flex-direction:column;align-items:flex-start}.tb-list{grid-template-columns:1fr}}
+
+.rd-page-heading p a{text-decoration:underline;text-underline-offset:3px}

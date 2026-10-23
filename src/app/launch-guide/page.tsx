@@ -7,8 +7,8 @@ import '../directory.css';
 import '../tools.css';
 const URL_='https://www.rivelolabs.com/launch-guide';
 export const metadata:Metadata={
-  title:'Where to Launch Your App or Website — Free Launch Sites & Product Hunt Alternatives',
-  description:'A practical list of free places to launch a new app, SaaS or website: Product Hunt alternatives, startup directories, communities and AI-search tips to get your first users and backlinks.',
+  title:'Free Startup Launch Sites & Product Hunt Alternatives',
+  description:'Find startup launch platforms, free app directories and Product Hunt alternatives for your app, SaaS or website, with a practical launch-week plan.',
   alternates:{canonical:URL_},
   openGraph:{title:'Where to launch your app or website (free list) | Rivelo Labs',description:'Free launch sites, Product Hunt alternatives and a launch-week plan to get your first users.',url:URL_},
 };
@@ -51,10 +51,10 @@ export default function Page(){
   ];
   return <CommunityShell active="/launch-guide"><main className="rc-content tl-page">
     <script type="application/ld+json" dangerouslySetInnerHTML={{__html:serializeSchema(ld)}}/>
-    <div className="rc-page-title"><span className="rd-overline">LAUNCH GUIDE · UPDATED OCTOBER 2026</span><h1>Where to launch your app<br/><em>or website — for free.</em></h1><p>{all.length} places to get your first users and backlinks, plus a simple launch-week plan. Product Hunt alternatives included.</p></div>
+    <div className="rc-page-title"><span className="rd-overline">LAUNCH GUIDE · UPDATED OCTOBER 2026</span><h1>Where to launch your app<br/><em>or website — for free.</em></h1><p>{all.length} places to get your first users and backlinks, plus a simple launch-week plan. Compare startup launch platforms, SaaS directories and Product Hunt alternatives.</p></div>
     <section className="tl-steps"><h2>A simple launch plan</h2><ol>{STEPS.map(([n,t])=><li key={n}><b>{n}</b><span>{t}</span></li>)}</ol><Link className="rd-button rd-primary" href="/tools/visibility-check">Run the free visibility check <ArrowUpRight size={16}/></Link></section>
     {SECTIONS.map(s=><section key={s.title} className="tl-list"><h2>{s.title}</h2><p className="tl-intro">{s.intro}</p><ol>{s.places.map(p=><li key={p.name}><div><a href={p.url} target="_blank" rel="noopener">{p.name} <ArrowUpRight size={14}/></a><p>{p.what}</p><small>Tip: {p.tip}</small></div></li>)}</ol></section>)}
     <section className="tl-faq"><h2>Getting recommended by AI assistants</h2><p className="tl-intro">Make your product pages clear, useful and accessible to search crawlers, and build relevant mentions on independent sites. These steps can help people and search assistants discover your product; no directory listing or AI text file guarantees a recommendation. Our <Link href="/tools/visibility-check">Visibility Check</Link> tests all of this for you.</p></section>
-    <section className="tl-next"><h2>Start here</h2><div><Link href="/register">List your product free on Rivelo <ArrowUpRight size={15}/></Link><Link href="/tools/visibility-check">Check your site’s visibility <ArrowUpRight size={15}/></Link><Link href="/community">Ask the community <ArrowUpRight size={15}/></Link></div></section>
+    <section className="tl-next"><h2>Start here</h2><div><Link href="/register">List your product free on Rivelo <ArrowUpRight size={15}/></Link><Link href="/tools/visibility-check">Check your site’s visibility <ArrowUpRight size={15}/></Link><Link href="/app-growth">Plan your app growth strategy <ArrowUpRight size={15}/></Link><Link href="/community">Ask the community <ArrowUpRight size={15}/></Link></div></section>
   </main></CommunityShell>;
 }

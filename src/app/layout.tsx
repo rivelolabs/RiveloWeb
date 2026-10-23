@@ -30,7 +30,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.rivelolabs.com"),
   title: { default: "Discover New Apps & Websites — List Yours Free | Rivelo Labs", template: "%s | Rivelo Labs" },
-  description: "Discover new apps and websites from independent builders. List your product for free, get upvotes and real users, and put your startup on the world map.",
+  description: "Discover independent apps and websites. List your startup for free, analyze your website’s SEO and find practical app growth and product launch resources.",
   applicationName: "Rivelo Labs",
   icons: { icon: [{ url: "/favicon.ico", sizes: "any" }, { url: "/icon.png", type: "image/png", sizes: "512x512" }], apple: "/apple-icon.png" },
   category: "technology",
@@ -48,9 +48,9 @@ const jsonLd = {
   url: "https://www.rivelolabs.com",
   email: "hello@rivelolabs.com",
   logo: "https://www.rivelolabs.com/icon-512.png",
-  description: "A discovery space for new apps, websites and independent builders.",
+  description: "An app and website directory with product launch resources and a website SEO analyzer for independent builders.",
 };
-const siteLd = { "@context": "https://schema.org", "@type": "WebSite", name: "Rivelo Labs", url: "https://www.rivelolabs.com", description: "A free app and website directory for discovering independent products and listing your own." };
+const siteLd = { "@context": "https://schema.org", "@type": "WebSite", name: "Rivelo Labs", url: "https://www.rivelolabs.com", description: "A free app and website directory with a website analyzer, app growth guides and product launch resources." };
 
 export default function RootLayout({
   children,
