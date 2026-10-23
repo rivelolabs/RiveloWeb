@@ -19,7 +19,7 @@ export async function PATCH(request:NextRequest){
     if(!maker||maker.claimedBy!==user.id)return NextResponse.json({error:'Not your page.'},{status:403});
     if(b.remove===true){await removeOwnMaker(maker.id,user.id);return NextResponse.json({removed:true});}
     const lat=typeof b.lat==='number'&&Math.abs(b.lat)<=85?b.lat:null,lng=typeof b.lng==='number'&&Math.abs(b.lng)<=180?b.lng:null;
-    const updated=await updateOwnMaker(maker.id,user.id,{name:shortText(b.name,120)||maker.name,bio:shortText(b.bio,400),productName:shortText(b.productName,120),productUrl:b.productUrl?imageUrl(b.productUrl)||null:null,productDescription:shortText(b.productDescription,1500),city:shortText(b.city,100)||null,lat:lat!==null&&lng!==null?lat:null,lng:lat!==null&&lng!==null?lng:null});
+    const updated=await updateOwnMaker(maker.id,user.id,{name:shortText(b.name,120)||maker.name,bio:shortText(b.bio,400),productName:shortText(b.productName,120),productUrl:b.productUrl?imageUrl(b.productUrl)||null:null,productDescription:shortText(b.productDescription,1500),city:shortText(b.city,100)||null,lat:lat!==null&&lng!==null?lat:null,lng:lat!==null&&lng!==null?lng:null,logo:b.logo?imageUrl(b.logo)||null:null});
     return NextResponse.json({maker:updated});
   }catch(error){return NextResponse.json({error:error instanceof Error?error.message:'Could not save.'},{status:400});}
 }

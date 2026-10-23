@@ -5,6 +5,8 @@ import {rateLimit} from '@/lib/catalog/limit';
 import {readCatalog,updateCatalog} from '@/lib/catalog/store';
 import {imageUrl,type CatalogState,type Listing} from '@/lib/catalog/types';
 import {genres} from '@/lib/directory';
+import {dbEnabled} from '@/lib/db';
+import {myMakerPages,productLabel} from '@/lib/db/makers';
 export const runtime='nodejs';export const dynamic='force-dynamic';
 
 /** A signed-in person owns a listing they submitted, a pin they registered, or an approved claim — all matched by their sign-in email. */
@@ -15,8 +17,10 @@ function owns(state:CatalogState,listing:Listing,email:string){
 const view=(state:CatalogState,l:Listing)=>{const pin=state.pins.find(p=>p.productId===l.id);return {id:l.id,name:l.name,description:l.editorialSummary||l.description,genre:l.genre,status:l.status,url:l.sourceUrl,logoUrl:l.logoUrl||'',bannerUrl:l.bannerUrl||'',fallbackImage:l.image?`/api/catalog/image/${l.id}`:'',city:pin?.city||'',pinStatus:pin?.status||null,submittedAt:l.importedAt,updatedAt:l.updatedAt||null};};
 
 export async function GET(request:NextRequest){
-  const user=await currentUser(request);if(!user?.email)return NextResponse.json({signedIn:false,listings:[]},{headers:{'Cache-Control':'no-store'}});
-  try{const state=await readCatalog();return NextResponse.json({signedIn:true,listings:state.listings.filter(l=>owns(state,l,user.email!)).map(l=>view(state,l))},{headers:{'Cache-Control':'no-store'}});}
+  const user=await currentUser(request);if(!user)return NextResponse.json({signedIn:false,listings:[],makers:[]},{headers:{'Cache-Control':'no-store'}});
+  try{const [state,pages]=await Promise.all([readCatalog(),dbEnabled()?myMakerPages(user.id).catch(()=>[]):Promise.resolve([])]);
+    const makers=pages.map(m=>({username:m.username,name:m.name,product:productLabel(m.productName,m.name),image:m.logo||(m.avatar?m.avatar.replace(/_normal(\.\w+)$/,'_200x200$1'):''),city:m.city||'',onMap:m.lat!=null&&m.lng!=null}));
+    return NextResponse.json({signedIn:true,listings:state.listings.filter(l=>!!user.email&&owns(state,l,user.email)).map(l=>view(state,l)),makers},{headers:{'Cache-Control':'no-store'}});}
   catch{return NextResponse.json({signedIn:true,listings:[],error:'Your listings are unavailable right now.'});}
 }
 export async function PATCH(request:NextRequest){

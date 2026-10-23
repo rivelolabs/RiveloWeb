@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import {Check,LoaderCircle,Pencil,Trash2} from 'lucide-react';
 import LocationSearch from './LocationSearch';
 const BusinessMap=dynamic(()=>import('./BusinessMap'),{ssr:false});
-type Fields={name:string;bio:string;productName:string;productUrl:string;productDescription:string;city:string;lat:number|null;lng:number|null};
+type Fields={name:string;bio:string;productName:string;productUrl:string;productDescription:string;city:string;lat:number|null;lng:number|null;logo:string};
 /** Claim button (mode=claim) or the owner's edit panel (mode=edit, only rendered for the owner). */
 export default function MakerOwner({username,mode,label,initial}:{username:string;mode:'claim'|'edit';label?:string;initial?:Fields}){
   const [busy,setBusy]=useState(false),[error,setError]=useState(''),[owner,setOwner]=useState(false),[open,setOpen]=useState(false),[f,setF]=useState<Fields|undefined>(initial),[saved,setSaved]=useState(false),[focus,setFocus]=useState<{lat:number;lng:number;zoom:number;key:number}>();
@@ -27,6 +27,7 @@ export default function MakerOwner({username,mode,label,initial}:{username:strin
     {open&&<form onSubmit={save} className="mk-form">
       <div className="rd-form-row"><label>Name<input value={f.name} onChange={e=>setF({...f,name:e.target.value})} maxLength={120} required/></label><label>Product name<input value={f.productName} onChange={e=>setF({...f,productName:e.target.value})} maxLength={120}/></label></div>
       <label>Bio<textarea value={f.bio} onChange={e=>setF({...f,bio:e.target.value})} maxLength={400} rows={2}/></label>
+      <label>Logo image link <small>(optional — shown on the map instead of your X photo)</small><input type="url" value={f.logo} onChange={e=>setF({...f,logo:e.target.value})} maxLength={500} placeholder="https://your-product.com/logo.png"/></label>
       <label>Product link<input type="url" value={f.productUrl} onChange={e=>setF({...f,productUrl:e.target.value})} maxLength={500} placeholder="https://your-product.com"/></label>
       <label>What are you building?<textarea value={f.productDescription} onChange={e=>setF({...f,productDescription:e.target.value})} maxLength={1500} rows={4}/></label>
       <LocationSearch value={f.city} onChange={v=>setF({...f,city:v})} onPlace={p=>{setF(x=>x&&({...x,lat:p.lat,lng:p.lng}));setFocus({lat:p.lat,lng:p.lng,zoom:p.zoom,key:Date.now()});}}/>

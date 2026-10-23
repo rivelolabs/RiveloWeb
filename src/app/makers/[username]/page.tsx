@@ -5,7 +5,7 @@ import {ArrowUpRight,MapPin,ShieldCheck,BadgeCheck} from 'lucide-react';
 import CommunityShell from '@/components/CommunityShell';
 import MakerOwner from '@/components/MakerOwner';
 import {dbEnabled} from '@/lib/db';
-import {makerByUsername} from '@/lib/db/makers';
+import {makerByUsername,productLabel} from '@/lib/db/makers';
 import '../../directory.css';
 import '../../makers.css';
 export const dynamic='force-dynamic';
@@ -39,11 +39,11 @@ export default async function Page({params}:Props){
     </section>
     {m.productUrl&&<section className={`mk-card mk-product${claimed?'':' mk-product-dashed'}`}>
       {!claimed&&<span className="mk-label">FROM THE LINK THEY DROPPED{m.sourceAuthor?` UNDER @${m.sourceAuthor.toUpperCase()}’S POST`:''}</span>}
-      <div className="mk-product-row">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={`https://www.google.com/s2/favicons?domain=${encodeURIComponent(host(m.productUrl))}&sz=128`} alt="" width={56} height={56}/><div><h3>{m.productName||host(m.productUrl)}</h3><a href={m.productUrl} target="_blank" rel="noopener noreferrer">{host(m.productUrl)} <ArrowUpRight size={13}/></a></div></div>
+      <div className="mk-product-row">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={m.logo||`https://www.google.com/s2/favicons?domain=${encodeURIComponent(host(m.productUrl))}&sz=128`} alt="" width={56} height={56}/><div><h3>{m.productName||host(m.productUrl)}</h3><a href={m.productUrl} target="_blank" rel="noopener noreferrer">{host(m.productUrl)} <ArrowUpRight size={13}/></a></div></div>
       {m.productDescription&&<p>{m.productDescription}</p>}
       <div className="mk-actions"><a className="rd-button rd-outline" href={m.productUrl} target="_blank" rel="noopener noreferrer">Visit {m.productName||host(m.productUrl)}</a>{!claimed&&<MakerOwner username={m.username} mode="claim" label="Is this yours? Claim it"/>}</div>
     </section>}
-    <MakerOwner username={m.username} mode="edit" initial={{name:m.name,bio:m.bio||'',productName:m.productName||'',productUrl:m.productUrl||'',productDescription:m.productDescription||'',city:m.city||'',lat:m.lat,lng:m.lng}}/>
+    <MakerOwner username={m.username} mode="edit" initial={{name:m.name,bio:m.bio||'',productName:productLabel(m.productName,''),productUrl:m.productUrl||'',productDescription:m.productDescription||'',city:m.city||'',lat:m.lat,lng:m.lng,logo:m.logo||''}}/>
     <p className="mk-report"><ShieldCheck size={14}/> Something wrong on this page, or want it removed? <a href={`mailto:hello@rivelolabs.com?subject=${encodeURIComponent(`Maker page @${m.username}`)}`}>Report it</a></p>
     <Link className="mk-map" href="/map"><MapPin size={16}/> Map</Link>
   </main></CommunityShell>;
