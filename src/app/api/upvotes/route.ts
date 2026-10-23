@@ -7,6 +7,7 @@ import {myVotes,toggleVote,voteCounts} from '@/lib/db/trending';
 import {commentCounts} from '@/lib/db/comments';
 import {publicProducts} from '@/lib/catalog/store';
 import {products as staticProducts} from '@/lib/directory';
+import {builderProducts,cachedBuilders} from '@/lib/db/builders';
 export const runtime='nodejs';export const dynamic='force-dynamic';
 export async function GET(request:NextRequest){
   if(!dbEnabled())return NextResponse.json({counts:{},mine:[]});
@@ -20,7 +21,7 @@ export async function POST(request:NextRequest){
     if(!dbEnabled())return NextResponse.json({error:'Voting opens soon.'},{status:503});
     const user=await currentUser(request);if(!user)return NextResponse.json({error:'Sign in to upvote.',signIn:true},{status:401});
     const body=await jsonBody(request,300);const productId=typeof body.productId==='string'?body.productId:'';
-    const known=staticProducts.some(p=>p.id===productId)||(await publicProducts()).some(p=>p.id===productId);
+    const known=staticProducts.some(p=>p.id===productId)||(productId.startsWith('maker:')?builderProducts(await cachedBuilders()).some(p=>p.id.toLowerCase()===productId.toLowerCase()):(await publicProducts()).some(p=>p.id===productId));
     if(!known)return NextResponse.json({error:'Product not found.'},{status:404});
     await upsertProfile(user);
     const voted=await toggleVote(user.id,productId);

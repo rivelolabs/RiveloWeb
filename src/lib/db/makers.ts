@@ -54,7 +54,8 @@ export async function removeOwnMaker(id:string,userId:string){bust('makers');awa
 /** Claimed makers with a location appear on the world map. */
 export async function makerPins(){
   const r=await db().query(`SELECT id,username,name,product_name,city,lat,lng,COALESCE(claimed_at,created_at) joined FROM rivelo.maker_pages WHERE status='claimed' AND lat IS NOT NULL AND lng IS NOT NULL`);
-  return r.rows.map(x=>({id:`maker-${x.id}`,productId:`maker:${x.username}`,name:productLabel(x.product_name,x.name),city:x.city||'',lat:x.lat,lng:x.lng,genre:'Makers',href:`/makers/${x.username}`,joinedAt:new Date(x.joined).toISOString()}));
+  const extras=await makerExtras(r.rows.map(x=>x.id));
+  return r.rows.map(x=>({id:`maker-${x.id}`,productId:`maker:${x.username}`,name:productLabel(x.product_name,x.name)+((extras.get(x.id)?.length)?` +${extras.get(x.id)!.length}`:''),city:x.city||'',lat:x.lat,lng:x.lng,genre:'Makers',href:`/makers/${x.username}`,joinedAt:new Date(x.joined).toISOString()}));
 }
 /** Pin photo per claimed maker: their product logo if they added one, otherwise their X profile photo (larger size). */
 export async function makerAvatarMap(){const r=await db().query(`SELECT id,username,NULLIF(logo_url,'') logo,avatar_url FROM rivelo.maker_pages WHERE status='claimed'`);return new Map<string,{photo:string;logo:string|null}>(r.rows.map(x=>[`maker-${x.id}`,{photo:xPhoto(x.avatar_url,x.username),logo:x.logo||null}]));}
@@ -68,7 +69,42 @@ export async function myMakerPages(userId:string){const r=await db().query(`SELE
 
 /** Display info for promoted maker pages (homepage Spotlight, map yachts), keyed by "maker:<username>". */
 export async function promotedMakers(ids:string[]){
-  const names=[...new Set(ids.filter(i=>i.startsWith('maker:')).map(i=>i.slice(6).toLowerCase()))];if(!names.length)return new Map<string,{id:string;name:string;tagline:string;url:string;logo:string|null}>();
+  const names=[...new Set(ids.map(i=>makerFromProductId(i)?.toLowerCase()).filter((x):x is string=>!!x))];if(!names.length)return new Map<string,{id:string;name:string;tagline:string;url:string;logo:string|null}>();
   const r=await db().query(`SELECT ${COLS} FROM rivelo.maker_pages WHERE lower(username)=ANY($1) AND status='claimed'`,[names]);
-  return new Map(r.rows.map(map).map(m=>[`maker:${m.username.toLowerCase()}`,{id:`maker:${m.username}`,name:productLabel(m.productName,m.name),tagline:m.productDescription||m.bio||`Built by @${m.username}`,url:m.productUrl||`/makers/${m.username}`,logo:m.logo||xPhoto(m.avatar,m.username)}]));
+  const makers=r.rows.map(map),extras=await makerExtras(makers.map(m=>m.id));
+  const out=new Map<string,{id:string;name:string;tagline:string;url:string;logo:string|null}>();
+  for(const m of makers){out.set(`maker:${m.username.toLowerCase()}`,{id:`maker:${m.username}`,name:productLabel(m.productName,m.name),tagline:m.productDescription||m.bio||`Built by @${m.username}`,url:m.productUrl||`/makers/${m.username}`,logo:m.logo||xPhoto(m.avatar,m.username)});
+    for(const e of extras.get(m.id)||[])out.set(`maker:${m.username.toLowerCase()}/${e.key}`,{id:makerProductId(m.username,e.key),name:e.name,tagline:e.description||`Built by @${m.username}`,url:e.url,logo:e.logo||xPhoto(m.avatar,m.username)});}
+  return out;
+}
+
+/* ───────── extra products (migration 014) ───────── */
+export type MakerProduct={id:string;key:string;name:string;url:string;logo:string|null;description:string;createdAt:string};
+/** Product id used across the site (upvotes, plans): "maker:<username>" for the main product, "maker:<username>/<key>" for extras. */
+export const makerProductId=(username:string,key?:string)=>key?`maker:${username}/${key}`:`maker:${username}`;
+/** Username part of a maker product id ("maker:alex/1a2b3c4d" → "alex"). */
+export const makerFromProductId=(id:string)=>id.startsWith('maker:')?id.slice(6).split('/')[0]:null;
+const mp=(r:Record<string,unknown>):MakerProduct=>({id:r.id as string,key:String(r.id).replace(/-/g,'').slice(0,8),name:r.name as string,url:r.url as string,logo:(r.logo_url as string|null)||null,description:(r.description as string|null)||'',createdAt:new Date(r.created_at as string).toISOString()});
+/** Extra products for these maker page ids. Returns an empty map until migration 014 is run. */
+export async function makerExtras(makerIds:string[]){
+  const out=new Map<string,MakerProduct[]>();if(!makerIds.length)return out;
+  const r=await db().query(`SELECT id,maker_id,name,url,logo_url,description,created_at FROM rivelo.maker_products WHERE maker_id=ANY($1::uuid[]) ORDER BY position,created_at`,[makerIds]).catch(()=>({rows:[]}));
+  for(const x of r.rows as Record<string,unknown>[]){const k=x.maker_id as string;out.set(k,[...(out.get(k)||[]),mp(x)]);}
+  return out;
+}
+/** Replace a builder's extra products (owner only, up to 5). Keeps ids of items that are kept, so upvotes stay. */
+export async function setMakerExtras(makerId:string,userId:string,items:{id?:string;name:string;url:string;logo:string|null;description:string}[]){
+  bust('makers');
+  const own=await db().query(`SELECT 1 FROM rivelo.maker_pages WHERE id=$1 AND claimed_by=$2`,[makerId,userId]);if(!own.rowCount)throw Error('Not your page.');
+  const client=await db().connect();
+  try{await client.query('BEGIN');
+    const keep=items.map(i=>i.id).filter((x):x is string=>!!x&&/^[0-9a-f-]{36}$/.test(x));
+    await client.query(`DELETE FROM rivelo.maker_products WHERE maker_id=$1 AND NOT (id=ANY($2::uuid[]))`,[makerId,keep]);
+    for(const [i,it] of items.slice(0,5).entries()){
+      if(it.id&&keep.includes(it.id))await client.query(`UPDATE rivelo.maker_products SET name=$3,url=$4,logo_url=$5,description=$6,position=$7 WHERE id=$1 AND maker_id=$2`,[it.id,makerId,it.name,it.url,it.logo,it.description,i]);
+      else await client.query(`INSERT INTO rivelo.maker_products (maker_id,name,url,logo_url,description,position) VALUES ($1,$2,$3,$4,$5,$6)`,[makerId,it.name,it.url,it.logo,it.description,i]);
+    }
+    await client.query('COMMIT');
+  }catch(e){await client.query('ROLLBACK').catch(()=>{});if(/maker_products/.test(String((e as Error).message))&&/does not exist/.test(String((e as Error).message)))throw Error('Run db/migrations/014_maker_products.sql in Supabase to add more products.');throw e;}
+  finally{client.release();}
 }

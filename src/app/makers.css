@@ -57,3 +57,8 @@
 .mk-claim-url input{height:44px;padding:0 12px;border:1px solid var(--rd-line);border-radius:10px;background:var(--rd-surface);color:var(--rd-ink);font:inherit;font-size:14px;font-weight:400;width:100%}
 .mk-url-box{padding:14px 16px;border:1px solid color-mix(in srgb,var(--rd-coral) 45%,var(--rd-line));border-radius:12px;background:color-mix(in srgb,var(--rd-coral) 6%,var(--rd-surface));display:flex;flex-direction:column;gap:6px}
 .mk-url-box>span{font-weight:700}.mk-url-box b{color:var(--rd-coral)}.mk-url-box small{color:var(--rd-secondary);font-weight:400}
+.mk-more{display:grid;gap:12px}.mk-more-item{padding:14px;border:1px solid var(--rd-line);border-radius:12px}.mk-more-item p{margin:10px 0 0;color:var(--rd-secondary);font-size:14px;line-height:1.55}
+.mk-more-item h3{margin:0;font-size:16px}.mk-more-item img{border-radius:10px;object-fit:cover}
+.mk-extra{padding:14px;border:1px solid var(--rd-line);border-radius:12px;display:grid;gap:10px;position:relative}
+.mk-extra-head{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px}
+.mk-add-product{justify-self:start}

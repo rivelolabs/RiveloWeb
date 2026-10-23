@@ -15,7 +15,7 @@ export default function MyPlans(){
     catch(e){setError(e instanceof Error?e.message:'Could not cancel.');}finally{setBusy('');}}
   if(!me?.signedIn)return null;
   const active=(me.subscriptions||[]).filter(s=>['active','authenticated','pending'].includes(s.status));
-  const name=(id:string)=>{const n=me.products?.find(p=>p.id===id)?.name;return n||(id.startsWith('maker:')?`@${id.slice(6)}`:id);};
+  const name=(id:string)=>{const n=me.products?.find(p=>p.id===id)?.name;return n||(id.startsWith('maker:')?`@${id.slice(6).split('/')[0]}`:id);};
   const day=(d:string|null)=>d?new Date(d).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}):'soon';
   return <section className="rc-form ra-plans"><div className="ra-plans-head"><h2>Your plans</h2><Link href="/premium">See plans <ArrowUpRight size={15}/></Link></div>
     {active.length?<ul>{active.map(s=><li key={s.id}>

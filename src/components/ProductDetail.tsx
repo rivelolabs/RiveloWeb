@@ -17,7 +17,7 @@ export default function ProductDetail({product:p,saved,onSave,votes,onVote,icon}
   const banner=p.logo&&p.image&&imgOk?p.image:undefined;
   const tagline=p.tagline&&!p.description.startsWith(p.tagline.replace(/…$/,'').slice(0,60))?p.tagline:'';
   const added=p.importedAt?new Date(p.importedAt).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}):'';
-  async function share(){const url=`${location.origin}${p.id.startsWith('maker:')?`/makers/${p.id.slice(6)}`:`/products/${p.id}`}`;try{if(navigator.share)await navigator.share({title:p.name,url});else{await navigator.clipboard.writeText(url);setCopied(true);setTimeout(()=>setCopied(false),1800);}}catch{}}
+  async function share(){const url=`${location.origin}${p.id.startsWith('maker:')?`/makers/${p.id.slice(6).split("/")[0]}`:`/products/${p.id}`}`;try{if(navigator.share)await navigator.share({title:p.name,url});else{await navigator.clipboard.writeText(url);setCopied(true);setTimeout(()=>setCopied(false),1800);}}catch{}}
   return <article className="pd">
     <div className={`pd-banner rd-${p.color}`}>{banner?/* eslint-disable-next-line @next/next/no-img-element */<img src={banner} alt="" referrerPolicy="no-referrer" onError={()=>setImgOk(false)}/>:<span className="pd-banner-art" aria-hidden="true"/>}</div>
     <header className="pd-head">
@@ -42,7 +42,7 @@ export default function ProductDetail({product:p,saved,onSave,votes,onVote,icon}
         {added&&<div><dt><CalendarDays size={13}/> Added</dt><dd>{added}</dd></div>}
       </dl>
       {p.policies&&<div className="rd-policy-links">{p.policies.map(link=><a key={link.href} href={link.href}>{link.name}<ArrowUpRight size={10}/></a>)}</div>}
-      <Link className="pd-more" href={p.id.startsWith('maker:')?`/makers/${p.id.slice(6)}`:`/products/${p.id}`}>Open full page <ArrowUpRight size={14}/></Link>
+      <Link className="pd-more" href={p.id.startsWith('maker:')?`/makers/${p.id.slice(6).split("/")[0]}`:`/products/${p.id}`}>Open full page <ArrowUpRight size={14}/></Link>
       <ProductComments productId={p.id} productName={p.name}/>
     </section>
   </article>;

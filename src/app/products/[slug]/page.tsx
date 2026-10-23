@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  if(decodeURIComponent(slug).startsWith('maker:'))redirect(`/makers/${decodeURIComponent(slug).slice(6)}`);
+  if(decodeURIComponent(slug).startsWith('maker:'))redirect(`/makers/${decodeURIComponent(slug).slice(6).split('/')[0]}`);
   const products=await publicProducts();
   const product = products.find(item => item.id === slug);
   if (!product) notFound();

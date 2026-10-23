@@ -55,6 +55,7 @@ export default async function Page({searchParams}:Props){
             {b.productUrl&&<a className="bl-product" href={b.productUrl} target="_blank" rel="noopener">
               {/* eslint-disable-next-line @next/next/no-img-element */}<img src={b.logo||`https://www.google.com/s2/favicons?domain=${encodeURIComponent(host(b.productUrl))}&sz=64`} alt="" width={16} height={16} loading="lazy"/>
               {b.product&&b.product!==b.name?b.product:STORE[host(b.productUrl)]||host(b.productUrl)}<ArrowUpRight size={13}/></a>}
+            {b.extras.length>0&&<Link href={`/makers/${b.username}`} className="bl-more">+{b.extras.length} more</Link>}
           </div>
         </div>
         <div className="bl-points"><strong>{compact(b.points)}</strong>{b.week>0?<span className="bl-up"><TrendingUp size={12}/>{compact(b.week)}</span>:<small>points</small>}</div>
