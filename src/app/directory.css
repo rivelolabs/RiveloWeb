@@ -515,3 +515,12 @@ a.rd-trend-main{color:inherit;text-decoration:none}
 .ra-plans ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}.ra-plans li{display:flex;align-items:center;gap:14px;padding:12px 14px;border:1px solid var(--rd-line);border-radius:12px;flex-wrap:wrap}
 .ra-plans li>div{flex:1;min-width:0;display:flex;flex-direction:column}.ra-plans li span{color:var(--rd-secondary);font-size:14px}.ra-plans li small{color:var(--rd-muted);font-size:13px}.ra-plans .rd-button{min-height:36px;padding:6px 14px}
 .rc-owned{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,#1f9d55 10%,var(--rd-surface));color:#1a7f46;font-size:14px;font-weight:600;margin:0 0 10px}
+.ra-name{display:flex;align-items:center;gap:10px}.ra-name h1{margin:0}
+.rc-form .ra-name-btn,.ra-name-btn{flex-shrink:0;display:inline-grid;place-items:center;width:34px;height:34px;min-height:0;padding:0;margin:0;border-radius:50%;border:1px solid var(--rd-line);background:var(--rd-surface);color:var(--rd-secondary);font-size:13px;line-height:1;cursor:pointer;box-shadow:none}
+.rc-form .ra-name-btn:hover,.ra-name-btn:hover{color:var(--rd-ink);border-color:var(--rd-control-border);background:var(--rd-soft)}
+.ra-name-btn:focus-visible{outline:2px solid var(--rd-coral);outline-offset:2px}
+.ra-name-edit .rd-button{min-height:44px;padding:8px 14px}
+.ra-name-edit{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0 8px;max-width:520px}
+.rc-form .ra-name-edit input,.ra-name-edit input{flex:1;min-width:180px;height:44px;padding:0 14px;border:1px solid var(--rd-control-border);border-radius:10px;background:var(--rd-surface);color:var(--rd-ink);font:inherit;font-size:16px;font-weight:500;letter-spacing:0}
+.ra-name-edit input:focus{outline:none;border-color:var(--rd-coral);box-shadow:0 0 0 3px color-mix(in srgb,var(--rd-coral) 18%,transparent)}
+.rc-form .ra-name-edit .rd-button{min-height:44px;padding:8px 16px;font-size:14px;gap:6px;border-radius:10px}

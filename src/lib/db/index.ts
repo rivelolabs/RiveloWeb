@@ -19,7 +19,7 @@ export async function upsertProfile(user:User){
        avatar_url=COALESCE(EXCLUDED.avatar_url,rivelo.profiles.avatar_url),
        provider=COALESCE(EXCLUDED.provider,rivelo.profiles.provider),
        last_seen_at=now()`,
-    [user.id,user.email??null,pick('full_name','name'),pick('user_name','preferred_username'),pick('avatar_url','picture'),typeof user.app_metadata?.provider==='string'?user.app_metadata.provider:null]
+    [user.id,user.email??null,pick('display_name','full_name','name'),pick('user_name','preferred_username'),pick('avatar_url','picture'),typeof user.app_metadata?.provider==='string'?user.app_metadata.provider:null]
   );
 }
 

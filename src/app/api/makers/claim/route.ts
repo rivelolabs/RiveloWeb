@@ -1,7 +1,7 @@
 import {NextRequest,NextResponse} from 'next/server';
 import {currentUser} from '@/lib/auth/server';
 import {jsonBody,sameOrigin} from '@/lib/catalog/http';
-import {dbEnabled,upsertProfile} from '@/lib/db';
+import {db,dbEnabled,upsertProfile} from '@/lib/db';
 import {claimMaker,makerByUsername,setMakerAvatar,setMakerProductUrl} from '@/lib/db/makers';
 import {httpsUrl} from '@/lib/catalog/types';
 import {xIdentity} from '@/lib/x/identity';
@@ -23,6 +23,8 @@ export async function POST(request:NextRequest){
     if(!await claimMaker(maker.id,user.id))return NextResponse.json({error:'This page can’t be claimed right now.'},{status:409});
     if(x.avatar)await setMakerAvatar(maker.id,x.avatar).catch(()=>{});
     if(productUrl)await setMakerProductUrl(maker.id,productUrl);
+    const chosen=String(user.user_metadata?.display_name||'').trim().slice(0,120);
+    if(chosen)await db().query(`UPDATE rivelo.maker_pages SET name=$2 WHERE id=$1`,[maker.id,chosen]).catch(()=>{});
     return NextResponse.json({success:true});
   }catch(error){return NextResponse.json({error:error instanceof Error?error.message:'Could not claim.'},{status:400});}
 }

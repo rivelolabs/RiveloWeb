@@ -20,7 +20,10 @@ export default function MakerOwner({username,mode,label,initial,extras:startExtr
       if(!r.ok)throw Error(d.error);window.location.assign(`/makers/${username}?setup=1#edit`);}
     catch(e){setError(e instanceof Error?e.message:'Could not claim.');setBusy(false);}}
   async function save(e:React.FormEvent){e.preventDefault();if(!f)return;setBusy(true);setError('');
-    try{const r=await fetch('/api/makers/me',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,...f,extras})});const d=await r.json();if(!r.ok)throw Error(d.error);setSaved(true);setTimeout(()=>window.location.reload(),600);}
+    try{const r=await fetch('/api/makers/me',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,...f,extras})});const d=await r.json();if(!r.ok)throw Error(d.error);
+      // Keep the account name the same as the builder page name.
+      try{const {browserAuth}=await import('@/lib/auth/browser');const auth=browserAuth();if(auth&&f.name.trim()){await auth.auth.updateUser({data:{display_name:f.name.trim()}});await fetch('/api/account/name',{method:'POST'});}}catch{}
+      setSaved(true);setTimeout(()=>window.location.reload(),600);}
     catch(err){setError(err instanceof Error?err.message:'Could not save.');}finally{setBusy(false);}}
   async function remove(){if(!confirm('Remove your page from Rivelo? It will disappear from the map.'))return;await fetch('/api/makers/me',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,remove:true})});window.location.assign('/map');}
   if(mode==='claim')return <form className="mk-claim" onSubmit={claim}><button type="submit" className="rd-button mk-claim-btn" disabled={busy}>{busy?<LoaderCircle className="rd-spin" size={16}/>:null}{label||'Claim your page'}</button><small>Sign in with X as @{username}</small>{error&&<p className="rd-error" role="alert">{error}</p>}</form>;
