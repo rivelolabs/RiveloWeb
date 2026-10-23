@@ -26,6 +26,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     })),
     {
+      url: `${baseUrl}/legal/refunds`,
+      lastModified,
+    },
+    {
       url: `${baseUrl}/legal/privacy`,
       lastModified,
       changeFrequency: "monthly",

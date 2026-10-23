@@ -84,8 +84,13 @@ const sections: LegalSection[] = [
   },
   {
     id: "paid",
-    title: "Growth services",
-    body: <p>Some services, such as editorial features, SEO reviews or promotion, may be offered for a fee. Scope, price, payment and delivery will be agreed with you in writing before work starts, and those terms apply alongside these Terms. Unless agreed otherwise, we do not guarantee any particular ranking, traffic, downloads or results.</p>,
+    title: "Paid plans",
+    body: (
+      <>
+        <p>Spotlight, Map yacht and Growth are optional paid plans shown on our <Link href="/premium">plans page</Link>. Payments are processed by Dodo Payments, our Merchant of Record, which also handles taxes and invoices. Plans renew automatically each week or month until you cancel, and you can cancel any time; your placement stays live until the end of the paid period.</p>
+        <p>Refunds follow our <Link href="/legal/refunds">Refund &amp; Cancellation Policy</Link>. We do not guarantee any particular ranking, traffic, downloads or results.</p>
+      </>
+    ),
   },
   {
     id: "ip",
@@ -144,7 +149,7 @@ export default function Page() {
     <RiveloLegal
       badge="Terms of Service"
       title="Rivelo Labs Terms of Service"
-      updated="October 22, 2026"
+      updated="October 23, 2026"
       intro={<p>Please read these Terms carefully. They cover your account, the listings and business locations you publish, community conduct and the limits of our responsibility.</p>}
       sections={sections}
       other={{ href: "/legal/privacy", label: "Privacy Policy" }}

@@ -8,9 +8,9 @@ type Plan={id:'spotlight'|'growth'|'yacht';name:string;price:string;per:string;b
 const PLANS:Plan[]=[
   {id:'spotlight',name:'Spotlight',price:'$15',per:'/ week',blurb:'Put your product in front of real people discovering what’s next.',features:['Your product in the homepage header all week','Promoted spot in Trending','Sponsored badge on your listing','Real visitors, no bots or paid clicks','Renews weekly, cancel anytime']},
   {id:'yacht',name:'Map yacht',price:'$20',per:'/ week',blurb:'Sail your product across the Rivelo world map. Only 5 yachts exist.',features:['Your logo and name on one of 5 premium yachts on the world map','Every map visitor can click through to your product','Sponsored label, renews weekly, cancel anytime']},
-  {id:'growth',name:'Growth',price:'$50',per:'/ month',blurb:'Everything in Spotlight, a free yacht, and an AI growth team on your side.',features:['Everything in Spotlight (7 days in the homepage header every month)','1 map yacht free all month','AI analysis of your product page and positioning','SEO tracking, monitored for you, with AI suggestions you can apply','Reddit communities and threads where your users are','Monthly growth report']},
+  {id:'growth',name:'Growth',price:'$50',per:'/ month',blurb:'Everything in Spotlight, a free yacht, and AI insights for your listing.',features:['Everything in Spotlight (7 days in the homepage header every month)','1 map yacht free all month','AI analysis of your listing and positioning','Automated SEO tracking with AI suggestions you can apply','Monthly report emailed to you']},
 ];
-type Me={signedIn:boolean;takenYachts?:number[];billingReady?:boolean;provider?:'dodo'|'razorpay'|null;email?:string;products?:{id:string;name:string}[];subscriptions?:{id:string;plan_id:string;product_id:string;status:string;cancel_at_period_end:boolean;current_period_end:string|null}[]};
+type Me={signedIn:boolean;takenYachts?:number[];billingReady?:boolean;provider?:'dodo'|'razorpay'|null;testMode?:boolean;email?:string;products?:{id:string;name:string}[];subscriptions?:{id:string;plan_id:string;product_id:string;status:string;cancel_at_period_end:boolean;current_period_end:string|null}[]};
 type RazorpayCtor=new(o:Record<string,unknown>)=>{open:()=>void;on:(e:string,cb:(r:{error?:{description?:string}})=>void)=>void};
 declare global{interface Window{Razorpay?:RazorpayCtor}}
 
@@ -53,7 +53,7 @@ export default function PlanPicker(){
   }
   async function cancel(id:string){if(!confirm('Cancel at the end of this billing period?'))return;const r=await fetch('/api/billing/cancel',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});const d=await r.json();if(!r.ok)setError(d.error);else await refresh();}
   const active=(me?.subscriptions||[]).filter(s=>['active','authenticated','pending'].includes(s.status));
-  return <section className="rc-plans" aria-labelledby="rc-plans-title">
+  return <section className="rc-plans" aria-labelledby="rc-plans-title">{me?.testMode&&<p className="rc-notice" role="note">Test mode: payments use Dodo test checkout. Use card 4242 4242 4242 4242, any future date and any CVC. No real money is charged.</p>}
     <div className="rc-plans-head"><span className="rd-overline">SIMPLE MONTHLY PLANS</span><h2 id="rc-plans-title">Get seen by people who are looking.</h2><p>Billed in USD. Cancel anytime. Paid placements are always labelled Sponsored.</p>{me&&!ready&&<p className="rc-plans-soon"><span>Coming soon</span> Paid plans open shortly. Join the waitlist and we’ll email you the day they go live. Listing your product is free right now.</p>}</div>
     {me?.signedIn&&<div className="rc-plan-product">{me.products?.length?<label>Promote<select value={product} onChange={e=>setProduct(e.target.value)}>{me.products.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label>:<p>No published products on <b>{me.email}</b> yet. <Link href="/register">List your product</Link> or <Link href="/claim">claim an existing one</Link> first.</p>}</div>}
     <div className="rc-plan-grid">{PLANS.map(plan=><article key={plan.id} className={`rc-plan${plan.id==='growth'?' rc-plan-featured':''}`}>
@@ -66,7 +66,7 @@ export default function PlanPicker(){
     {done&&<p className="rc-notice" role="status"><Check size={17}/> {done}</p>}
     {error&&<p className="rd-error" role="alert">{error}</p>}
     {active.length>0&&<div className="rc-plan-current"><h3>Your plans</h3>{active.map(s=><p key={s.id}><b>{s.plan_id==='growth'?'Growth':s.plan_id==='yacht'?'Map yacht':'Spotlight'}</b> · {me?.products?.find(p=>p.id===s.product_id)?.name||s.product_id} · {s.cancel_at_period_end?'ends':'renews'} {s.current_period_end?new Date(s.current_period_end).toLocaleDateString():'soon'} {!s.cancel_at_period_end&&<button type="button" className="rc-text-button" onClick={()=>cancel(s.id)}>Cancel</button>}</p>)}</div>}
-    <p className="rd-fine-print">Search rankings, traffic and third-party results are not guaranteed. See our <Link href="/legal/terms">Terms</Link>.</p>
+    <p className="rd-fine-print">Search rankings, traffic and third-party results are not guaranteed. Payments are processed securely by Dodo Payments. Cancel anytime. See our <Link href="/legal/terms">Terms</Link> and <Link href="/legal/refunds">Refund Policy</Link>.</p>
   </section>;
 }
 
