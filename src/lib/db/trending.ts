@@ -1,4 +1,5 @@
 import {db} from './index';
+import {bust,cached} from '@/lib/cache';
 export type VoteCounts=Record<string,{total:number;week:number}>;
 export async function voteCounts():Promise<VoteCounts>{
   const r=await db().query(`SELECT product_id,count(*)::int total,count(*) FILTER (WHERE created_at>now()-interval '7 days')::int week FROM rivelo.upvotes GROUP BY product_id`);
@@ -10,13 +11,13 @@ export async function toggleVote(userId:string,productId:string){
   if(del.rowCount)return false;
   await db().query(`INSERT INTO rivelo.upvotes (user_id,product_id) VALUES ($1,$2) ON CONFLICT DO NOTHING`,[userId,productId]);return true;
 }
-export type Launch={id:string;source:'producthunt'|'indiehackers'|'rivelo';name:string;tagline:string;url:string;website:string|null;image:string|null;votes:number;comments:number;launchedAt:string;topics:string[]};
+export type Launch={id:string;source:'producthunt'|'indiehackers'|'rivelo'|'hackernews';name:string;tagline:string;url:string;website:string|null;image:string|null;votes:number;comments:number;launchedAt:string;topics:string[]};
 export async function recentLaunches(limit=30,days=14):Promise<Launch[]>{
   const r=await db().query(`SELECT id,source,name,COALESCE(tagline,'') tagline,url,website,image_url,votes,comments,launched_at,topics FROM rivelo.launches WHERE NOT hidden AND launched_at>now()-make_interval(days=>$2) ORDER BY date_trunc('day',launched_at) DESC,votes DESC LIMIT $1`,[limit,days]);
   return r.rows.map(x=>({id:x.id,source:x.source,name:x.name,tagline:x.tagline,url:x.url,website:x.website,image:x.image_url,votes:x.votes,comments:x.comments,launchedAt:new Date(x.launched_at).toISOString(),topics:x.topics}));
 }
 export type LaunchInput=Omit<Launch,'id'>&{externalId:string};
-export async function upsertLaunches(items:LaunchInput[]){
+export async function upsertLaunches(items:LaunchInput[]){bust('launches');
   let n=0;
   for(const l of items){
     await db().query(`INSERT INTO rivelo.launches (source,external_id,name,tagline,url,website,image_url,topics,votes,comments,launched_at,fetched_at)
@@ -26,3 +27,5 @@ export async function upsertLaunches(items:LaunchInput[]){
   }
   return n;
 }
+
+export const cachedRecentLaunches=cached((limit:number,days:number)=>recentLaunches(limit,days),'recent-launches',['launches'],300);

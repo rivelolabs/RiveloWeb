@@ -354,3 +354,9 @@ html{background:#ffffff;color-scheme:light}
 html[data-theme="dark"]{background:#07090d;color-scheme:dark}
 body{background:inherit;color:#18181b}
 html[data-theme="dark"] body{color:#f2f5f9}
+
+/* Page-change progress bar (NavProgress) */
+.rl-nav-progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:9999;background:#c43e19;opacity:0;pointer-events:none;transition:opacity .2s}
+.rl-nav-progress.rl-nav-on{opacity:1;animation:rl-nav 8s cubic-bezier(.1,.8,.2,1) forwards}
+@keyframes rl-nav{0%{width:0}15%{width:45%}100%{width:92%}}
+@media (prefers-reduced-motion:reduce){.rl-nav-progress.rl-nav-on{animation:none;width:60%}}

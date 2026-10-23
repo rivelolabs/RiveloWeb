@@ -3,8 +3,9 @@ import {publicProducts} from "@/lib/catalog/store";
 import Directory from "@/components/Directory";
 import { preload } from "react-dom";
 import { dbEnabled } from "@/lib/db";
-import { liveSpotlights, countSpotlightImpressions } from "@/lib/db/billing";
-import { recentLaunches } from "@/lib/db/trending";
+import { cachedSpotlights, countSpotlightImpressions } from "@/lib/db/billing";
+import { after } from "next/server";
+import { cachedRecentLaunches, type Launch } from "@/lib/db/trending";
 import { directorySchema, serializeSchema, shareImage, siteUrl } from "@/lib/seo";
 import "./directory.css";
 
@@ -17,15 +18,14 @@ export const metadata: Metadata = {
 };
 export const dynamic="force-dynamic";
 export default async function Home() {
-  const catalog=await publicProducts();
   // Start downloading the first hero image with the HTML (it is the largest thing on screen).
   preload("/hero/hero-omeglevc-800.webp",{as:"image",fetchPriority:"high",imageSrcSet:"/hero/hero-omeglevc-800.webp 800w, /hero/hero-omeglevc-1600.webp 1600w",imageSizes:"(max-width: 760px) 92vw, 860px"});
-  let sponsored:{id:string;name:string;tagline:string;url:string;image:string|null}[]=[],launches:Awaited<ReturnType<typeof recentLaunches>>=[];
-  if(dbEnabled()){
-    const [spots,recent]=await Promise.all([liveSpotlights().catch(()=>[]),recentLaunches(12).catch(()=>[])]);
+  let sponsored:{id:string;name:string;tagline:string;url:string;image:string|null}[]=[];
+  const db=dbEnabled();
+  const [catalog,spots,launches]=await Promise.all([publicProducts(),db?cachedSpotlights().catch(()=>[]):Promise.resolve([]),db?cachedRecentLaunches(12,14).catch(()=>[] as Launch[]):Promise.resolve([] as Launch[])]);
+  if(db){
     sponsored=spots.flatMap(s=>{const p=catalog.find(x=>x.id===s.productId);return p?[{id:p.id,name:p.name,tagline:s.headline||p.tagline,url:p.url||`${siteUrl}/products/${p.id}`,image:s.image||null}]:[];});
-    launches=recent;
-    void countSpotlightImpressions(spots.map(s=>s.id));
+    after(()=>countSpotlightImpressions(spots.map(s=>s.id)));
   }
   const schema={...directorySchema,mainEntity:{...directorySchema.mainEntity,numberOfItems:catalog.length,itemListElement:catalog.map((product,index)=>({"@type":"ListItem",position:index+1,name:product.name,url:`${siteUrl}/products/${product.id}`}))}};
   return <><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeSchema(schema) }}/><Directory catalog={catalog} sponsored={sponsored} launches={launches}/></>;

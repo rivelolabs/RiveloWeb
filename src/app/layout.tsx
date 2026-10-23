@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { themeBootstrap } from "@/lib/theme";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { Suspense } from "react";
+import NavProgress from "@/components/NavProgress";
 import "./globals.css";
 
 const inter = Inter({
@@ -70,6 +72,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}
       >
+        <Suspense fallback={null}><NavProgress /></Suspense>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

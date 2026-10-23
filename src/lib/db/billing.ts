@@ -1,4 +1,5 @@
 import type {PoolClient} from 'pg';
+import {bust,cached} from '@/lib/cache';
 import {db} from './index';
 import type {PlanId,RzPayment,RzSubscription} from '@/lib/billing/razorpay';
 
@@ -14,21 +15,21 @@ export async function listPlans():Promise<Plan[]>{
 const ts=(s:number|null|undefined)=>s?new Date(s*1000):null;
 const STATUSES=['created','authenticated','active','pending','halted','cancelled','completed','expired'];
 
-export async function recordNewSubscription(input:{userId:string;plan:PlanId;productId:string;sub:RzSubscription;slotIndex?:number}){
+export async function recordNewSubscription(input:{userId:string;plan:PlanId;productId:string;sub:RzSubscription;slotIndex?:number}){bust('billing');
   await db().query(`INSERT INTO rivelo.subscriptions (user_id,plan_id,product_id,status,razorpay_subscription_id,razorpay_plan_id,slot_index) VALUES ($1,$2,$3,'created',$4,$5,$6)`,
     [input.userId,input.plan,input.productId,input.sub.id,input.sub.plan_id,input.slotIndex??null]);
 }
 async function withTx<T>(fn:(c:PoolClient)=>Promise<T>){const c=await db().connect();try{await c.query('BEGIN');const r=await fn(c);await c.query('COMMIT');return r;}catch(e){await c.query('ROLLBACK').catch(()=>{});throw e;}finally{c.release();}}
 
 /** Sync status/period from Razorpay's subscription entity. Returns our row (or null if unknown). */
-export async function syncSubscription(sub:RzSubscription,c?:PoolClient){
+export async function syncSubscription(sub:RzSubscription,c?:PoolClient){bust('billing');
   const status=STATUSES.includes(sub.status)?sub.status:'pending';
   const r=await (c||db()).query(`UPDATE rivelo.subscriptions SET status=$2,current_period_start=COALESCE($3,current_period_start),current_period_end=COALESCE($4,current_period_end) WHERE razorpay_subscription_id=$1 RETURNING id,user_id,plan_id,product_id,slot_index`,
     [sub.id,status,ts(sub.current_start),ts(sub.current_end)]);
   return r.rows[0] as {id:string;user_id:string;plan_id:PlanId;product_id:string;slot_index:number|null}|undefined;
 }
 /** Record a captured payment and grant that cycle's homepage header week. Idempotent per payment id. */
-export async function recordPaymentAndGrant(sub:RzSubscription,payment:RzPayment){
+export async function recordPaymentAndGrant(sub:RzSubscription,payment:RzPayment){bust('billing');
   return withTx(async c=>{
     const row=await syncSubscription(sub,c);if(!row)return false;
     await c.query(`INSERT INTO rivelo.payments (user_id,subscription_id,razorpay_payment_id,razorpay_invoice_id,amount_cents,currency,status) VALUES ($1,$2,$3,$4,$5,$6,$7)
@@ -52,7 +53,7 @@ export async function claimEvent(id:string,event:string,payload:unknown){
   const r=await db().query(`INSERT INTO rivelo.billing_events (id,event,payload) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING RETURNING id`,[id,event,JSON.stringify(payload)]);
   return r.rowCount===1;
 }
-export async function stopPlacements(razorpaySubscriptionId:string){
+export async function stopPlacements(razorpaySubscriptionId:string){bust('billing');
   // Keep the already-paid week; cancel only future, unstarted placements.
   await db().query(`UPDATE rivelo.featured_placements f SET status='cancelled' FROM rivelo.subscriptions s WHERE f.subscription_id=s.id AND s.razorpay_subscription_id=$1 AND f.starts_at>now()`,[razorpaySubscriptionId]);
 }
@@ -65,7 +66,7 @@ export async function userSubscriptions(userId:string){
 export async function ownedSubscription(userId:string,id:string){
   const r=await db().query(`SELECT razorpay_subscription_id FROM rivelo.subscriptions WHERE id=$1 AND user_id=$2`,[id,userId]);return r.rows[0]?.razorpay_subscription_id as string|undefined;
 }
-export async function markCancelAtPeriodEnd(id:string){await db().query(`UPDATE rivelo.subscriptions SET cancel_at_period_end=true WHERE id=$1`,[id]);}
+export async function markCancelAtPeriodEnd(id:string){bust('billing');await db().query(`UPDATE rivelo.subscriptions SET cancel_at_period_end=true WHERE id=$1`,[id]);}
 /** Header placements live right now (homepage hero). */
 export async function liveSpotlights(limit=5){
   const r=await db().query(`SELECT id,product_id,headline,image_url,ends_at FROM rivelo.featured_placements WHERE slot='header' AND status='scheduled' AND now() BETWEEN starts_at AND ends_at ORDER BY starts_at LIMIT $1`,[limit]);
@@ -83,7 +84,7 @@ export async function yachtBookings(){
 /* ───────── Dodo Payments ───────── */
 const DODO_STATUS:Record<string,string>={active:'active',pending:'pending',on_hold:'halted',paused:'halted',cancelled:'cancelled',failed:'expired',expired:'expired'};
 /** Create or update our subscription row from a Dodo webhook (keyed by Dodo's subscription id). */
-export async function upsertDodoSubscription(input:{subscriptionId:string;userId:string;plan:PlanId;listingId:string;yacht?:number|null;status:string;periodEnd?:string|null}){
+export async function upsertDodoSubscription(input:{subscriptionId:string;userId:string;plan:PlanId;listingId:string;yacht?:number|null;status:string;periodEnd?:string|null}){bust('billing');
   const status=DODO_STATUS[input.status]||'pending';
   const r=await db().query(`INSERT INTO rivelo.subscriptions (user_id,plan_id,product_id,status,razorpay_subscription_id,provider,slot_index,current_period_end)
       VALUES ($1,$2,$3,$4,$5,'dodo',$6,$7)
@@ -92,7 +93,7 @@ export async function upsertDodoSubscription(input:{subscriptionId:string;userId
   return r.rows[0] as {id:string;user_id:string;plan_id:PlanId;product_id:string;slot_index:number|null};
 }
 /** Record a Dodo payment for a subscription and grant that cycle's placements (idempotent per payment id). */
-export async function grantDodoCycle(subscriptionId:string,payment:{id:string;amountCents:number;currency:string}){
+export async function grantDodoCycle(subscriptionId:string,payment:{id:string;amountCents:number;currency:string}){bust('billing');
   return withTx(async c=>{
     const s=await c.query(`SELECT id,user_id,plan_id,product_id,slot_index FROM rivelo.subscriptions WHERE razorpay_subscription_id=$1`,[subscriptionId]);
     const row=s.rows[0];if(!row)return false;
@@ -110,8 +111,12 @@ export async function grantDodoCycle(subscriptionId:string,payment:{id:string;am
     return true;
   });
 }
-export async function setDodoStatus(subscriptionId:string,status:string){
+export async function setDodoStatus(subscriptionId:string,status:string){bust('billing');
   await db().query(`UPDATE rivelo.subscriptions SET status=$2 WHERE razorpay_subscription_id=$1`,[subscriptionId,DODO_STATUS[status]||'pending']);
   if(['cancelled','failed','expired','on_hold'].includes(status))await stopPlacements(subscriptionId);
 }
 export async function subscriptionProvider(id:string){const r=await db().query(`SELECT provider,razorpay_subscription_id FROM rivelo.subscriptions WHERE id=$1`,[id]);return r.rows[0] as {provider:string;razorpay_subscription_id:string}|undefined;}
+
+/** Cached reads for public pages (checkout always uses the live yachtBookings()). */
+export const cachedSpotlights=cached(()=>liveSpotlights(),'spotlights',['billing'],60);
+export const cachedYachtSlots=cached(async()=>[...(await yachtBookings()).entries()],'yacht-slots',['billing'],60);

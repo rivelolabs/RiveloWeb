@@ -2,15 +2,17 @@ import * as file from './file-store';
 import {postgresEnabled,readPostgres,readPostgresPublic,updatePostgres} from './postgres';
 import {buildPublicSnapshot} from './snapshot';
 import type {CatalogState} from './types';
+import {bust,cached} from '@/lib/cache';
+const publicSnapshot=cached(()=>readPostgresPublic(),'public-catalog',['catalog'],120);
 export const catalogDirectory=file.catalogDirectory;
 export const initialState=file.initialState;
 export function storageConfigured(){return postgresEnabled()?!!process.env.DATABASE_URL:!!catalogDirectory();}
 export async function readCatalog():Promise<CatalogState>{return postgresEnabled()?readPostgres():file.readCatalog();}
-export async function updateCatalog<T>(fn:(state:CatalogState)=>T):Promise<T>{return postgresEnabled()?updatePostgres(fn):file.updateCatalog(fn);}
+export async function updateCatalog<T>(fn:(state:CatalogState)=>T):Promise<T>{const result=await (postgresEnabled()?updatePostgres(fn):file.updateCatalog(fn));bust('catalog');return result;}
 // Public pages should never crash because the database is briefly unreachable: show an empty catalog and log the cause.
 export async function readPublicCatalog(){
   if(!postgresEnabled())return buildPublicSnapshot(file.readCatalog());
-  try{return await readPostgresPublic();}
+  try{return await publicSnapshot();}
   catch(error){console.error('[rivelo] public catalog unavailable:',error instanceof Error?error.message:error);return buildPublicSnapshot(file.initialState());}
 }
 export async function publicProducts(){return (await readPublicCatalog()).products;}

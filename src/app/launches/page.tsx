@@ -3,13 +3,13 @@ import Link from 'next/link';
 import {ArrowUpRight,Rocket} from 'lucide-react';
 import CommunityShell from '@/components/CommunityShell';
 import {dbEnabled} from '@/lib/db';
-import {recentLaunches,type Launch} from '@/lib/db/trending';
+import {cachedRecentLaunches,type Launch} from '@/lib/db/trending';
 import '../directory.css';
 export const dynamic='force-dynamic';
 export const metadata:Metadata={title:'New launches — Apps & websites launching this week',description:'Fresh app and website launches from Product Hunt and the Rivelo Labs community, updated through the day.',alternates:{canonical:'https://rivelolabs.com/launches'}};
-const SOURCE:Record<Launch['source'],string>={producthunt:'Product Hunt',indiehackers:'Indie Hackers',rivelo:'Rivelo'};
+const SOURCE:Record<Launch['source'],string>={producthunt:'Product Hunt',indiehackers:'Indie Hackers',rivelo:'Rivelo',hackernews:'Show HN'};
 export default async function Page(){
-  const launches=dbEnabled()?await recentLaunches(100,14).catch(()=>[]):[];
+  const launches=dbEnabled()?await cachedRecentLaunches(100,14).catch(()=>[]):[];
   const days=new Map<string,Launch[]>();
   for(const l of launches){const d=new Date(l.launchedAt).toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});days.set(d,[...(days.get(d)||[]),l]);}
   return <CommunityShell active="/launches"><main className="rc-content">

@@ -2,22 +2,30 @@ import type {Metadata} from 'next';
 import MapExplorer from '@/components/MapExplorer';
 import {readCatalog,readPublicCatalog} from '@/lib/catalog/store';
 import {avatarsByEmail,dbEnabled} from '@/lib/db';
-import {yachtBookings} from '@/lib/db/billing';
-import {makerAvatarMap,makerPins} from '@/lib/db/makers';
+import {cachedYachtSlots} from '@/lib/db/billing';
+import {cachedMakerPins} from '@/lib/db/makers';
+import {cached} from '@/lib/cache';
 import {YACHTS,type YachtSpot} from '@/lib/yachts';
 import '../directory.css';
 export const dynamic='force-dynamic';
 export const metadata:Metadata={title:'Business map — Find apps & websites near you',description:'Explore owner-registered apps and websites by location and category on the Rivelo Labs business map.',alternates:{canonical:'https://rivelolabs.com/map'}};
-export default async function Page(){
-  const {pins,products}=await readPublicCatalog();
-  const booked=dbEnabled()?await yachtBookings().catch(()=>new Map<number,string>()):new Map<number,string>();
-  const yachts:YachtSpot[]=YACHTS.map(y=>{const id=booked.get(y.index);const p=id?products.find(x=>x.id===id):undefined;return {...y,product:p?{id:p.id,name:p.name,url:p.url||`/products/${p.id}`,logo:p.logo||null}:undefined};});
-  const makers=dbEnabled()?await makerPins().catch(()=>[]):[];
-  // Each pin shows the product logo, or the lister's X/Google profile photo. Emails never leave the server.
+// Pin photos need lister emails, which stay on the server; cache the resulting id -> photo map.
+const pinAvatars=cached(async()=>{
   const full=await readCatalog().catch(()=>null);
-  const emailOf=new Map((full?.pins||[]).map(p=>[p.id,p.email]));
+  const emailOf=new Map((full?.pins||[]).map(p=>[p.id,p.email.toLowerCase()]));
   const avatars=await avatarsByEmail([...emailOf.values()]).catch(()=>new Map<string,string>());
-  const withPhotos=pins.map(p=>{const logo=products.find(x=>x.id===p.productId)?.logo;const e=emailOf.get(p.id)?.toLowerCase();return {...p,avatar:logo||(e?avatars.get(e):undefined)||null};});
-  const makerAvatars=dbEnabled()?await makerAvatarMap().catch(()=>new Map<string,string>()):new Map<string,string>();
-  return <MapExplorer pins={[...withPhotos,...makers.map(m=>({...m,avatar:makerAvatars.get(m.id)||null}))]} yachts={yachts}/>;
+  return [...emailOf].flatMap(([id,e])=>avatars.get(e)?[[id,avatars.get(e)!] as [string,string]]:[]);
+},'map-pin-avatars',['catalog','profiles'],300);
+export default async function Page(){
+  // Everything is read in parallel and from the short-lived cache, so the map opens without waiting on the database.
+  const [{pins,products},slots,makers,photos]=await Promise.all([
+    readPublicCatalog(),
+    dbEnabled()?cachedYachtSlots().catch(()=>[] as [number,string][]):Promise.resolve([] as [number,string][]),
+    dbEnabled()?cachedMakerPins().catch(()=>[]):Promise.resolve([]),
+    dbEnabled()?pinAvatars().catch(()=>[] as [string,string][]):Promise.resolve([] as [string,string][]),
+  ]);
+  const booked=new Map(slots),photo=new Map(photos);
+  const yachts:YachtSpot[]=YACHTS.map(y=>{const id=booked.get(y.index);const p=id?products.find(x=>x.id===id):undefined;return {...y,product:p?{id:p.id,name:p.name,url:p.url||`/products/${p.id}`,logo:p.logo||null}:undefined};});
+  const withPhotos=pins.map(p=>({...p,avatar:products.find(x=>x.id===p.productId)?.logo||photo.get(p.id)||null}));
+  return <MapExplorer pins={[...withPhotos,...makers]} yachts={yachts}/>;
 }

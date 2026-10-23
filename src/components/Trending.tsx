@@ -3,9 +3,9 @@ import Link from 'next/link';
 import {ArrowUpRight,ChevronUp,Flame,Rocket} from 'lucide-react';
 import type {Product} from '@/lib/directory';
 
-export type LaunchItem={id:string;source:'producthunt'|'indiehackers'|'rivelo';name:string;tagline:string;url:string;image:string|null;votes:number;launchedAt:string};
+export type LaunchItem={id:string;source:'producthunt'|'indiehackers'|'rivelo'|'hackernews';name:string;tagline:string;url:string;image:string|null;votes:number;launchedAt:string};
 export type Votes={counts:Record<string,{total:number;week:number}>;mine:string[]};
-const SOURCE:Record<LaunchItem['source'],string>={producthunt:'Product Hunt',indiehackers:'Indie Hackers',rivelo:'New on Rivelo'};
+const SOURCE:Record<LaunchItem['source'],string>={producthunt:'Product Hunt',indiehackers:'Indie Hackers',rivelo:'New on Rivelo',hackernews:'Show HN'};
 
 export function UpvoteButton({productId,votes,onVote,compact=false}:{productId:string;votes:Votes;onVote:(id:string)=>void;compact?:boolean}){
   const on=votes.mine.includes(productId),n=votes.counts[productId]?.total||0;
