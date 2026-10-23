@@ -5,9 +5,9 @@ import type {PlanId,RzPayment,RzSubscription} from '@/lib/billing/razorpay';
 
 export type Plan={id:PlanId;name:string;priceCents:number;currency:string;interval:string;spotlightDays:number;aiReports:boolean;features:string[]};
 export const FALLBACK_PLANS:Plan[]=[
-  {id:'spotlight',name:'Spotlight',priceCents:1500,currency:'USD',interval:'week',spotlightDays:7,aiReports:false,features:['Your product in the homepage header all week','Promoted spot in Trending','Sponsored badge on your listing','Renews weekly, cancel anytime']},
+  {id:'spotlight',name:'Spotlight',priceCents:1500,currency:'USD',interval:'week',spotlightDays:7,aiReports:false,features:['Pinned at the top of Trending this week','Featured first in Fresh launches','Sponsored badge on your listing','Renews weekly, cancel anytime']},
   {id:'yacht',name:'Map yacht',priceCents:2000,currency:'USD',interval:'week',spotlightDays:7,aiReports:false,features:['Your logo and name on one of 5 premium yachts on the world map','Every map visitor can click through to your product','Sponsored label, renews weekly, cancel anytime']},
-  {id:'growth',name:'Growth',priceCents:5000,currency:'USD',interval:'month',spotlightDays:7,aiReports:true,features:['More on-demand SEO checks','Everything in Spotlight (7 days in the homepage header every month)','1 map yacht free all month','AI analysis of your listing and positioning','Automated SEO tracking with AI suggestions you can apply','Monthly report emailed to you']},
+  {id:'growth',name:'Growth',priceCents:5000,currency:'USD',interval:'month',spotlightDays:7,aiReports:true,features:['More on-demand SEO checks','Everything in Spotlight (7 days pinned in Trending every month)','1 map yacht free all month','AI analysis of your listing and positioning','Automated SEO tracking with AI suggestions you can apply','Monthly report emailed to you']},
 ];
 export async function listPlans():Promise<Plan[]>{
   const r=await db().query(`SELECT id,name,price_cents,currency,billing_interval,spotlight_days,ai_reports,features FROM rivelo.plans WHERE active ORDER BY sort_order`);

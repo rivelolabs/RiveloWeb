@@ -39,6 +39,9 @@ export async function updateOwnMaker(id:string,userId:string,f:{name:string;bio:
   const r=await db().query(`UPDATE rivelo.maker_pages SET name=$3,bio=$4,product_name=$5,product_url=$6,product_description=$7,city=$8,lat=$9,lng=$10,logo_url=$11 WHERE id=$1 AND claimed_by=$2 AND status='claimed' RETURNING ${COLS}`,[id,userId,f.name,f.bio,f.productName,f.productUrl,f.productDescription,f.city,f.lat,f.lng,f.logo]);
   return r.rows[0]?map(r.rows[0]):null;
 }
+/** The product link the maker gave when claiming or joining (also sets a readable product name if none yet). */
+export async function setMakerProductUrl(id:string,url:string){bust('makers');
+  await db().query(`UPDATE rivelo.maker_pages SET product_url=$2,product_name=COALESCE(NULLIF(product_name,''),$3) WHERE id=$1`,[id,url,STORE_HOSTS.has(host(url))?null:host(url)]);}
 /** A signed-in X user adds themselves: creates (or takes over their own unclaimed) page, already claimed. */
 export async function joinAsMaker(userId:string,x:{username:string;id:string;avatar:string|null},name:string){bust('makers');
   const r=await db().query(`INSERT INTO rivelo.maker_pages (x_user_id,username,name,avatar_url,status,claimed_by,claimed_at) VALUES (NULLIF($1,''),$2,$3,$4,'claimed',$5,now())

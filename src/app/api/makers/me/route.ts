@@ -21,6 +21,7 @@ export async function PATCH(request:NextRequest){
     if(b.remove===true){await removeOwnMaker(maker.id,user.id);return NextResponse.json({removed:true});}
     const x=xIdentity(user);if(x?.avatar&&x.avatar!==maker.avatar)await setMakerAvatar(maker.id,x.avatar).catch(()=>{});
     const lat=typeof b.lat==='number'&&Math.abs(b.lat)<=85?b.lat:null,lng=typeof b.lng==='number'&&Math.abs(b.lng)<=180?b.lng:null;
+    if(!String(b.productUrl||'').trim())return NextResponse.json({error:'Add the link to your app or website.'},{status:400});
     const updated=await updateOwnMaker(maker.id,user.id,{name:shortText(b.name,120)||maker.name,bio:shortText(b.bio,400),productName:shortText(b.productName,120),productUrl:b.productUrl?imageUrl(b.productUrl)||null:null,productDescription:shortText(b.productDescription,1500),city:shortText(b.city,100)||null,lat:lat!==null&&lng!==null?lat:null,lng:lat!==null&&lng!==null?lng:null,logo:b.logo?imageUrl(b.logo)||null:null});
     return NextResponse.json({maker:updated});
   }catch(error){return NextResponse.json({error:error instanceof Error?error.message:'Could not save.'},{status:400});}

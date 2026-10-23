@@ -19,7 +19,7 @@ const slides: Slide[] = [
 
 const INTERVAL = 5000;
 
-export type SponsoredSlide = { id: string; name: string; tagline: string; url: string; image?: string | null };
+export type SponsoredSlide = { id: string; name: string; tagline: string; url: string; image?: string | null; logo?: string | null };
 
 export default function HeroSlider({ first, sponsored = [] }: { first?: ReactNode; sponsored?: SponsoredSlide[] }) {
   // Paid "header" placements first, then the image slides, and the house card last.

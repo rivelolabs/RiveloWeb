@@ -37,3 +37,4 @@
   .bl-points{grid-column:3;flex-direction:row;align-items:baseline;gap:8px;justify-content:flex-start}.bl-points strong{font-size:15px}
   .bl-you{flex-direction:column;align-items:stretch}.bl-head p{font-size:14px}.bl-tabs a{padding:8px 13px}}
 .bl-tags .bl-tag{display:inline-flex;align-items:center;padding:4px 10px;border:1px solid var(--rd-line);border-radius:8px;font-size:13px;color:var(--rd-muted)}
+.bl-you-join input{margin-top:12px;width:100%;max-width:420px;height:42px;padding:0 12px;border:1px solid var(--rd-line);border-radius:10px;background:var(--rd-surface);color:var(--rd-ink);font:inherit;font-size:14px}

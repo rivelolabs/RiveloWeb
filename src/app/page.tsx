@@ -30,7 +30,9 @@ export default async function Home() {
   const builders:BuilderCard[]=db?rankBuilders(await cachedBuilders().catch(()=>[]),'top').slice(0,6).map(b=>({username:b.username,name:b.name,photo:b.photo,logo:b.logo,claimed:b.claimed,place:shortPlace(b.city),flag:flag(b.country),product:b.product&&b.product!==b.name?b.product:null,points:b.points,week:b.week,bio:b.bio.slice(0,120)})):[];
   if(db){
     const makerSpots=await promotedMakers(spots.map(s=>s.productId)).catch(()=>new Map());
-    sponsored=spots.flatMap(s=>{const p=catalog.find(x=>x.id===s.productId);if(p)return [{id:p.id,name:p.name,tagline:s.headline||p.tagline,url:p.url||`${siteUrl}/products/${p.id}`,image:s.image||null}];const m=makerSpots.get(s.productId.toLowerCase());return m?[{id:m.id,name:m.name,tagline:s.headline||m.tagline,url:m.url,image:s.image||m.logo}]:[];});
+    sponsored=spots.flatMap(s=>{const p=catalog.find(x=>x.id===s.productId);if(p)return [{id:p.id,name:p.name,tagline:s.headline||p.tagline,url:p.url||`${siteUrl}/products/${p.id}`,image:s.image||null,logo:p.logo||null}];const m=makerSpots.get(s.productId.toLowerCase());return m?[{id:m.id,name:m.name,tagline:s.headline||m.tagline,url:m.url,image:s.image||null,logo:m.logo}]:[];});
+    // The same product can hold two Spotlight purchases (e.g. bought twice); show it once.
+    sponsored=sponsored.filter((x,i,a)=>a.findIndex(y=>y.id===x.id)===i);
     after(()=>countSpotlightImpressions(spots.map(s=>s.id)));
   }
   const schema={...directorySchema,mainEntity:{...directorySchema.mainEntity,numberOfItems:catalog.length,itemListElement:catalog.map((product,index)=>({"@type":"ListItem",position:index+1,name:product.name,url:`${siteUrl}/products/${product.id}`}))}};

@@ -18,7 +18,7 @@ const sections: LegalSection[] = [
       <>
         <p>Listing a product on Rivelo Labs, claiming a listing and joining the community are free. Paid plans are optional promotion:</p>
         <ul>
-          <li><strong>Spotlight</strong> &mdash; USD 15 per week. Your product in the homepage header and a promoted spot in Trending.</li>
+          <li><strong>Spotlight</strong> &mdash; USD 15 per week. Your product pinned at the top of Trending this week and first in Fresh launches on the homepage.</li>
           <li><strong>Map yacht</strong> &mdash; USD 20 per week. Your logo and link on one of five premium yachts on the world map.</li>
           <li><strong>Growth</strong> &mdash; USD 50 per month. Spotlight for 7 days each month, one map yacht for the month, AI analysis and SEO tracking with suggestions, and a monthly report.</li>
         </ul>

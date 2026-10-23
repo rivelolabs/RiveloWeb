@@ -53,3 +53,5 @@
 .mk-form .rd-form-row>*{min-width:0}
 .mk-form label small{font-weight:400;color:var(--rd-muted)}
 @media(max-width:640px){.mk-form .rd-form-row{grid-template-columns:1fr}.mk-actions{flex-wrap:wrap}.mk-actions>span{display:none}.mk-actions .rd-button{flex:1 1 auto;justify-content:center}}
+.mk-claim-url{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;width:100%}
+.mk-claim-url input{height:44px;padding:0 12px;border:1px solid var(--rd-line);border-radius:10px;background:var(--rd-surface);color:var(--rd-ink);font:inherit;font-size:14px;font-weight:400;width:100%}

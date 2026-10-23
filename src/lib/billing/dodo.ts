@@ -36,3 +36,21 @@ export async function cancelDodoSubscription(subscriptionId:string){
   const r=await fetch(`${base}/subscriptions/${encodeURIComponent(subscriptionId)}`,{method:'PATCH',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},body:JSON.stringify({cancel_at_next_billing_date:true}),cache:'no-store',signal:AbortSignal.timeout(15000)});
   if(!r.ok){const d=await r.json().catch(()=>({}));throw Error(d?.message||'Could not cancel. Email hello@rivelolabs.com and we’ll do it for you.');}
 }
+
+/** Reads a subscription from Dodo (needs DODO_API_KEY). Used to confirm a purchase when the buyer returns from checkout. */
+export async function fetchDodoSubscription(subscriptionId:string){
+  const key=process.env.DODO_API_KEY;if(!key)throw Error('DODO_API_KEY is not set.');
+  const base=dodoMode()==='live'?'https://live.dodopayments.com':'https://test.dodopayments.com';
+  const r=await fetch(`${base}/subscriptions/${encodeURIComponent(subscriptionId)}`,{headers:{Authorization:`Bearer ${key}`},cache:'no-store',signal:AbortSignal.timeout(10000)});
+  const d=await r.json().catch(()=>null);if(!r.ok||!d)throw Error(d?.message||`Dodo error ${r.status}`);
+  return d as {subscription_id:string;product_id?:string;status?:string;next_billing_date?:string;previous_billing_date?:string;recurring_pre_tax_amount?:number;currency?:string;metadata?:Record<string,string>};
+}
+
+/** Recent subscriptions on the Dodo account (newest first). */
+export async function listDodoSubscriptions(){
+  const key=process.env.DODO_API_KEY;if(!key)throw Error('DODO_API_KEY is not set.');
+  const base=dodoMode()==='live'?'https://live.dodopayments.com':'https://test.dodopayments.com';
+  const r=await fetch(`${base}/subscriptions?page_size=100`,{headers:{Authorization:`Bearer ${key}`},cache:'no-store',signal:AbortSignal.timeout(10000)});
+  const d=await r.json().catch(()=>null);if(!r.ok||!d)throw Error(d?.message||`Dodo error ${r.status}`);
+  return ((d.items||[]) as {subscription_id:string;metadata?:Record<string,string>;status?:string}[]);
+}
