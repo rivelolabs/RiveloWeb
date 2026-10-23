@@ -6,6 +6,7 @@ import CommunityShell from '@/components/CommunityShell';
 import {dbEnabled} from '@/lib/db';
 import {cachedRecentLaunches,type Launch} from '@/lib/db/trending';
 import {refreshLaunchesIfStale} from '@/lib/launches/refresh';
+import {cachedBuilders,withBuilderLaunches} from '@/lib/db/builders';
 import '../directory.css';
 import '../builders.css';
 export const dynamic='force-dynamic';
@@ -21,7 +22,7 @@ type Props={searchParams:Promise<{source?:string}>};
 export default async function Page({searchParams}:Props){
   const {source:raw}=await searchParams;const source=TABS.some(t=>t[0]===raw)?raw!:'all';
   if(dbEnabled())after(()=>refreshLaunchesIfStale().catch(()=>null));
-  const all=dbEnabled()?await cachedRecentLaunches(200,14).catch(()=>[]):[];
+  const all=dbEnabled()?withBuilderLaunches(await cachedRecentLaunches(200,14).catch(()=>[]),await cachedBuilders().catch(()=>[])):[];
   const launches=all.filter(l=>source==='all'||l.source===source);
   const days=new Map<string,Launch[]>();
   for(const l of launches){const k=dayKey(l.launchedAt);days.set(k,[...(days.get(k)||[]),l]);}

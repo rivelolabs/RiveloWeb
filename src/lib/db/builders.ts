@@ -3,6 +3,7 @@ import {cached} from '@/lib/cache';
 import {productLabel,xPhoto} from './makers';
 import {countryCode} from '@/lib/flags';
 import type {Genre,Product} from '@/lib/directory';
+import type {Launch} from './trending';
 
 /**
  * Builders leaderboard. Points are earned on Rivelo, and the rules are public on /makers#points:
@@ -76,4 +77,17 @@ export function builderProducts(all:Builder[]):Product[]{
       platforms:store?[store]:['Web'],type:store?'App':'Website',color:['lilac','lime','peach','butter','blue'][b.username.length%5],letter:name.slice(0,1).toLowerCase(),
       url:u,logo:b.logo||b.photo,claimed:true} as Product;
   });
+}
+
+/** Builder pages (added through X) joined in the last `days`, as launches on /launches and Fresh launches. */
+export function builderLaunches(all:Builder[],days=14):Launch[]{
+  const since=Date.now()-days*86400000;
+  return builderProducts(all).flatMap(p=>{const b=all.find(x=>`maker:${x.username}`===p.id)!;if(Date.parse(b.joinedAt)<since)return [];
+    return [{id:p.id,source:'rivelo' as const,name:p.name,tagline:p.tagline,url:`/makers/${b.username}`,website:p.url||null,image:p.logo||null,votes:b.upvotes,comments:0,launchedAt:b.joinedAt,topics:[GENRE[b.category]||'Productivity']}];});
+}
+/** Adds builder launches to a launch list, skipping ones whose website is already there. */
+export function withBuilderLaunches(list:Launch[],all:Builder[]){
+  const host=(u:string|null)=>{try{return u?new URL(u).href.replace(/^https?:\/\/(www\.)?/,'').replace(/\/$/,''):'';}catch{return '';}};
+  const seen=new Set(list.flatMap(l=>[host(l.website),host(l.url)]).filter(Boolean));
+  return [...list,...builderLaunches(all).filter(l=>!seen.has(host(l.website)))].sort((a,b)=>b.launchedAt.slice(0,10).localeCompare(a.launchedAt.slice(0,10))||b.votes-a.votes);
 }

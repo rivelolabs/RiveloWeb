@@ -8,7 +8,7 @@ import { after } from "next/server";
 import { promotedMakers } from "@/lib/db/makers";
 import { cachedRecentLaunches, type Launch } from "@/lib/db/trending";
 import { directorySchema, serializeSchema, shareImage, siteUrl } from "@/lib/seo";
-import { cachedBuilders, rankBuilders, builderProducts } from "@/lib/db/builders";
+import { cachedBuilders, rankBuilders, builderProducts, withBuilderLaunches } from "@/lib/db/builders";
 import { flag, shortPlace } from "@/lib/flags";
 import type { BuilderCard } from "@/components/TopBuilders";
 import "./directory.css";
@@ -32,6 +32,7 @@ export default async function Home() {
   // Products added through X builder pages appear in Apps / Websites too (unless already listed by URL).
   const listedUrls=new Set(catalog.map(p=>p.url).filter(Boolean));
   catalog.push(...builderProducts(allBuilders).filter(p=>!listedUrls.has(p.url)));
+  const freshLaunches=withBuilderLaunches(launches,allBuilders).slice(0,12);
   const builders:BuilderCard[]=db?rankBuilders(allBuilders,'top').slice(0,6).map(b=>({username:b.username,name:b.name,photo:b.photo,logo:b.logo,claimed:b.claimed,place:shortPlace(b.city),flag:flag(b.country),product:b.product&&b.product!==b.name?b.product:null,points:b.points,week:b.week,bio:b.bio.slice(0,120)})):[];
   if(db){
     const makerSpots=await promotedMakers(spots.map(s=>s.productId)).catch(()=>new Map());
@@ -41,5 +42,5 @@ export default async function Home() {
     after(()=>countSpotlightImpressions(spots.map(s=>s.id)));
   }
   const schema={...directorySchema,mainEntity:{...directorySchema.mainEntity,numberOfItems:catalog.length,itemListElement:catalog.map((product,index)=>({"@type":"ListItem",position:index+1,name:product.name,url:`${siteUrl}/products/${product.id}`}))}};
-  return <><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeSchema(schema) }}/><Directory catalog={catalog} sponsored={sponsored} launches={launches} builders={builders}/></>;
+  return <><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeSchema(schema) }}/><Directory catalog={catalog} sponsored={sponsored} launches={freshLaunches} builders={builders}/></>;
 }
