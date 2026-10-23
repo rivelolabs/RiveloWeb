@@ -5,6 +5,8 @@ import {rateLimit} from '@/lib/catalog/limit';
 import {dbEnabled,upsertProfile} from '@/lib/db';
 import {myVotes,toggleVote,voteCounts} from '@/lib/db/trending';
 import {commentCounts} from '@/lib/db/comments';
+import {notifyUpvote} from '@/lib/db/notifications';
+import {after} from 'next/server';
 import {publicProducts} from '@/lib/catalog/store';
 import {products as staticProducts} from '@/lib/directory';
 import {builderProducts,cachedBuilders} from '@/lib/db/builders';
@@ -25,6 +27,7 @@ export async function POST(request:NextRequest){
     if(!known)return NextResponse.json({error:'Product not found.'},{status:404});
     await upsertProfile(user);
     const voted=await toggleVote(user.id,productId);
+    if(voted)after(()=>notifyUpvote(user,productId));
     return NextResponse.json({voted});
   }catch(error){return NextResponse.json({error:error instanceof Error?error.message:'Could not vote.'},{status:400});}
 }

@@ -7,6 +7,8 @@ import {dbEnabled,upsertProfile} from '@/lib/db';
 import {addComment,deleteOwnComment,listComments} from '@/lib/db/comments';
 import {publicProducts} from '@/lib/catalog/store';
 import {builderProducts,cachedBuilders} from '@/lib/db/builders';
+import {notifyComment} from '@/lib/db/notifications';
+import {after} from 'next/server';
 export const runtime='nodejs';export const dynamic='force-dynamic';
 const validId=(v:unknown):v is string=>typeof v==='string'&&/^[\w.:\/-]{1,120}$/.test(v);
 export async function GET(request:NextRequest){
@@ -32,6 +34,8 @@ export async function POST(request:NextRequest){
     if(text.length<2)return NextResponse.json({error:'Write a comment first.'},{status:400});
     await upsertProfile(user);
     const avatar=typeof user.user_metadata?.avatar_url==='string'?user.user_metadata.avatar_url:typeof user.user_metadata?.picture==='string'?user.user_metadata.picture:null;
-    return NextResponse.json({comment:await addComment({productId:b.productId,userId:user.id,author:displayName(user),avatar,body:text})},{status:201});
+    const comment=await addComment({productId:b.productId,userId:user.id,author:displayName(user),avatar,body:text});
+    after(()=>notifyComment(user,b.productId,text));
+    return NextResponse.json({comment},{status:201});
   }catch(error){return NextResponse.json({error:error instanceof Error?error.message:'Could not post comment.'},{status:400});}
 }
