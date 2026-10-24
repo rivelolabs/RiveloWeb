@@ -9,7 +9,7 @@ export const BOOP_GRADIENT = "linear-gradient(135deg, #14b8a6, #3b82f6)";
 
 export function SectionHeading({ id, number, title }: { id?: string; number: string; title: string }) {
   return (
-    <h2 id={id} className="flex items-baseline gap-3 text-xl font-semibold scroll-mt-24" style={{ color: "var(--text)" }}>
+    <h2 id={id} className="flex  items-baseline gap-3 text-xl font-semibold scroll-mt-24" style={{ color: "var(--text)" }}>
       <span className="text-sm font-bold" style={{ color: "var(--accent)" }}>{number}</span>
       {title}
     </h2>
