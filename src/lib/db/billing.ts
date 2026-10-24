@@ -7,7 +7,7 @@ export type Plan={id:PlanId;name:string;priceCents:number;currency:string;interv
 export const FALLBACK_PLANS:Plan[]=[
   {id:'spotlight',name:'Spotlight',priceCents:1500,currency:'USD',interval:'week',spotlightDays:7,aiReports:false,features:['Pinned at the top of Trending this week','Featured first in Fresh launches','Sponsored badge on your listing','Renews weekly, cancel anytime']},
   {id:'yacht',name:'Map yacht',priceCents:2000,currency:'USD',interval:'week',spotlightDays:7,aiReports:false,features:['Your logo and name on one of 5 premium yachts on the world map','Every map visitor can click through to your product','Sponsored label, renews weekly, cancel anytime']},
-  {id:'growth',name:'Growth',priceCents:5000,currency:'USD',interval:'month',spotlightDays:7,aiReports:true,features:['More on-demand SEO checks','Everything in Spotlight (7 days pinned in Trending every month)','1 map yacht free all month','AI analysis of your listing and positioning','Automated SEO tracking with AI suggestions you can apply','Monthly report emailed to you']},
+  {id:'growth',name:'Growth',priceCents:5000,currency:'USD',interval:'month',spotlightDays:7,aiReports:true,features:['Everything in Spotlight (7 days pinned in Trending every month)','1 map yacht free all month','Weekly search report from your Google Search Console, by email','AI-search tracking: does Claude recommend you for your buyer questions?','Claude SEO & GEO agent: titles, keywords, article outlines, llms.txt','Sales agent: leads, conversations to join and drafted emails you approve','$5 of Claude credit included every month']},
 ];
 export async function listPlans():Promise<Plan[]>{
   const r=await db().query(`SELECT id,name,price_cents,currency,billing_interval,spotlight_days,ai_reports,features FROM rivelo.plans WHERE active ORDER BY sort_order`);
@@ -59,7 +59,7 @@ export async function stopPlacements(razorpaySubscriptionId:string){bust('billin
   await db().query(`UPDATE rivelo.featured_placements f SET status='cancelled' FROM rivelo.subscriptions s WHERE f.subscription_id=s.id AND s.razorpay_subscription_id=$1 AND f.starts_at>now()`,[razorpaySubscriptionId]);
 }
 export async function userSubscriptions(userId:string){
-  const r=await db().query(`SELECT s.id,s.plan_id,s.product_id,s.status,s.razorpay_subscription_id,s.current_period_end,s.cancel_at_period_end,
+  const r=await db().query(`SELECT s.id,s.plan_id,s.product_id,s.status,s.slot_index,s.razorpay_subscription_id,s.current_period_end,s.cancel_at_period_end,
       (SELECT json_agg(json_build_object('startsAt',f.starts_at,'endsAt',f.ends_at,'status',f.status) ORDER BY f.starts_at DESC) FROM rivelo.featured_placements f WHERE f.subscription_id=s.id) placements
     FROM rivelo.subscriptions s WHERE s.user_id=$1 AND s.status<>'created' ORDER BY s.created_at DESC`,[userId]);
   return r.rows;

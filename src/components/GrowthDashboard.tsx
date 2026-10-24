@@ -1,4 +1,5 @@
 "use client";
+import GrowthAgent from './GrowthAgent';
 import {useEffect,useMemo,useState} from 'react';
 import Link from 'next/link';
 import {ArrowDown,ArrowUp,ArrowUpRight,Bot,Check,Gauge,Link2,Search,Sparkles,Wand2} from 'lucide-react';
@@ -100,6 +101,9 @@ function Moves({view}:{view:View}){
 }
 
 export default function GrowthDashboard(){
+  // Growth subscribers get the real agent; everyone else sees the preview cards below.
+  const [agentOn,setAgentOn]=useState(false);
+  useEffect(()=>{fetch('/api/agent',{cache:'no-store'}).then(r=>r.json()).then(x=>setAgentOn(!!x.growth)).catch(()=>{});},[]);
   const [range,setRange]=useState<28|90>(28),[kwTab,setKwTab]=useState<'all'|'wins'|'brand'>('all'),[metric,setMetric]=useState<'clicks'|'impressions'|'position'>('clicks');
   const [status,setStatus]=useState<Status|null>(null),[real,setReal]=useState<View|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
   useEffect(()=>{
@@ -129,7 +133,7 @@ export default function GrowthDashboard(){
   const connectBtn=<a className="rd-button rd-primary" href="/api/gsc/connect"><Search size={15}/> Connect Google Search Console</a>;
   return <div className="gd">
     {notice&&<p className="rc-notice" role="status"><Check size={16}/> {notice}</p>}
-    {!isReal&&<div className="gd-preview"><Sparkles size={16}/><span>{status?.growth&&status.configured?(status.connection?<><b>Choose your website below</b> to load your real Search Console data.</>:<><b>Connect Google Search Console</b> to replace this sample data with your real clicks, impressions and keywords. Read-only access; disconnect anytime.</>):<><b>Preview with sample data.</b> {status?.signedIn?'Connect Google Search Console for free to see your real clicks, keywords and quick wins.':'Sign in and connect Google Search Console for free to see your real clicks, keywords and quick wins.'} The Claude SEO agent and AI-search tracking come with Growth and are set up within 2–6 hours during working hours.</>}</span>{!status?.connection&&(status?.signedIn?connectBtn:<a className="rd-button rd-primary" href="/login?next=/growth">Sign in to connect</a>)}</div>}
+    {!isReal&&<div className="gd-preview"><Sparkles size={16}/><span>{status?.growth&&status.configured?(status.connection?<><b>Choose your website below</b> to load your real Search Console data.</>:<><b>Connect Google Search Console</b> to replace this sample data with your real clicks, impressions and keywords. Read-only access; disconnect anytime.</>):<><b>Preview with sample data.</b> {status?.signedIn?'Connect Google Search Console for free to see your real clicks, keywords and quick wins.':'Sign in and connect Google Search Console for free to see your real clicks, keywords and quick wins.'} The Claude SEO agent, AI-search tracking and sales agent come with Growth and switch on as soon as you subscribe.</>}</span>{!status?.connection&&(status?.signedIn?connectBtn:<a className="rd-button rd-primary" href="/login?next=/growth">Sign in to connect</a>)}</div>}
     {status?.connection&&!site&&<div className="gd-card gd-pick"><h2>Which website?</h2><p className="gd-muted">Signed in to Google as {status.connection.googleEmail||'your account'}. Pick the Search Console property to show.</p>{status.sites.length?<div className="gd-pick-list">{status.sites.map(s=><button key={s.siteUrl} className="rd-button rd-outline" onClick={()=>chooseSite(s.siteUrl)}>{siteName(s.siteUrl)}{s.siteUrl.startsWith('sc-domain:')&&<small> · whole domain</small>}</button>)}</div>:<p>No verified properties on this Google account. <a href="https://search.google.com/search-console" target="_blank" rel="noopener">Add your site in Search Console</a>, then reconnect.</p>}</div>}
     {error&&<p className="rd-error" role="alert">{error}</p>}
     <div className="gd-toolbar"><div className="gd-site"><span className="gd-site-dot" style={isReal?undefined:{background:'#9aa3ad'}}/> {site?siteName(site):'xyz.app'} <small>{isReal?`Search Console · ${status?.connection?.googleEmail||'Connected'}`:loading?'Loading Search Console…':'Sample data'}</small>{status?.connection&&<button type="button" className="gd-link" onClick={disconnect}>Disconnect</button>}{status?.connection&&status.sites.length>1&&site&&<select className="gd-site-select" value={site} onChange={e=>chooseSite(e.target.value)} aria-label="Switch website">{status.sites.map(s=><option key={s.siteUrl} value={s.siteUrl}>{siteName(s.siteUrl)}</option>)}</select>}</div><div className="gd-seg" role="group" aria-label="Date range">{([28,90] as const).map(r=><button key={r} aria-pressed={range===r} onClick={()=>setRange(r)}>Last {r} days</button>)}</div></div>
@@ -151,13 +155,13 @@ export default function GrowthDashboard(){
         {isReal&&view.pages.length>0?(()=>{const max=Math.max(...view.pages.map(p=>p.clicks),1);return <ul className="gd-pages">{view.pages.slice(0,10).map(pg=><li key={pg.key}><div className="gd-page-top"><span className="gd-url" title={pg.key}>{pg.key.replace(/^https?:\/\/[^/]+/,'')||'/'}</span><b>{fmt(pg.clicks)}</b></div><div className="gd-page-bar"><i style={{width:`${pg.clicks/max*100}%`}}/></div><small>{fmt(pg.impressions)} impressions · {(pg.impressions?pg.clicks/pg.impressions*100:0).toFixed(1)}% CTR · position {pg.position}</small></li>)}</ul>;})():<p className="gd-muted">Connect Search Console to see which pages bring visitors.</p>}</section>
     </div>
 
-    <div className="gd-two">
-      <section className="gd-card gd-agent"><div className="gd-card-head"><h2><Wand2 size={17}/> Claude SEO agent</h2>{isReal?<span className="gd-tag">Activates within 2–6 hours</span>:<span className="gd-credit" title="Resets on your billing date">AI credit <b>${(credit.total-credit.used).toFixed(2)}</b> of ${credit.total.toFixed(2)} left</span>}</div>
+    {agentOn?<GrowthAgent/>:<div className="gd-two">
+      <section className="gd-card gd-agent"><div className="gd-card-head"><h2><Wand2 size={17}/> Claude SEO agent</h2>{isReal?<span className="gd-tag">Included with Growth</span>:<span className="gd-credit" title="Resets on your billing date">AI credit <b>${(credit.total-credit.used).toFixed(2)}</b> of ${credit.total.toFixed(2)} left</span>}</div>
         {!isReal&&<div className="gd-meter" aria-label={`$${credit.used} of $${credit.total} AI credit used`}><i style={{width:`${credit.used/credit.total*100}%`}}/></div>}
         <h3>{isReal?'Your top moves, from your Search Console data':'This week’s top 3 moves'}</h3>
         {isReal?<Moves view={view}/>:<ol className="gd-moves"><li><b>Target “notion alternative” on your home page.</b> You rank #11.8 with 9.3k impressions; adding it to your title and H1 could move you onto page 1.</li><li><b>Add an FAQ section.</b> Questions like “Does it work offline?” appear in 3 of the AI answers where you are missing.</li><li><b>Get listed on 2 more directories.</b> Competitor A is mentioned by AI assistants because AlternativeTo and Product Hunt both link to it.</li></ol>}
-        <div className="gd-actions"><button className="rd-button rd-primary" type="button" disabled={isReal} title={isReal?'Activates within 2–6 hours of subscribing':undefined}><Sparkles size={15}/> Rewrite my title &amp; description</button><button className="rd-button rd-outline" type="button" disabled={isReal}>Suggest new keywords</button><button className="rd-button rd-outline" type="button" disabled={isReal}>Write an article outline</button></div>
-        <p className="gd-muted gd-small">Activated within 2–6 hours of subscribing (during working hours). Each run uses a few cents of credit; weekly audits run automatically.</p></section>
+        <div className="gd-actions"><button className="rd-button rd-primary" type="button" disabled={isReal} title={isReal?'Included with the Growth plan':undefined}><Sparkles size={15}/> Rewrite my title &amp; description</button><button className="rd-button rd-outline" type="button" disabled={isReal}>Suggest new keywords</button><button className="rd-button rd-outline" type="button" disabled={isReal}>Write an article outline</button></div>
+        <p className="gd-muted gd-small">Included with Growth: $5 of Claude credit every month, for SEO and AI-search work only. Each run uses a few cents; weekly checks run automatically.</p></section>
       <section className="gd-card"><div className="gd-card-head"><h2><Bot size={17}/> AI search share of voice</h2>{isReal?<span className="gd-tag">Preview · tracking starts soon</span>:<span className="gd-muted">How often AI assistants mention you for 20 buyer questions</span>}</div>
         <div className={isReal?'gd-dim':''}><ul className="gd-bars">{AI.map(a=><li key={a.name} className={'you' in a?'gd-you':''}><span>{a.name}</span><div><i style={{width:`${a.share*2}%`}}/></div><b>{a.share}%</b></li>)}</ul>
         <table className="gd-table gd-prompts"><thead><tr><th>Buyer question</th><th>Claude</th><th>ChatGPT</th></tr></thead><tbody>{PROMPTS.map(p=><tr key={p.p}><td>{p.p}</td><td>{p.claude?<span className="gd-yes"><Check size={13}/>{p.rank?` #${p.rank}`:''}</span>:<span className="gd-no">Not mentioned</span>}</td><td>{p.chatgpt?<span className="gd-yes"><Check size={13}/></span>:<span className="gd-no">Not mentioned</span>}</td></tr>)}</tbody></table></div></section>
@@ -166,6 +170,6 @@ export default function GrowthDashboard(){
         <svg viewBox="0 0 300 70" className="gd-spark" role="img" aria-label="Visibility score trend"><path d={SCORE.map((s,i)=>`${i?'L':'M'}${(i*300/(SCORE.length-1)).toFixed(1)},${(66-(s-50)*1.2).toFixed(1)}`).join('')} className="gd-line"/></svg>
         <ul className="gd-checks"><li className="gd-ok"><Check size={14}/> Share preview image added</li><li className="gd-ok"><Check size={14}/> Sitemap found</li><li className="gd-warn">! No llms.txt yet</li></ul>
         <div className="gd-sub"><Link2 size={15}/> Your Rivelo backlink is live · <Link href="/tools/visibility-check">Run a check now <ArrowUpRight size={13}/></Link></div></section>
-    </div>
+    </div>}
   </div>;
 }

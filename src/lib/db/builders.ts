@@ -110,12 +110,14 @@ export function suggestions(all:Builder[]){
 }
 
 /** Claimed builder pages with a product link, as directory products (Apps / Websites). Id "maker:<username>". */
+/** Product picture for a builder product: its own logo, else the website's icon (never the builder's face). App-store links get no icon (letter tile). */
+const siteIcon=(u:string)=>{try{const h=new URL(u).hostname;return /(^|\.)(play\.google|apps\.apple|itunes\.apple)\.com$/.test(h)?undefined:`https://www.google.com/s2/favicons?domain=${encodeURIComponent(h)}&sz=128`;}catch{return undefined;}};
 const GENRE:Record<string,Genre>={AI:'AI & developer tools','Dev tools':'AI & developer tools',Games:'Games',Health:'Health & fitness',Social:'Social & community'};
 export function builderProducts(all:Builder[]):Product[]{
   const item=(b:Builder,id:string,name:string,u:string,desc:string,logo:string|null):Product=>{
     const store=/play\.google\.com/.test(u)?'Android':/apps\.apple\.com|itunes\.apple\.com/.test(u)?'iOS':null;const text=(desc||b.bio||`Built by @${b.username}`).replace(/\s+/g,' ').trim();
     return {id,name,tagline:text.length>150?text.slice(0,149)+'…':text,description:text,genre:GENRE[categoryOf(`${name} ${desc}`)]||GENRE[b.category]||'Productivity',platforms:store?[store]:['Web'],type:store?'App':'Website',
-      color:['lilac','lime','peach','butter','blue'][id.length%5],letter:name.slice(0,1).toLowerCase(),url:u,logo:logo||b.photo,claimed:true,funding:b.funding||undefined} as Product;};
+      color:['lilac','lime','peach','butter','blue'][id.length%5],letter:name.slice(0,1).toLowerCase(),url:u,logo:logo||siteIcon(u),claimed:true,funding:b.funding||undefined} as Product;};
   return all.filter(b=>b.source==='x'&&b.claimed&&(b.productUrl||b.extras.length)).flatMap(b=>[...(b.productUrl?[item(b,`maker:${b.username}`,b.product&&b.product!==b.name?b.product:b.name,b.productUrl,b.productDescription,b.logo)]:[]),
     ...b.extras.map(e=>item(b,`maker:${b.username}/${e.key}`,e.name,e.url,e.description,e.logo))]);
 }

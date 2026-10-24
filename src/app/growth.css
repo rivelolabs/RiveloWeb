@@ -91,3 +91,25 @@
 .gd-actions .rd-button:disabled{opacity:.5;cursor:not-allowed}
 [data-theme="dark"] .gd-pos-top{background:#163322;color:#8fd7a8}[data-theme="dark"] .gd-pos-p1{background:#182a4a;color:#9cc0ff}[data-theme="dark"] .gd-pos-p2{background:#3a2c10;color:#f1cf7a}
 .gd-two>section:nth-child(3):last-child{grid-column:1/-1}
+/* Growth agent */
+.ga{display:grid;gap:18px;margin-top:18px}.ga-head{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:start}.ga-head h2{display:flex;align-items:center;gap:8px;margin:0 0 6px}
+.ga-head>.rd-error{grid-column:1/-1;margin:0}
+.ga-credit{min-width:220px;display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid var(--rd-line);border-radius:12px}.ga-credit span,.ga-credit small{font-size:12px;color:var(--rd-muted)}.ga-credit b{font-size:20px}.ga-credit b small{font-size:13px;font-weight:500}
+.ga-toggle{all:unset;cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:600;width:100%}.ga-toggle svg:last-child{margin-left:auto}
+.ga-form{display:grid;gap:12px;margin-top:14px}.ga-form label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600}.ga-form small{font-weight:400;color:var(--rd-muted)}
+.ga-form input,.ga-form textarea{font:inherit;font-size:14px;font-weight:400;padding:10px 12px;border:1px solid var(--rd-line);border-radius:10px;background:var(--rd-surface);color:var(--rd-ink)}
+.ga-form .rd-checkbox{flex-direction:row;align-items:center;font-weight:400}
+.ga-btn{min-height:40px!important;padding:8px 14px!important;font-size:13.5px!important;gap:7px!important}.ga-wrap{flex-wrap:wrap}
+.ga-inline{display:inline-flex;gap:6px;align-items:center}.ga-inline input{height:40px;padding:0 12px;border:1px solid var(--rd-line);border-radius:8px;font:inherit;font-size:14px;background:var(--rd-surface);color:var(--rd-ink);min-width:200px}
+.ga-results{display:grid;gap:14px;margin-top:14px}.ga-results article{padding:14px 16px;border:1px solid var(--rd-line);border-radius:12px}.ga-results h3{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:15px;margin:0 0 10px}.ga-results h3 small{font-weight:400;color:var(--rd-muted);font-size:12px}
+.ga-results dl{display:grid;grid-template-columns:150px 1fr;gap:8px 12px;margin:0;font-size:14px}.ga-results dt{color:var(--rd-muted)}.ga-results dd{margin:0}
+.ga-pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.55;background:var(--rd-soft);padding:12px;border-radius:10px;margin:8px 0;max-height:360px;overflow:auto}
+.ga-copy{display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:12.5px;padding:4px 10px;border:1px solid var(--rd-line);border-radius:999px;background:var(--rd-surface);color:var(--rd-secondary);cursor:pointer;text-decoration:none}
+.ga-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}.ga-kpis div{padding:10px;border:1px solid var(--rd-line);border-radius:10px;display:flex;flex-direction:column}.ga-kpis small{color:var(--rd-muted);font-size:12px}.ga-kpis b{font-size:20px}.ga-kpis em{font-style:normal;font-size:12px;font-weight:600}
+.ga-up{color:#1a7f46}.ga-down{color:#c0392b}.ga-h3{display:flex;align-items:center;gap:6px;font-size:13px;margin:12px 0 6px}
+.ga-list{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:13.5px}.ga-list li{display:flex;justify-content:space-between;gap:10px}.ga-list span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ga-list b{white-space:nowrap;font-weight:600}
+.ga-big{font-size:15px}.ga-big b{font-size:20px}
+.ga-leads,.ga-convos{list-style:none;margin:0;padding:0;display:grid;gap:10px}.ga-leads li{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;padding-bottom:10px;border-bottom:1px solid var(--rd-line)}
+.ga-leads p,.ga-convos p{margin:4px 0;font-size:13.5px}.ga-leads small,.ga-convos small{font-size:12px;color:var(--rd-muted);display:block}.ga-convos li{padding-bottom:10px;border-bottom:1px solid var(--rd-line)}
+@media(max-width:700px){.ga-head{grid-template-columns:1fr}.ga-kpis{grid-template-columns:1fr 1fr 1fr}.ga-results dl{grid-template-columns:1fr}.ga-leads li{flex-direction:column}}
+.ga-note{grid-column:1/-1;margin:0;padding:10px 12px;border-radius:10px;background:var(--rd-soft);color:var(--rd-secondary);font-size:14px}

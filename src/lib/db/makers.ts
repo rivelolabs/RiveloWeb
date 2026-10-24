@@ -73,8 +73,8 @@ export async function promotedMakers(ids:string[]){
   const r=await db().query(`SELECT ${COLS} FROM rivelo.maker_pages WHERE lower(username)=ANY($1) AND status='claimed'`,[names]);
   const makers=r.rows.map(map),extras=await makerExtras(makers.map(m=>m.id));
   const out=new Map<string,{id:string;name:string;tagline:string;url:string;logo:string|null}>();
-  for(const m of makers){out.set(`maker:${m.username.toLowerCase()}`,{id:`maker:${m.username}`,name:productLabel(m.productName,m.name),tagline:m.productDescription||m.bio||`Built by @${m.username}`,url:m.productUrl||`/makers/${m.username}`,logo:m.logo||xPhoto(m.avatar,m.username)});
-    for(const e of extras.get(m.id)||[])out.set(`maker:${m.username.toLowerCase()}/${e.key}`,{id:makerProductId(m.username,e.key),name:e.name,tagline:e.description||`Built by @${m.username}`,url:e.url,logo:e.logo||xPhoto(m.avatar,m.username)});}
+  for(const m of makers){out.set(`maker:${m.username.toLowerCase()}`,{id:`maker:${m.username}`,name:productLabel(m.productName,m.name),tagline:m.productDescription||m.bio||`Built by @${m.username}`,url:m.productUrl||`/makers/${m.username}`,logo:m.logo||null});
+    for(const e of extras.get(m.id)||[])out.set(`maker:${m.username.toLowerCase()}/${e.key}`,{id:makerProductId(m.username,e.key),name:e.name,tagline:e.description||`Built by @${m.username}`,url:e.url,logo:e.logo||null});}
   return out;
 }
 
