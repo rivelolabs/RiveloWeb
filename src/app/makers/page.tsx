@@ -26,7 +26,7 @@ export default async function Page({searchParams}:Props){
   const ranks=Object.fromEntries(top.map((b,i)=>[b.username.toLowerCase(),{rank:i+1,points:b.points}]));
   const href=(s:Sort,query=q)=>`/makers?${new URLSearchParams({...(s!=='top'?{sort:s}:{}),...(query?{q:query}:{})})}`;
   const heading=q?`Results for “${q}”`:sort==='top'?'Top builders':sort==='trending'?'Trending this week':sort==='rising'?'Rising fast':'Newest builders';
-  const ld={'@context':'https://schema.org','@type':'ItemList',name:'Top builders on Rivelo Labs',itemListElement:top.slice(0,20).map((b,i)=>({'@type':'ListItem',position:i+1,url:`https://www.rivelolabs.com/makers/${b.username}`,name:b.name}))};
+  const ld={'@context':'https://schema.org','@type':'ItemList',name:'Top builders on Rivelo Labs',itemListElement:top.slice(0,20).map((b,i)=>({'@type':'ListItem',position:i+1,url:`https://www.rivelolabs.com${b.href}`,name:b.name}))};
 
   return <CommunityShell active="/makers"><main className="rc-content bl">
     <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(ld).replace(/</g,'\\u003c')}}/>
@@ -45,12 +45,12 @@ export default async function Page({searchParams}:Props){
     {list.length?<ol className="bl-list">{list.map((b,i)=>{const rank=q||sort!=='top'?ranks[b.username.toLowerCase()]?.rank:i+1;
       return <li key={b.username} className="bl-row">
         <span className={`bl-rank${rank&&rank<=3?' bl-rank-top':''}`}>{q||sort!=='top'?i+1:rank}</span>
-        <Link href={`/makers/${b.username}`} className="bl-photo" aria-hidden tabIndex={-1}>
+        <Link href={b.href} className="bl-photo" aria-hidden tabIndex={-1}>
           {/* eslint-disable-next-line @next/next/no-img-element */}<img src={b.photo} alt="" width={56} height={56} loading={i<8?'eager':'lazy'} referrerPolicy="no-referrer"/>
           {b.logo&&/* eslint-disable-next-line @next/next/no-img-element */<img className="bl-badge" src={b.logo} alt="" width={20} height={20} loading="lazy"/>}
         </Link>
         <div className="bl-main">
-          <p className="bl-name"><Link href={`/makers/${b.username}`}>{b.name}</Link>{b.claimed&&<BadgeCheck size={16} className="bl-check" aria-label="Claimed by the maker"/>}<span>@{b.username}</span></p>
+          <p className="bl-name"><Link href={b.href}>{b.name}</Link>{b.claimed&&<BadgeCheck size={16} className="bl-check" aria-label="Claimed by the maker"/>}<span>{b.handle}</span></p>
           {(b.bio||b.productDescription)&&<p className="bl-bio">{b.bio||b.productDescription}</p>}
           <div className="bl-tags">
             {b.city&&<Link href={href(sort,shortPlace(b.city))}>{b.country&&<span aria-hidden>{flag(b.country)}</span>}{shortPlace(b.city)}</Link>}
@@ -58,7 +58,7 @@ export default async function Page({searchParams}:Props){
             {b.productUrl&&<a className="bl-product" href={b.productUrl} target="_blank" rel="noopener">
               {/* eslint-disable-next-line @next/next/no-img-element */}<img src={b.logo||`https://www.google.com/s2/favicons?domain=${encodeURIComponent(host(b.productUrl))}&sz=64`} alt="" width={16} height={16} loading="lazy"/>
               {b.product&&b.product!==b.name?b.product:STORE[host(b.productUrl)]||host(b.productUrl)}<ArrowUpRight size={13}/></a>}
-            {b.extras.length>0&&<Link href={`/makers/${b.username}`} className="bl-more">+{b.extras.length} more</Link>}
+            {b.extras.length>0&&<Link href={b.href} className="bl-more">+{b.extras.length} more</Link>}
           </div>
         </div>
         <div className="bl-points"><strong>{compact(b.points)}</strong>{b.week>0?<span className="bl-up"><TrendingUp size={12}/>{compact(b.week)}</span>:<small>points</small>}</div>

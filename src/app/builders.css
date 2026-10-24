@@ -40,3 +40,5 @@
 .bl-you-join input{margin-top:12px;width:100%;max-width:420px;height:42px;padding:0 12px;border:1px solid var(--rd-line);border-radius:10px;background:var(--rd-surface);color:var(--rd-ink);font:inherit;font-size:14px}
 .bl-tags .bl-more{font-weight:600;color:var(--rd-ink)}
 .bl-more-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;color:var(--rd-muted);font-size:14px;flex-wrap:wrap}.bl-more-row .rd-button{min-height:40px;padding:8px 16px;scroll-margin-top:120px}
+.bl .bl-search input,.bl .bl-search input:focus,.bl .bl-search input:focus-visible{border:0!important;outline:none!important;box-shadow:none!important;background:transparent!important;padding:0!important;height:auto!important;min-height:0!important;border-radius:0!important}
+.bl .bl-search:focus-within{border-color:var(--rd-coral);box-shadow:0 0 0 3px color-mix(in srgb,var(--rd-coral) 15%,transparent)}
