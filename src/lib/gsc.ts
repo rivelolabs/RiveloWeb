@@ -68,7 +68,7 @@ export type GscRow={key:string;clicks:number;impressions:number;ctr:number;posit
 export type GscReport={siteUrl:string;days:number;range:{start:string;end:string};daily:GscDay[];totals:{clicks:number;impressions:number;ctr:number;position:number};prev:{clicks:number;impressions:number;position:number};queries:GscRow[];pages:GscRow[]};
 const iso=(d:Date)=>d.toISOString().slice(0,10);
 /** Last N days (Search Console data lags ~2 days), plus the previous N days for comparison. */
-export async function report(userId:string,siteUrl:string,days:28|90):Promise<GscReport>{
+export async function report(userId:string,siteUrl:string,days:7|28|90):Promise<GscReport>{
   const end=new Date(Date.now()-2*86400000),start=new Date(end.getTime()-(days-1)*86400000);
   const pEnd=new Date(start.getTime()-86400000),pStart=new Date(pEnd.getTime()-(days-1)*86400000);
   const path=`/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`;

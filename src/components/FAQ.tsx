@@ -45,7 +45,7 @@ const faqs: FAQItem[] = [
     category: "Pricing & Billing",
     question: "How does pricing and project budgeting work?",
     answer:
-      "We offer transparent, fixed-scope milestone billing with regional currency support (USD, INR, EUR, GBP, AED, CAD, AUD, SGD) as well as custom budget brackets. We also provide flexible dedicated engineering sprints for scale-ups and enterprises.",
+      "We offer transparent, fixed-scope milestone billing with regional currency support (USD, EUR, GBP, AED, CAD, AUD, SGD) as well as custom budget brackets. We also provide flexible dedicated engineering sprints for scale-ups and enterprises.",
   },
 ];
 

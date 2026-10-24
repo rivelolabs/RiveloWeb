@@ -1,4 +1,4 @@
-/** Country flag + short place name from a free-text city like "Lucknow, Uttar Pradesh, India". */
+/** Country flag + short place name from a free-text city like "Austin, Texas, United States". */
 let byName:Map<string,string>|null=null;
 function names(){
   if(byName)return byName;byName=new Map();

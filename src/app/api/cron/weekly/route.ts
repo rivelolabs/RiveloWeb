@@ -16,6 +16,7 @@ export async function GET(request:Request){
     const row:Record<string,unknown>={user:id.slice(0,8)};
     try{const w=await weeklyReport(id);if(w){await storeReport(id,w);const s=await getSettings(id).catch(()=>null);row.report=true;row.emailed=s?.weeklyEmail!==false?await emailReport(id,w):false;}}catch(e){row.reportError=(e as Error).message;}
     try{const s=await getSettings(id);if(agentConfigured()&&s.questions.length>=3&&(await credit(id)).left>=0.05){await runTask(id,'visibility');row.visibility=true;}}catch(e){row.visibilityError=(e as Error).message;}
+    try{const s=await getSettings(id);if(s.siteUrl&&(await credit(id)).left>=0.05){await runTask(id,'audit');row.audit=true;}}catch(e){row.auditError=(e as Error).message;}
     out.push(row);
   }
   return NextResponse.json({users:out.length,out},{headers:{'Cache-Control':'no-store'}});

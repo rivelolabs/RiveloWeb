@@ -71,7 +71,7 @@ const sections: LegalSection[] = [
   {
     id: "contact",
     title: "Contact",
-    body: <p>Rivelo Labs, India. Email: {mail}.</p>,
+    body: <p>Rivelo Labs. Email: {mail}.</p>,
   },
 ];
 

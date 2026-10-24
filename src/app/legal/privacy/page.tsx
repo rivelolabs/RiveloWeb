@@ -16,7 +16,7 @@ const sections: LegalSection[] = [
     title: "Who we are",
     body: (
       <>
-        <p>Rivelo Labs (&ldquo;Rivelo&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;) is a directory, business map and community for independent apps, websites and the people who build them, available at rivelolabs.com. Rivelo Labs is based in India and is responsible for the personal data described in this policy.</p>
+        <p>Rivelo Labs (&ldquo;Rivelo&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;) is a directory, business map and community for independent apps, websites and the people who build them, available at rivelolabs.com. Rivelo Labs is responsible for the personal data described in this policy.</p>
         <p>This policy covers the Rivelo Labs website and its features: browsing, accounts, product listings, the business map, owner claims, the community and growth services. It does not cover the apps and websites listed on Rivelo Labs, which have their own privacy policies, or third-party sites you reach through a listing.</p>
       </>
     ),
@@ -111,7 +111,7 @@ const sections: LegalSection[] = [
     title: "Your choices and rights",
     body: (
       <>
-        <p>Depending on where you live, including under India&rsquo;s Digital Personal Data Protection Act, 2023, and laws such as the GDPR, you may have the right to access, correct, update or erase your personal data, withdraw consent, object to or restrict certain processing, and nominate another person to exercise your rights. You can also:</p>
+        <p>Depending on where you live, including under data protection laws such as the GDPR, you may have the right to access, correct, update or erase your personal data, withdraw consent, object to or restrict certain processing, and nominate another person to exercise your rights. You can also:</p>
         <ul>
           <li>Edit or delete listings, posts and location by contacting us.</li>
           <li>Disconnect Rivelo Labs from your Google or X account settings.</li>
@@ -130,7 +130,7 @@ const sections: LegalSection[] = [
   {
     id: "international",
     title: "International transfers",
-    body: <p>Rivelo Labs is based in India and our service providers may process data in India and other countries, which may have different data protection laws. Where we transfer data, we take reasonable steps to make sure it remains protected as described in this policy.</p>,
+    body: <p>Rivelo Labs and our service providers may process data in different countries, which may have different data protection laws. Where we transfer data, we take reasonable steps to make sure it remains protected as described in this policy.</p>,
   },
   {
     id: "changes",

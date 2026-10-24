@@ -120,7 +120,7 @@ const sections: LegalSection[] = [
   {
     id: "liability",
     title: "Limitation of liability",
-    body: <p>To the fullest extent permitted by law, Rivelo Labs and its team and partners will not be liable for any indirect, incidental, special, consequential or punitive damages, or for loss of profits, data, goodwill or business, arising from your use of the Service. Our total liability for any claim relating to the Service is limited to the greater of the amount you paid us for the Service in the 12 months before the claim or INR 5,000. Nothing in these Terms limits liability that cannot be limited by law.</p>,
+    body: <p>To the fullest extent permitted by law, Rivelo Labs and its team and partners will not be liable for any indirect, incidental, special, consequential or punitive damages, or for loss of profits, data, goodwill or business, arising from your use of the Service. Our total liability for any claim relating to the Service is limited to the greater of the amount you paid us for the Service in the 12 months before the claim or USD 60. Nothing in these Terms limits liability that cannot be limited by law.</p>,
   },
   {
     id: "indemnity",
@@ -130,7 +130,7 @@ const sections: LegalSection[] = [
   {
     id: "law",
     title: "Governing law and disputes",
-    body: <p>These Terms are governed by the laws of India. Subject to any mandatory consumer protection rights where you live, the courts of Uttar Pradesh, India will have exclusive jurisdiction over any dispute arising from these Terms or the Service. Before starting a formal dispute, please contact us so we can try to resolve it informally.</p>,
+    body: <p>These Terms are governed by the laws of the place where Rivelo Labs is registered. Subject to any mandatory consumer protection rights where you live, the courts of that place will have exclusive jurisdiction over any dispute arising from these Terms or the Service. Before starting a formal dispute, please contact us so we can try to resolve it informally.</p>,
   },
   {
     id: "changes",
@@ -140,7 +140,7 @@ const sections: LegalSection[] = [
   {
     id: "contact",
     title: "Contact",
-    body: <p>Rivelo Labs, India. Email: {mail}.</p>,
+    body: <p>Rivelo Labs. Email: {mail}.</p>,
   },
 ];
 

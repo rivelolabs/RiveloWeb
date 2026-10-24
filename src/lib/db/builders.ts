@@ -104,8 +104,8 @@ export function rankBuilders(all:Builder[],sort:Sort,q=''){
 export function suggestions(all:Builder[]){
   const top=(f:(b:Builder)=>string|null)=>[...all.reduce((m,b)=>{const k=f(b);if(k)m.set(k,(m.get(k)||0)+1);return m;},new Map<string,number>())].sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
   const dn=new Intl.DisplayNames(['en'],{type:'region'});
-  const countries=top(b=>b.country).slice(0,2).map(c=>dn.of(c)||c),cats=top(b=>b.category==='Indie'?null:b.category).slice(0,2);
-  const out=[cats[0]&&`${cats[0]} builders${countries[0]?` in ${countries[0]}`:''}`,countries[1]&&`Builders in ${countries[1]}`,cats[1]&&`${cats[1]} makers`,'Makers on the map'].filter(Boolean) as string[];
+  const countries=top(b=>b.country).slice(0,2).map(c=>dn.of(c)||c),cats=top(b=>b.category==='Indie'?null:b.category).slice(0,3);
+  void countries;const out=[cats[0]&&`${cats[0]} builders`,cats[1]&&`${cats[1]} makers`,cats[2]&&`${cats[2]} makers`,'Makers on the map'].filter(Boolean) as string[];
   return [...new Set(out)].slice(0,4);
 }
 

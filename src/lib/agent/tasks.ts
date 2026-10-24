@@ -17,6 +17,7 @@ export async function saveSettings(userId:string,b:Record<string,unknown>):Promi
   return s;
 }
 export async function saveResult(userId:string,kind:string,payload:unknown){const r=await db().query(`INSERT INTO rivelo.ai_results (user_id,kind,payload) VALUES ($1,$2,$3) RETURNING id,created_at`,[userId,kind,JSON.stringify(payload)]);return {id:r.rows[0].id as string,createdAt:new Date(r.rows[0].created_at).toISOString()};}
+export async function updateResult(userId:string,id:string,payload:unknown){await db().query(`UPDATE rivelo.ai_results SET payload=$3 WHERE id=$1 AND user_id=$2`,[id,userId,JSON.stringify(payload)]);}
 export async function results(userId:string,kind:string,limit=10){
   const r=await db().query(`SELECT id,payload,created_at FROM rivelo.ai_results WHERE user_id=$1 AND kind=$2 ORDER BY created_at DESC LIMIT $3`,[userId,kind,limit]);
   return r.rows.map(x=>({id:x.id as string,payload:x.payload,createdAt:new Date(x.created_at).toISOString()}));
@@ -29,10 +30,11 @@ async function gscQueries(userId:string){
     return `<data>\nTop Google queries last 28 days (query · clicks · impressions · avg position):\n${r.queries.slice(0,25).map(q=>`${q.key} · ${q.clicks} · ${q.impressions} · ${q.position}`).join('\n')}\n</data>`;}catch{return '';}
 }
 
-export const TASKS=['setup','rewrite','keywords','outline','llms','visibility','leads','conversations','email'] as const;
+export const TASKS=['setup','rewrite','keywords','outline','llms','visibility','leads','conversations','email','audit'] as const;
 export type Task=typeof TASKS[number];
 
 export async function runTask(userId:string,task:Task,input:Record<string,unknown>={}){
+  if(task==='audit'){const {runAudit}=await import('./audit');return runAudit(userId,{background:input.__background as ((fn:()=>Promise<void>)=>void)|undefined});}
   const s=await getSettings(userId);need(s);
   switch(task){
     case 'setup':{const {json}=await askClaude(userId,task,{maxTokens:900,prompt:`${product(s)}\nSuggest how people would ask an AI assistant when looking for a product like this. Return {"questions":[10 short buyer questions, as a real person would type them, without the product's name],"competitors":[up to 5 well-known competing products or alternatives]}.`});

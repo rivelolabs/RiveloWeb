@@ -1,11 +1,14 @@
 "use client";
 import {useCallback,useEffect,useState} from 'react';
-import {Bot,Check,ChevronDown,Copy,FileText,LoaderCircle,Mail,MessagesSquare,Search,Settings2,Sparkles,Target,TrendingDown,TrendingUp,Users,Wand2} from 'lucide-react';
+import {Activity,Bot,Check,ChevronDown,Copy,FileText,LoaderCircle,Mail,MessagesSquare,Search,Settings2,Sparkles,Target,TrendingDown,TrendingUp,Users,Wand2} from 'lucide-react';
 type Res<T=Record<string,unknown>>={id:string;payload:T;createdAt:string};
 type Settings={productName:string;siteUrl:string;category:string;description:string;competitors:string[];questions:string[];audience:string;weeklyEmail:boolean};
 type Credit={limit:number;used:number;left:number;resetsAt:string};
 type Data={signedIn:boolean;growth?:boolean;configured?:boolean;setup?:string;credit?:Credit;settings?:Settings;results?:Record<string,Res[]>};
 type Row={key:string;clicks:number;impressions:number;position:number;prevPosition?:number|null};
+type Audit={status?:'running'|'done';startedAt?:string;notesError?:string;gscConnected?:boolean;site:string;sitemap:{found:boolean;urls:number;source:string};robots:{found:boolean;blocksAll:boolean;aiBlocked:string[]};llmsTxt:boolean;summary?:string;notes?:{priority:string;page:string;issue:string;fix:string;why:string}[];
+  totals:{pages:number;withIssues:number};speed:{url:string;performance:number|null;seo:number|null;accessibility:number|null;bestPractices:number|null;lcp:string;cls:string;tbt:string;fcp?:string;field:{rating?:string}|null;opportunities:string[];error?:string;pending?:boolean;source?:'pagespeed'|'rivelo'}[];
+  pages:{url:string;title:string;issues:string[];gsc?:{clicks:number;impressions:number;position:number}|null}[]};
 type Weekly={site:string;range:{start:string;end:string};clicks:number;prevClicks:number;impressions:number;prevImpressions:number;position:number;up:Row[];down:Row[];almost:Row[];newQueries:Row[]};
 const money=(n:number)=>`$${n.toFixed(2)}`;
 const when=(iso:string)=>new Date(iso).toLocaleDateString(undefined,{day:'numeric',month:'short'});
@@ -19,6 +22,8 @@ export default function GrowthAgent(){
   const [weekly,setWeekly]=useState<Weekly|null>(null),[keyword,setKeyword]=useState(''),[lead,setLead]=useState('');
   const load=useCallback(()=>fetch('/api/agent',{cache:'no-store'}).then(r=>r.json()).then((x:Data)=>{setD(x);if(x.settings){setS(x.settings);if(!x.settings.productName)setOpen(true);}const w=x.results?.weekly?.[0];if(w)setWeekly(w.payload as unknown as Weekly);}).catch(()=>setD({signedIn:false})),[]);
   useEffect(()=>{void load();},[load]);
+  const auditRunning=(d?.results?.audit?.[0]?.payload as {status?:string}|undefined)?.status==='running';
+  useEffect(()=>{if(!auditRunning)return;let n=0;const t=setInterval(()=>{n++;void load();if(n>45)clearInterval(t);},8000);return()=>clearInterval(t);},[auditRunning,load]);
   if(!d?.growth)return null;
   if(d.setup)return <section className="gd-card ga"><h2><Bot size={17}/> Claude growth agent</h2><p className="rd-error">{d.setup}</p></section>;
   const latest=<T,>(k:string)=>(d.results?.[k]?.[0] as Res<T>|undefined);
@@ -49,7 +54,7 @@ export default function GrowthAgent(){
     <section className="gd-card"><button type="button" className="ga-toggle" onClick={()=>setOpen(!open)} aria-expanded={open}><Settings2 size={16}/> Agent settings — {s?.productName||'tell the agent about your product'} <ChevronDown size={15}/></button>
       {open&&s&&<form className="ga-form" onSubmit={e=>{e.preventDefault();void post({settings:s},'settings').then(x=>{if(x)setOpen(false);});}}>
         <div className="rd-form-row"><label>Product name<input required value={s.productName} onChange={e=>setS({...s,productName:e.target.value})} maxLength={120}/></label><label>Website or store link<input value={s.siteUrl} onChange={e=>setS({...s,siteUrl:e.target.value})} maxLength={300} placeholder="https://"/></label></div>
-        <div className="rd-form-row"><label>Category<input value={s.category} onChange={e=>setS({...s,category:e.target.value})} maxLength={120} placeholder="e.g. note taking app"/></label><label>Ideal customer<input value={s.audience} onChange={e=>setS({...s,audience:e.target.value})} maxLength={600} placeholder="e.g. indie SaaS founders in India"/></label></div>
+        <div className="rd-form-row"><label>Category<input value={s.category} onChange={e=>setS({...s,category:e.target.value})} maxLength={120} placeholder="e.g. note taking app"/></label><label>Ideal customer<input value={s.audience} onChange={e=>setS({...s,audience:e.target.value})} maxLength={600} placeholder="e.g. indie SaaS founders"/></label></div>
         <label>What it does<textarea required rows={3} value={s.description} onChange={e=>setS({...s,description:e.target.value})} maxLength={1200}/></label>
         <div className="rd-form-row"><label>Competitors <small>(one per line, up to 5)</small><textarea rows={4} value={s.competitors.join('\n')} onChange={e=>setS({...s,competitors:e.target.value.split('\n')})}/></label>
           <label>Buyer questions for AI tracking <small>(one per line, up to 10)</small><textarea rows={4} value={s.questions.join('\n')} onChange={e=>setS({...s,questions:e.target.value.split('\n')})}/></label></div>
@@ -58,6 +63,47 @@ export default function GrowthAgent(){
           <button type="button" className="rd-button rd-outline" disabled={!!busy||!d.configured||!s.productName||!s.description} onClick={async()=>{const x=await post({settings:s},'settings');if(!x)return;const r=await post({task:'setup'},'setup');const p=r?.result?.payload;if(p)setS({...s,questions:(p.questions||[]).slice(0,10),competitors:s.competitors.filter(Boolean).length?s.competitors:(p.competitors||[]).slice(0,5)});}}>{busy==='setup'?<LoaderCircle className="rd-spin" size={15}/>:<Sparkles size={15}/>} Suggest questions &amp; competitors</button></div>
       </form>}
     </section>
+
+    {(()=>{const a=latest<Audit>('audit');const sc=(n:number|null)=>n==null?'–':String(n);const cls=(n:number|null)=>n==null?'':n>=90?'ga-good':n>=50?'ga-mid':'ga-bad';
+      const running=a?.payload.status==='running';const p=a?.payload;
+      return <section className="gd-card"><div className="gd-card-head"><h2><Activity size={17}/> Full site audit</h2><span className="gd-muted">Sitemap · SEO tags on every page · speed · Search Console</span></div>
+        {p?<>
+          {running&&<p className="ga-progress"><LoaderCircle className="rd-spin" size={15}/> Pages checked. Now testing speed with Google PageSpeed and writing your key notes. This takes 2–4 minutes; you can leave this page.</p>}
+          {p.summary&&<p className="ga-summary">{p.summary}</p>}
+          <div className="ga-chips">
+            <span className={p.sitemap.found?'ga-ok':'ga-warn'}>{p.sitemap.found?`Sitemap · ${p.sitemap.urls} URLs`:'No sitemap.xml'}</span>
+            <span className={p.robots.found&&!p.robots.blocksAll?'ga-ok':'ga-warn'}>{!p.robots.found?'No robots.txt':p.robots.blocksAll?'robots.txt blocks all crawlers':'robots.txt OK'}</span>
+            <span className={p.robots.aiBlocked.length?'ga-warn':'ga-ok'}>{p.robots.aiBlocked.length?`Blocks AI crawlers: ${p.robots.aiBlocked.join(', ')}`:'Open to AI crawlers'}</span>
+            <span className={p.llmsTxt?'ga-ok':'ga-warn'}>{p.llmsTxt?'llms.txt found':'No llms.txt'}</span>
+            <span>{p.totals.pages} pages checked · {p.totals.withIssues} with issues</span>
+          </div>
+          {p.notes&&p.notes.length>0?<details className="ga-sec" open><summary><Sparkles size={15}/><b>Key notes</b><span>{p.notes.filter(n=>n.priority==='high').length} high priority · {p.notes.length} total</span><ChevronDown size={16} className="ga-chev"/></summary>
+              <ol className="ga-notes">{p.notes.map((n,i)=><li key={i}><span className={`ga-pri ga-pri-${n.priority}`}>{n.priority}</span><div><b>{n.issue}</b> <small>{n.page}</small><p>{n.fix}</p><small>{n.why}</small></div></li>)}</ol></details>
+            :!running&&p.notesError?<p className="ga-note"><Sparkles size={14}/> Key notes from Claude will appear here once the AI agent is on. Everything below is already checked.</p>:null}
+          {(()=>{const done=p.speed.filter(x=>!x.pending&&x.performance!=null);const avg=done.length?Math.round(done.reduce((n,x)=>n+(x.performance||0),0)/done.length):null;const own=p.speed.some(x=>x.source==='rivelo');
+            return <details className="ga-sec"><summary><Activity size={15}/><b>Speed (mobile)</b><span>{running&&!done.length?'Testing…':<>Average <em className={cls(avg)}>{sc(avg)}</em> · {p.speed.length} pages tested</>}</span><ChevronDown size={16} className="ga-chev"/></summary>
+              {own&&<p className="ga-src-line">Google PageSpeed was unavailable, so these are Rivelo’s own speed estimates. Add a PageSpeed API key for Google’s full Lighthouse scores.</p>}
+              <div className="ga-speed">{p.speed.map(x=><div key={x.url} className="ga-speed-card">
+                <div className="ga-speed-top"><span className="ga-url">{x.url.replace(p.site,'')||'/'}</span>{x.pending?<LoaderCircle className="rd-spin" size={16}/>:<span className={`ga-ring ${cls(x.performance)}`}>{sc(x.performance)}</span>}</div>
+                {!x.pending&&(x.source==='pagespeed'?<div className="ga-mini">{([['SEO',x.seo],['Access.',x.accessibility],['Best pr.',x.bestPractices]] as [string,number|null][]).map(([l,n])=><span key={l}><em className={cls(n)}>{sc(n)}</em>{l}</span>)}</div>:null)}
+                {!x.pending&&<dl className="ga-metrics">{x.source==='pagespeed'?<><dt>LCP</dt><dd>{x.lcp||'–'}</dd><dt>CLS</dt><dd>{x.cls||'–'}</dd><dt>TBT</dt><dd>{x.tbt||'–'}</dd></>
+                  :<><dt>Server</dt><dd>{(x.fcp||'').replace('server ','')}</dd><dt>Weight</dt><dd>{x.lcp.replace(' page weight','')}</dd><dt>JS</dt><dd>{x.tbt.replace(' JavaScript','')}</dd></>}</dl>}
+                {x.opportunities.length>0&&<details className="ga-fixes"><summary>{x.opportunities.length} fix{x.opportunities.length>1?'es':''} <ChevronDown size={13}/></summary><ul>{x.opportunities.map(o=><li key={o}>{o}</li>)}</ul></details>}
+                {!x.pending&&!x.opportunities.length&&<small className="ga-ok-text"><Check size={12}/> Nothing to fix</small>}
+              </div>)}</div></details>;})()}
+          {(()=>{const sorted=[...p.pages].sort((x,y)=>y.issues.length-x.issues.length);const bad=sorted.filter(x=>x.issues.length).length;
+            return <details className="ga-sec" open={bad>0}><summary><FileText size={15}/><b>Pages</b><span>{p.pages.length} checked · {bad?<em className="ga-bad">{bad} with issues</em>:<em className="ga-good">all clear</em>}</span><ChevronDown size={16} className="ga-chev"/></summary>
+              {!p.gscConnected&&<p className="ga-src-line">Connect Google Search Console above to see clicks, impressions and position for each page.</p>}
+              <ul className="ga-pagelist">{sorted.map(pg=><li key={pg.url}><details><summary>
+                <span className={`ga-dot ${pg.issues.length?'ga-dot-bad':'ga-dot-ok'}`}/><span className="ga-url" title={pg.url}>{pg.url.replace(p.site,'')||'/'}</span>
+                {p.gscConnected&&pg.gsc&&<span className="ga-gsc">{pg.gsc.clicks} clicks · {pg.gsc.impressions} impr. · #{pg.gsc.position}</span>}
+                <span className={`ga-title-len${pg.title.length>65||pg.title.length<20?' ga-warn-text':''}`}>{pg.title?`Title ${pg.title.length}`:'No title'}</span>
+                <span className="ga-count">{pg.issues.length?`${pg.issues.length} issue${pg.issues.length>1?'s':''}`:'OK'}</span><ChevronDown size={14} className="ga-chev"/></summary>
+                <div className="ga-page-body"><p><b>Title:</b> {pg.title||'—'}</p>{pg.issues.length?<ul>{pg.issues.map(i=><li key={i}>{i}</li>)}</ul>:<p className="ga-ok-text"><Check size={12}/> No issues found on this page.</p>}<a href={pg.url} target="_blank" rel="noopener noreferrer">Open page ↗</a></div></details></li>)}</ul></details>;})()}
+          <p className="gd-muted gd-small">Checked {when(a!.createdAt)}. Runs automatically every week.</p>
+        </>:<p className="gd-muted">Reads your robots.txt and sitemap.xml, loads up to 25 pages and checks every title, description, H1, canonical, structured data, share image and alt text, tests speed with Google PageSpeed on your key pages and lines it all up with your Search Console clicks. Claude then writes your key notes.</p>}
+        <div className="gd-actions"><button type="button" className="rd-button rd-primary ga-btn" disabled={!!busy||running} onClick={()=>run('audit')}>{busy==='audit'?<><LoaderCircle className="rd-spin" size={15}/> Checking pages…</>:running?<><LoaderCircle className="rd-spin" size={15}/> Testing speed…</>:<><Activity size={15}/> {p?'Run the audit again':'Run full site audit'}</>}</button></div>
+      </section>;})()}
 
     <div className="gd-two">
       <section className="gd-card"><div className="gd-card-head"><h2><FileText size={17}/> Weekly search report</h2><span className="gd-muted">Free · from Search Console</span></div>

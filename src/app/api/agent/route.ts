@@ -1,4 +1,4 @@
-import {NextRequest,NextResponse} from 'next/server';
+import {NextRequest,NextResponse,after} from 'next/server';
 import {currentUser} from '@/lib/auth/server';
 import {jsonBody,sameOrigin} from '@/lib/catalog/http';
 import {rateLimit} from '@/lib/catalog/limit';
@@ -6,14 +6,14 @@ import {dbEnabled,upsertProfile} from '@/lib/db';
 import {agentConfigured,canUseAgent,credit} from '@/lib/agent/claude';
 import {getSettings,results,runTask,saveSettings,TASKS,type Task} from '@/lib/agent/tasks';
 import {weeklyReport} from '@/lib/agent/weekly';
-export const runtime='nodejs';export const dynamic='force-dynamic';export const maxDuration=120;
-const KINDS=['setup','rewrite','keywords','outline','llms','visibility','leads','conversations','email','weekly'];
+export const runtime='nodejs';export const dynamic='force-dynamic';export const maxDuration=300;
+const KINDS=['setup','rewrite','keywords','outline','llms','visibility','leads','conversations','email','weekly','audit'];
 // GET: plan access, credit, settings, latest results. POST {settings} saves settings; POST {task,input} runs one agent task.
 export async function GET(request:NextRequest){
   const user=dbEnabled()?await currentUser(request):null;if(!user)return NextResponse.json({signedIn:false});
   const allowed=await canUseAgent(user.id);if(!allowed)return NextResponse.json({signedIn:true,growth:false});
   try{
-    const [c,s,...lists]=await Promise.all([credit(user.id),getSettings(user.id),...KINDS.map(k=>results(user.id,k,k==='visibility'||k==='weekly'?8:5))]);
+    const [c,s,...lists]=await Promise.all([credit(user.id),getSettings(user.id),...KINDS.map(k=>results(user.id,k,k==='visibility'||k==='weekly'?8:k==='audit'?2:5))]);
     return NextResponse.json({signedIn:true,growth:true,configured:agentConfigured(),credit:c,settings:s,results:Object.fromEntries(KINDS.map((k,i)=>[k,lists[i]]))},{headers:{'Cache-Control':'no-store'}});
   }catch{return NextResponse.json({signedIn:true,growth:true,setup:'Run db/migrations/017_growth_agent.sql in Supabase.'});}
 }
@@ -28,7 +28,10 @@ export async function POST(request:NextRequest){
     if(b.task==='weekly'){const w=await weeklyReport(user.id);if(!w)throw Error('Connect Google Search Console and choose your website first.');return NextResponse.json({payload:w});}
     if(!TASKS.includes(b.task))throw Error('Unknown task.');
     rateLimit(request,'agent',30);
-    const out=await runTask(user.id,b.task as Task,(b.input&&typeof b.input==='object'?b.input:{}) as Record<string,unknown>);
+    const input={...(b.input&&typeof b.input==='object'?b.input:{}) as Record<string,unknown>};delete input.__background;
+    // The audit returns after the crawl; PageSpeed + key notes continue after the response.
+    if(b.task==='audit')input.__background=(fn:()=>Promise<void>)=>after(fn);
+    const out=await runTask(user.id,b.task as Task,input);
     return NextResponse.json({result:out,credit:await credit(user.id)});
   }catch(error){return NextResponse.json({error:error instanceof Error?error.message:'The agent could not finish.'},{status:400});}
 }

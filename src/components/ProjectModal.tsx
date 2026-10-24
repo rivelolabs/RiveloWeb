@@ -16,11 +16,6 @@ const currencyData: Record<string, { label: string; symbol: string; options: str
     symbol: "$",
     options: ["< $5,000", "$5,000 - $15,000", "$15,000 - $40,000", "$40,000+", "Custom Amount"],
   },
-  INR: {
-    label: "INR (₹)",
-    symbol: "₹",
-    options: ["< ₹2,00,000", "₹2,00,000 - ₹5,00,000", "₹5,00,000 - ₹15,00,000", "₹15,00,000+", "Custom Amount"],
-  },
   EUR: {
     label: "EUR (€)",
     symbol: "€",
@@ -71,10 +66,7 @@ export default function ProjectModal({ isOpen, onClose, initialType = "AI Applic
   useEffect(() => {
     try {
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
-      if (timeZone.includes("Calcutta") || timeZone.includes("Kolkata") || timeZone.includes("India")) {
-        setCurrency("INR");
-        setBudget("₹2,00,000 - ₹5,00,000");
-      } else if (timeZone.includes("London")) {
+      if (timeZone.includes("London")) {
         setCurrency("GBP");
         setBudget("£4,000 - £12,000");
       } else if (timeZone.includes("Paris") || timeZone.includes("Berlin") || timeZone.includes("Europe")) {
@@ -357,7 +349,7 @@ export default function ProjectModal({ isOpen, onClose, initialType = "AI Applic
                               type="text"
                               value={customBudget}
                               onChange={(e) => setCustomBudget(e.target.value)}
-                              placeholder={`Enter custom amount e.g. ${currency === "INR" ? "3,50,000" : "12,500"}`}
+                              placeholder={`Enter custom amount e.g. ${"12,500"}`}
                               className="w-full rounded-xl border border-indigo-300 bg-indigo-50/40 pl-8 pr-3.5 py-2 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600 text-xs font-medium"
                             />
                           </div>

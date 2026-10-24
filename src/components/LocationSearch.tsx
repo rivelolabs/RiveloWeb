@@ -34,7 +34,7 @@ export default function LocationSearch({value,onChange,onPlace}:{value:string;on
     <div className="rc-locsearch-row">
       <div className="rc-locsearch-field">
         <Search size={17} aria-hidden="true"/>
-        <input id={`${list}-input`} name="city" required maxLength={100} autoComplete="off" placeholder="Search a city or address — e.g. Lucknow, India" value={value}
+        <input id={`${list}-input`} name="city" required maxLength={100} autoComplete="off" placeholder="Search a city or address — e.g. Lisbon, Portugal" value={value}
           role="combobox" aria-expanded={open&&results.length>0} aria-controls={list} aria-autocomplete="list" aria-activedescendant={active>=0?`${list}-${active}`:undefined}
           onChange={e=>{typed.current=true;onChange(e.target.value);}} onFocus={()=>results.length&&setOpen(true)}
           onKeyDown={e=>{if(!open||!results.length)return;if(e.key==='ArrowDown'){e.preventDefault();setActive(a=>(a+1)%results.length);}else if(e.key==='ArrowUp'){e.preventDefault();setActive(a=>(a-1+results.length)%results.length);}else if(e.key==='Enter'&&active>=0){e.preventDefault();choose(results[active]);}else if(e.key==='Escape')setOpen(false);}}/>

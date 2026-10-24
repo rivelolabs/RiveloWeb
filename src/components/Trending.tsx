@@ -1,5 +1,6 @@
 "use client";
 import Link from 'next/link';
+import {useState} from 'react';
 import {ArrowUpRight,ChevronUp,Flame,Rocket} from 'lucide-react';
 import type {Product} from '@/lib/directory';
 import type {SponsoredSlide} from './HeroSlider';
@@ -14,15 +15,16 @@ export function UpvoteButton({productId,votes,onVote,compact=false}:{productId:s
 }
 
 export default function Trending({catalog,votes,onVote,sponsored,launches,onOpen}:{catalog:Product[];votes:Votes;onVote:(id:string)=>void;sponsored:SponsoredSlide[];launches:LaunchItem[];onOpen:(p:Product)=>void}){
+  const [kind,setKind]=useState<'all'|'App'|'Website'>('all');
   const promoted=sponsored.map(s=>s.id);
   const score=(p:Product)=>(votes.counts[p.id]?.week||0)*3+(votes.counts[p.id]?.total||0);
-  const organic=catalog.filter(p=>!promoted.includes(p.id)).sort((a,b)=>score(b)-score(a)).slice(0,Math.max(3,6-sponsored.length));
+  const organic=catalog.filter(p=>!promoted.includes(p.id)&&(kind==='all'||p.type===kind)).sort((a,b)=>score(b)-score(a)).slice(0,Math.max(3,6-sponsored.length));
   const list=organic;
   const ext=(u:string)=>/^https?:/.test(u);
   return <section className="rd-trending" aria-label="Trending and new launches">
     <div className="rd-trend-col">
-      <div className="rd-trend-head"><Flame size={18}/><h2>Trending this week</h2><span className="rd-fine-print">Upvoted by the Rivelo community</span></div>
-      {list.length===0&&sponsored.length===0&&<p className="rd-fine-print rd-launch-empty">Approved products will appear here as people upvote them.</p>}<ol className="rd-trend-list">{sponsored.map(s=>{const p=catalog.find(x=>x.id===s.id);return <li key={'sp-'+s.id} className="rd-trend-promoted">
+      <div className="rd-trend-head"><Flame size={18}/><h2>Trending this week</h2><div className="rd-trend-tabs" role="tablist" aria-label="Trending type">{([['all','All'],['App','Apps'],['Website','Websites']] as const).map(([k,l])=><button key={k} type="button" role="tab" aria-selected={kind===k} className={kind===k?'rd-trend-tab-on':''} onClick={()=>setKind(k)}>{l}</button>)}</div></div>
+      {list.length===0&&sponsored.length===0&&<p className="rd-fine-print rd-launch-empty">Approved products will appear here as people upvote them.</p>}<ol className="rd-trend-list">{sponsored.filter(s=>{const p=catalog.find(x=>x.id===s.id);return kind==='all'||!p||p.type===kind;}).map(s=>{const p=catalog.find(x=>x.id===s.id);return <li key={'sp-'+s.id} className="rd-trend-promoted">
         <span className="rd-trend-rank">★</span>
         {p?<button type="button" className="rd-trend-main" onClick={()=>onOpen(p)}><b>{s.name}</b><span>{s.tagline}</span></button>
           :<a className="rd-trend-main" href={s.url} {...(ext(s.url)?{target:'_blank',rel:'sponsored noopener noreferrer'}:{})}><b>{s.name}</b><span>{s.tagline}</span></a>}
