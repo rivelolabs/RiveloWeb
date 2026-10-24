@@ -2,6 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  serverExternalPackages: ["sharp"],
+  // Next 16.1's Sharp tracer misses libvips with Sharp 0.35's dist entry point.
+  // Include the installed platform binaries in the thumbnail function package.
+  outputFileTracingIncludes: {
+    "/api/map/image/*": ["./node_modules/@img/sharp-*/**/*"],
+  },
   // PostHog goes through our own domain so ad blockers don't drop analytics.
   skipTrailingSlashRedirect: true,
   async rewrites() {

@@ -1,4 +1,3 @@
-import sharp from 'sharp';
 import { getMapData } from '@/lib/map-data';
 import { mapImageSource } from '@/lib/map-images';
 import { safeFetch } from '@/lib/catalog/safe-fetch';
@@ -11,6 +10,9 @@ const thumbnail = cached(async (source: string) => {
   const image = await safeFetch(source, { maxBytes: 2_000_000 });
   const type = String(image.headers['content-type'] || '').split(';')[0].trim().toLowerCase();
   if (image.status !== 200 || !TYPES.includes(type)) throw Error('Not a public image.');
+  // Loading inside the handler allows an original-image fallback if a native
+  // dependency is unavailable in a serverless deployment.
+  const { default: sharp } = await import('sharp');
   const buffer = await sharp(image.body, { limitInputPixels: 16_777_216, animated: false })
     .rotate().resize(96, 96, { fit: 'inside', withoutEnlargement: true }).webp({ quality: 75 }).toBuffer();
   return buffer.toString('base64');
@@ -28,13 +30,24 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const yacht = data.yachts.find(item => `yacht-${item.index}` === id);
     const source = mapImageSource(pin ? (kind === 'badge' ? pin.badge : pin.avatar) : yacht?.product?.logo);
     if (!source) return missing();
-    const image = await thumbnail(source);
-    return new Response(new Uint8Array(Buffer.from(image, 'base64')), { headers: {
-      'Content-Type': 'image/webp', 'Cache-Control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400', 'X-Content-Type-Options': 'nosniff',
-    } });
-  } catch { return missing(); }
+    try {
+      const image = await thumbnail(source);
+      return new Response(new Uint8Array(Buffer.from(image, 'base64')), { headers: {
+        'Content-Type': 'image/webp', 'Cache-Control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400', 'X-Content-Type-Options': 'nosniff',
+      } });
+    } catch (error) {
+      console.error('Map thumbnail unavailable; using original image', { id, kind, error: error instanceof Error ? error.name : 'UnknownError' });
+      // Only the stored public image can be used; request parameters never
+      // control this destination. Do not cache temporary processing failures.
+      return new Response(null, { status: 307, headers: {
+        Location: source, 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer', 'X-Content-Type-Options': 'nosniff',
+      } });
+    }
+  } catch {
+    return new Response(null, { status: 503, headers: { 'Cache-Control': 'no-store' } });
+  }
 }
 
 function missing() {
-  return new Response(null, { status: 404, headers: { 'Cache-Control': 'public, max-age=300', 'X-Content-Type-Options': 'nosniff' } });
+  return new Response(null, { status: 404, headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } });
 }

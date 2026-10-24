@@ -99,7 +99,7 @@ export default function BusinessMap({pins=emptyPins,selected,onSelect,pick,onPic
     yachtLayer.current.clearLayers();
     for(const y of yachts||[]){
       const face=document.createElement('span');face.className=`ra-yacht${y.product?' ra-yacht-booked':''}`;face.innerHTML=YACHT_SVG;
-      if(y.product){const badge=document.createElement('b');if(y.product.logo){const img=document.createElement('img');img.src=y.product.logo;img.alt='';img.decoding='async';img.referrerPolicy='no-referrer';badge.append(img);}else badge.textContent=y.product.name.slice(0,2).toUpperCase();face.append(badge);}
+      if(y.product){const badge=document.createElement('b');const initials=y.product.name.slice(0,2).toUpperCase();if(y.product.logo){const img=document.createElement('img');img.src=y.product.logo;img.alt='';img.decoding='async';img.referrerPolicy='no-referrer';img.onerror=()=>{badge.textContent=initials;};badge.append(img);}else badge.textContent=initials;face.append(badge);}
       else{const free=document.createElement('i');free.innerHTML='<svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true"><path d="M3 18h18l-1.5-9-4.5 4-3-7-3 7-4.5-4z" fill="currentColor"/></svg> Premium · Book';face.append(free);}
       const glow=document.createElement('s');face.prepend(glow);
       L.marker([y.lat,y.lng],{icon:L.divIcon({className:'ra-yacht-pin',html:face,iconSize:[72,42],iconAnchor:[36,34]}),title:y.product?`${y.product.name} (sponsored)`:`Yacht ${y.index}: available to book`,keyboard:true,zIndexOffset:500}).addTo(yachtLayer.current).bindPopup(yachtPopup(y),{offset:[0,-26],className:'ra-yacht-popup',autoPanPaddingTopLeft:[window.innerWidth>900?400:20,90],autoPanPaddingBottomRight:[30,90]});

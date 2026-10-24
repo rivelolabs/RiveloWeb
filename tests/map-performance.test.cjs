@@ -50,14 +50,49 @@ test('thumbnail requests cannot choose arbitrary URLs or unpublished IDs',async(
   assert.equal(calls,0);
 });
 
-test('non-image upstream responses fail without exposing their contents',async()=>{
+test('failed image processing falls back only to the stored image without caching failure',async()=>{
   const route=load('src/app/api/map/image/[id]/route.ts',{
     '@/lib/map-data':{getMapData:async()=>({pins:[{id:'public-pin',avatar:'https://example.com/page'}],yachts:[]})},
     '@/lib/map-images':images,'@/lib/cache':cache,
     '@/lib/catalog/safe-fetch':{safeFetch:async()=>({status:200,headers:{'content-type':'text/html'},body:Buffer.from('not an image')})},
   });
+  const response=await route.GET(new Request('https://www.rivelolabs.com/api/map/image/public-pin?url=https://untrusted.example/photo'),{params:Promise.resolve({id:'public-pin'})});
+  assert.equal(response.status,307);assert.equal(await response.text(),'');
+  assert.equal(response.headers.get('location'),'https://example.com/page');
+  assert.equal(response.headers.get('cache-control'),'no-store');
+});
+
+test('missing native Sharp library does not crash the route and falls back to the original photo',async()=>{
+  const imports={
+    '@/lib/map-data':{getMapData:async()=>({pins:[{id:'public-pin',avatar:'https://example.com/photo.png'}],yachts:[]})},
+    '@/lib/map-images':images,'@/lib/cache':cache,
+    '@/lib/catalog/safe-fetch':{safeFetch:async()=>({status:200,headers:{'content-type':'image/png'},body:Buffer.from('image')})},
+  };
+  Object.defineProperty(imports,'sharp',{get(){throw Error('ERR_DLOPEN_FAILED: missing libvips');}});
+  const route=load('src/app/api/map/image/[id]/route.ts',imports);
   const response=await route.GET(new Request('https://www.rivelolabs.com/api/map/image/public-pin'),{params:Promise.resolve({id:'public-pin'})});
-  assert.equal(response.status,404);assert.equal(await response.text(),'');
+  assert.equal(response.status,307);
+  assert.equal(response.headers.get('location'),'https://example.com/photo.png');
+  assert.equal(response.headers.get('cache-control'),'no-store');
+});
+
+test('temporary map data failures are not cached as missing images',async()=>{
+  const route=load('src/app/api/map/image/[id]/route.ts',{
+    '@/lib/map-data':{getMapData:async()=>{throw Error('Database temporarily unavailable');}},
+    '@/lib/map-images':images,'@/lib/cache':cache,'@/lib/catalog/safe-fetch':{},
+  });
+  const response=await route.GET(new Request('https://www.rivelolabs.com/api/map/image/public-pin'),{params:Promise.resolve({id:'public-pin'})});
+  assert.equal(response.status,503);assert.equal(response.headers.get('cache-control'),'no-store');
+});
+
+test('production thumbnail bundle includes the installed native libvips library',{skip:!fs.existsSync('.next/server/app/api/map/image/[id]/route.js.nft.json')},()=>{
+  const path=require('node:path');
+  const manifest='.next/server/app/api/map/image/[id]/route.js.nft.json';
+  const traced=new Set(JSON.parse(fs.readFileSync(manifest,'utf8')).files.map(file=>path.resolve(path.dirname(manifest),file)));
+  const lib=`node_modules/@img/sharp-libvips-${process.platform}-${process.arch}/lib`;
+  const binaries=fs.readdirSync(lib).filter(file=>/\.(?:so(?:\.\d+)*|dylib|dll)$/.test(file));
+  assert.ok(binaries.length,'Expected an installed libvips native library');
+  for(const binary of binaries)assert.ok(traced.has(path.resolve(lib,binary)),`Deployment omitted ${binary}`);
 });
 
 test('map snapshot preserves ranks, maker links and sponsored yacht destinations',async()=>{
