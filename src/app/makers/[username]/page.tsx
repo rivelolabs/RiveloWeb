@@ -5,7 +5,8 @@ import {ArrowUpRight,MapPin,ShieldCheck,BadgeCheck} from 'lucide-react';
 import CommunityShell from '@/components/CommunityShell';
 import MakerOwner from '@/components/MakerOwner';
 import {dbEnabled} from '@/lib/db';
-import {makerByUsername,makerExtras,productLabel,xPhoto,type MakerProduct} from '@/lib/db/makers';
+import {makerByUsername,makerExtras,makerFunding,productLabel,xPhoto,type MakerProduct} from '@/lib/db/makers';
+import {fundingLabel} from '@/lib/funding';
 import '../../directory.css';
 import '../../makers.css';
 export const dynamic='force-dynamic';
@@ -21,6 +22,7 @@ const host=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'');}cat
 export default async function Page({params}:Props){
   const {username}=await params;const m=await load(username);if(!m)notFound();
   const claimed=m.status==='claimed',first=m.name.split(' ')[0];
+  const funding=claimed?await makerFunding(m.id):'';
   const extras:MakerProduct[]=claimed?(await makerExtras([m.id]).catch(()=>new Map<string,MakerProduct[]>())).get(m.id)||[]:[];
   const ld={'@context':'https://schema.org','@type':'ProfilePage',url:`https://www.rivelolabs.com/makers/${m.username}`,mainEntity:{'@type':'Person',name:m.name,alternateName:`@${m.username}`,description:m.bio||undefined,image:m.avatar||undefined,sameAs:[`https://x.com/${m.username}`,...(m.website?[m.website]:[])],...(m.city?{homeLocation:{'@type':'Place',name:m.city}}:{}),...(m.productUrl?{owns:{'@type':'SoftwareApplication',name:m.productName||host(m.productUrl),url:m.productUrl}}:{})}};
   return <CommunityShell active="/makers"><main className="rc-content mk-page"><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(ld).replace(/</g,'\\u003c')}}/>
@@ -32,7 +34,7 @@ export default async function Page({params}:Props){
     <header className="mk-head">
       {/* eslint-disable-next-line @next/next/no-img-element */}<img src={xPhoto(m.avatar,m.username)} alt="" width={96} height={96} referrerPolicy="no-referrer"/>
       <div><h1>{m.name}{claimed&&<BadgeCheck size={22} aria-label="Claimed by its owner"/>}</h1><p className="mk-handle">@{m.username}{typeof m.followers==='number'&&<> · {m.followers.toLocaleString()} followers</>}</p>
-        <div className="mk-chips"><a className="mk-x" href={`https://x.com/${m.username}`} target="_blank" rel="noopener noreferrer" aria-label={`@${m.username} on X`}>𝕏</a>{m.city&&<span><MapPin size={14}/> {m.city}</span>}<span className={claimed?'mk-live':'mk-unclaimed'}>{claimed?'Live on the map':'Not claimed yet'}</span></div></div>
+        <div className="mk-chips"><a className="mk-x" href={`https://x.com/${m.username}`} target="_blank" rel="noopener noreferrer" aria-label={`@${m.username} on X`}>𝕏</a>{m.city&&<span><MapPin size={14}/> {m.city}</span>}{funding&&<span>{fundingLabel(funding)}</span>}<span className={claimed?'mk-live':'mk-unclaimed'}>{claimed?'Live on the map':'Not claimed yet'}</span></div></div>
     </header>
     <section className="mk-card"><h2>About {first}</h2>{m.bio?<p>{m.bio}</p>:<p className="mk-muted">No bio yet.</p>}
       {m.website&&<><span className="mk-label">LINKS</span><div className="mk-links"><a href={m.website} target="_blank" rel="noopener noreferrer">{host(m.website)} <ArrowUpRight size={14}/></a></div></>}
@@ -47,7 +49,7 @@ export default async function Page({params}:Props){
     {extras.length>0&&<section className="mk-card"><h2>More from {first}</h2><div className="mk-more">{extras.map(e=><article key={e.id} className="mk-more-item">
       <div className="mk-product-row">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={e.logo||`https://www.google.com/s2/favicons?domain=${encodeURIComponent(host(e.url))}&sz=128`} alt="" width={48} height={48}/><div><h3>{e.name}</h3><a href={e.url} target="_blank" rel="noopener noreferrer">{host(e.url)} <ArrowUpRight size={13}/></a></div></div>
       {e.description&&<p>{e.description}</p>}</article>)}</div></section>}
-    <MakerOwner username={m.username} mode="edit" extras={extras.map(e=>({id:e.id,name:e.name,url:e.url,logo:e.logo||'',description:e.description}))} initial={{name:m.name,bio:m.bio||'',productName:productLabel(m.productName,''),productUrl:m.productUrl||'',productDescription:m.productDescription||'',city:m.city||'',lat:m.lat,lng:m.lng,logo:m.logo||''}}/>
+    <MakerOwner username={m.username} mode="edit" extras={extras.map(e=>({id:e.id,name:e.name,url:e.url,logo:e.logo||'',description:e.description}))} initial={{funding,name:m.name,bio:m.bio||'',productName:productLabel(m.productName,''),productUrl:m.productUrl||'',productDescription:m.productDescription||'',city:m.city||'',lat:m.lat,lng:m.lng,logo:m.logo||''}}/>
     <p className="mk-report"><ShieldCheck size={14}/> Something wrong on this page, or want it removed? <a href={`mailto:hello@rivelolabs.com?subject=${encodeURIComponent(`Maker page @${m.username}`)}`}>Report it</a></p>
     <Link className="mk-map" href="/map"><MapPin size={16}/> Map</Link>
   </main></CommunityShell>;

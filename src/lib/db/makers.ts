@@ -108,3 +108,8 @@ export async function setMakerExtras(makerId:string,userId:string,items:{id?:str
   }catch(e){await client.query('ROLLBACK').catch(()=>{});if(/maker_products/.test(String((e as Error).message))&&/does not exist/.test(String((e as Error).message)))throw Error('Run db/migrations/014_maker_products.sql in Supabase to add more products.');throw e;}
   finally{client.release();}
 }
+
+/** Funding stage of a builder page (migration 016). Reads/writes are skipped quietly until it is run. */
+export async function makerFunding(id:string){const r=await db().query(`SELECT funding FROM rivelo.maker_pages WHERE id=$1`,[id]).catch(()=>({rows:[]}));return (r.rows[0]?.funding as string|null)||'';}
+export async function setMakerFunding(id:string,userId:string,funding:string|null){bust('makers');
+  await db().query(`UPDATE rivelo.maker_pages SET funding=$3 WHERE id=$1 AND claimed_by=$2`,[id,userId,funding]).catch(e=>{if(funding&&/funding/.test(String(e.message)))throw Error('Run db/migrations/016_maker_funding.sql in Supabase to save the funding stage.');});}

@@ -2,7 +2,8 @@ import {NextRequest,NextResponse} from 'next/server';
 import {currentUser} from '@/lib/auth/server';
 import {jsonBody,sameOrigin,shortText} from '@/lib/catalog/http';
 import {dbEnabled} from '@/lib/db';
-import {makerByUsername,removeOwnMaker,setMakerAvatar,setMakerExtras,updateOwnMaker} from '@/lib/db/makers';
+import {makerByUsername,removeOwnMaker,setMakerAvatar,setMakerExtras,setMakerFunding,updateOwnMaker} from '@/lib/db/makers';
+import {isFunding} from '@/lib/funding';
 import {xIdentity} from '@/lib/x/identity';
 import {httpsUrl as imageUrl} from "@/lib/catalog/types";
 export const runtime='nodejs';export const dynamic='force-dynamic';
@@ -29,6 +30,7 @@ export async function PATCH(request:NextRequest){
         return {id:typeof e.id==='string'?e.id:undefined,name,url,logo:e.logo?imageUrl(e.logo)||null:null,description:shortText(e.description,1500)};});
       await setMakerExtras(maker.id,user.id,extras);
     }
+    if('funding' in b)await setMakerFunding(maker.id,user.id,isFunding(b.funding)?b.funding:null);
     const updated=await updateOwnMaker(maker.id,user.id,{name:shortText(b.name,120)||maker.name,bio:shortText(b.bio,400),productName:shortText(b.productName,120),productUrl:b.productUrl?imageUrl(b.productUrl)||null:null,productDescription:shortText(b.productDescription,1500),city:shortText(b.city,100)||null,lat:lat!==null&&lng!==null?lat:null,lng:lat!==null&&lng!==null?lng:null,logo:b.logo?imageUrl(b.logo)||null:null});
     return NextResponse.json({maker:updated});
   }catch(error){return NextResponse.json({error:error instanceof Error?error.message:'Could not save.'},{status:400});}

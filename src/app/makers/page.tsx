@@ -6,6 +6,7 @@ import BuildersYou from '@/components/BuildersYou';
 import {dbEnabled} from '@/lib/db';
 import {cachedBuilders,rankBuilders,suggestions,POINTS,type Builder,type Sort} from '@/lib/db/builders';
 import {flag,shortPlace} from '@/lib/flags';
+import {FUNDING,fundingLabel,isFunding} from '@/lib/funding';
 import '../directory.css';
 import '../builders.css';
 export const dynamic='force-dynamic';
@@ -14,17 +15,17 @@ const TABS:[Sort,string][]=[['top','Top'],['trending','Trending'],['rising','Ris
 const host=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'');}catch{return u;}};
 const STORE:Record<string,string>={'play.google.com':'Google Play','apps.apple.com':'App Store','itunes.apple.com':'App Store'};
 const compact=(n:number)=>n>=1000?`${(n/1000).toFixed(n>=10000?0:1).replace(/\.0$/,'')}K`:String(n);
-type Props={searchParams:Promise<{sort?:string;q?:string;n?:string}>};
+type Props={searchParams:Promise<{sort?:string;q?:string;n?:string;funding?:string}>};
 const PAGE=25;
 
 export default async function Page({searchParams}:Props){
-  const sp=await searchParams;const sort=(TABS.some(t=>t[0]===sp.sort)?sp.sort:'top') as Sort;const q=(sp.q||'').slice(0,80);
+  const sp=await searchParams;const sort=(TABS.some(t=>t[0]===sp.sort)?sp.sort:'top') as Sort;const q=(sp.q||'').slice(0,80);const funding=isFunding(sp.funding)?sp.funding:'';
   const all:Builder[]=dbEnabled()?await cachedBuilders().catch(()=>[]):[];
-  const top=rankBuilders(all,'top'),ranked=rankBuilders(all,sort,q);
+  const top=rankBuilders(all,'top'),ranked=rankBuilders(all,sort,q).filter(b=>!funding||b.funding===funding);
   // 25 at a time; "Show more" adds the next 25 (plain links, so every builder page stays crawlable).
   const shown=Math.min(Math.max(PAGE,Math.floor(Number(sp.n)||PAGE)),ranked.length||PAGE),list=ranked.slice(0,shown);
   const ranks=Object.fromEntries(top.map((b,i)=>[b.username.toLowerCase(),{rank:i+1,points:b.points}]));
-  const href=(s:Sort,query=q)=>`/makers?${new URLSearchParams({...(s!=='top'?{sort:s}:{}),...(query?{q:query}:{})})}`;
+  const href=(s:Sort,query=q,fund:string=funding)=>`/makers?${new URLSearchParams({...(s!=='top'?{sort:s}:{}),...(query?{q:query}:{}),...(fund?{funding:fund}:{})})}`;
   const heading=q?`Results for “${q}”`:sort==='top'?'Top builders':sort==='trending'?'Trending this week':sort==='rising'?'Rising fast':'Newest builders';
   const ld={'@context':'https://schema.org','@type':'ItemList',name:'Top builders on Rivelo Labs',itemListElement:top.slice(0,20).map((b,i)=>({'@type':'ListItem',position:i+1,url:`https://www.rivelolabs.com${b.href}`,name:b.name}))};
 
@@ -39,6 +40,7 @@ export default async function Page({searchParams}:Props){
     <nav className="bl-tabs" aria-label="Sort builders">{TABS.map(([id,label])=><Link key={id} href={href(id)} className={sort===id?'bl-tab-on':''} aria-current={sort===id?'page':undefined}>{label}</Link>)}</nav>
     {all.length>0&&<div className="bl-chips">{suggestions(all).map(s=><Link key={s} href={href(sort,s)} className={q===s?'bl-chip-on':''}><Sparkles size={14}/>{s}</Link>)}</div>}
 
+    <nav className="bl-funding" aria-label="Filter by funding"><span>Funding</span><Link href={href(sort,q,'')} className={!funding?'bl-fund-on':''}>Any</Link>{FUNDING.map(f=><Link key={f.id} href={href(sort,q,f.id)} className={funding===f.id?'bl-fund-on':''}>{f.label}</Link>)}</nav>
     <BuildersYou ranks={ranks}/>
 
     <h2 className="bl-list-title">{heading}</h2>
@@ -55,6 +57,7 @@ export default async function Page({searchParams}:Props){
           <div className="bl-tags">
             {b.city&&<Link href={href(sort,shortPlace(b.city))}>{b.country&&<span aria-hidden>{flag(b.country)}</span>}{shortPlace(b.city)}</Link>}
             <Link href={href(sort,b.category==='Indie'?'':b.category)}>{b.category}</Link>
+            {b.funding&&<Link href={href(sort,q,b.funding)} className="bl-fund">{fundingLabel(b.funding)}</Link>}
             {b.productUrl&&<a className="bl-product" href={b.productUrl} target="_blank" rel="noopener">
               {/* eslint-disable-next-line @next/next/no-img-element */}<img src={b.logo||`https://www.google.com/s2/favicons?domain=${encodeURIComponent(host(b.productUrl))}&sz=64`} alt="" width={16} height={16} loading="lazy"/>
               {b.product&&b.product!==b.name?b.product:STORE[host(b.productUrl)]||host(b.productUrl)}<ArrowUpRight size={13}/></a>}

@@ -3,7 +3,7 @@ export type Genre = typeof genres[number];
 export type Product = {
   id: string; name: string; tagline: string; description: string; genre: Genre;
   platforms: string[]; type: "App" | "Website"; color: string; letter: string;
-  imported?:boolean; sourceKind?:string; sourceUrl?:string; importedAt?:string; claimed?:boolean; sponsored?:boolean; image?: string; logo?: string; url?: string; policies?: { name: string; href: string }[];
+  imported?:boolean; sourceKind?:string; sourceUrl?:string; importedAt?:string; claimed?:boolean; sponsored?:boolean; image?: string; logo?: string; url?: string; funding?: string; policies?: { name: string; href: string }[];
 };
 /** Earlier built-in apps. Kept for artwork only; they are no longer listed in the directory. */
 export const ecosystemProducts: Product[] = [
@@ -31,13 +31,14 @@ export function validateRegistration(value: unknown): value is Registration {
   return true;
 }
 
-export function filterProducts(options: { view:string; genre:Genre|null; query:string; sort:string; saved:string[]; items?:Product[] }): Product[] {
+export function filterProducts(options: { view:string; genre:Genre|null; query:string; sort:string; saved:string[]; items?:Product[]; funding?:string }): Product[] {
   const needle = options.query.trim().toLowerCase();
   const result = (options.items||products).filter(product =>
     (options.view !== "apps" || product.type === "App") &&
     (options.view !== "websites" || product.type === "Website") &&
     (options.view !== "saved" || options.saved.includes(product.id)) &&
     (!options.genre || product.genre === options.genre) &&
+    (!options.funding || product.funding === options.funding) &&
     `${product.name} ${product.tagline} ${product.genre} ${product.platforms.join(" ")}`.toLowerCase().includes(needle)
   );
   return options.sort === "az" ? [...result].sort((a,b) => a.name.localeCompare(b.name)) : result;

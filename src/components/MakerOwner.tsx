@@ -3,9 +3,10 @@ import {useEffect,useState} from 'react';
 import dynamic from 'next/dynamic';
 import {Check,LoaderCircle,Pencil,Plus,Trash2,X} from 'lucide-react';
 import LocationSearch from './LocationSearch';
+import {FUNDING} from '@/lib/funding';
 const BusinessMap=dynamic(()=>import('./BusinessMap'),{ssr:false});
 type Extra={id?:string;name:string;url:string;logo:string;description:string};
-type Fields={name:string;bio:string;productName:string;productUrl:string;productDescription:string;city:string;lat:number|null;lng:number|null;logo:string};
+type Fields={funding?:string;name:string;bio:string;productName:string;productUrl:string;productDescription:string;city:string;lat:number|null;lng:number|null;logo:string};
 /** Claim button (mode=claim) or the owner's edit panel (mode=edit, only rendered for the owner). */
 export default function MakerOwner({username,mode,label,initial,extras:startExtras=[]}:{username:string;mode:'claim'|'edit';label?:string;initial?:Fields;extras?:Extra[]}){
   const [extras,setExtras]=useState<Extra[]>(startExtras);
@@ -36,6 +37,7 @@ export default function MakerOwner({username,mode,label,initial,extras:startExtr
       <label>Bio<textarea value={f.bio} onChange={e=>setF({...f,bio:e.target.value})} maxLength={400} rows={2}/></label>
       <label>Logo image link <small>(optional — shown on the map instead of your X photo)</small><input type="url" value={f.logo} onChange={e=>setF({...f,logo:e.target.value})} maxLength={500} placeholder="https://your-product.com/logo.png"/></label>
       {initial?.productUrl&&<label>App or website link<input type="url" required value={f.productUrl} onChange={e=>setF({...f,productUrl:e.target.value})} maxLength={500}/></label>}
+      <label>How is it funded? <small>(optional)</small><select value={f.funding||''} onChange={e=>setF({...f,funding:e.target.value})}><option value="">Prefer not to say</option>{FUNDING.map(x=><option key={x.id} value={x.id}>{x.label}</option>)}</select></label>
       <label>What are you building?<textarea value={f.productDescription} onChange={e=>setF({...f,productDescription:e.target.value})} maxLength={1500} rows={4}/></label>
       <div className="mk-extras"><span className="mk-label">MORE PRODUCTS</span>
         {extras.map((e,i)=><div key={e.id||`new-${i}`} className="mk-extra">

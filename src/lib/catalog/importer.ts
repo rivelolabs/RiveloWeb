@@ -29,10 +29,12 @@ export function parsePlay(data:unknown,source:Source,packageId:string):Listing{
 }
 export async function importSource(source:Source):Promise<Listing[]>{
   if(source.kind==='website'){
-    const target=new URL(publicUrl(source.value));const robots=await safeFetch(`${target.origin}/robots.txt`,{maxBytes:150000});
-    if(robots.status!==404&&(robots.status<200||robots.status>=300))throw Error('Could not verify the website’s crawl permissions.');
-    if(!robotsAllows(robots.text,target.pathname+target.search))throw Error('This page is excluded by robots.txt.');
-    const page=await safeFetch(target.href,{redirects:0});if(page.status>=300&&page.status<400)throw Error('Use the website’s final URL, without a redirect.');
+    const target=new URL(publicUrl(source.value));
+    // Follow normal redirects (notion.so → www.notion.so/…); robots.txt is checked on the final site.
+    const page=await safeFetch(target.href,{redirects:5,maxBytes:3_000_000});
+    const final=new URL(page.url);
+    const robots=await safeFetch(`${final.origin}/robots.txt`,{maxBytes:150000,redirects:5}).catch(()=>null);
+    if(robots&&robots.status>=200&&robots.status<300&&!robotsAllows(robots.text,final.pathname+final.search))throw Error('This page is excluded by robots.txt.');
     if(page.status!==200||!String(page.headers['content-type']).includes('text/html'))throw Error('The website did not return an HTML page.');
     if(/noindex|nosnippet/i.test(String(page.headers['x-robots-tag']||'')))throw Error('The website opts out through X-Robots-Tag.');
     return [parseWebsite(page.text,page.url,source)];

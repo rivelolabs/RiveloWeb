@@ -538,3 +538,5 @@ a.rd-trend-main{color:inherit;text-decoration:none}
 .nb-upvote{background:var(--rd-coral)}.nb-comment{background:#2f6fde}.nb-reply{background:#1f9d55}
 .nb-text{min-width:0;display:flex;flex-direction:column;gap:3px;font-size:13.5px;line-height:1.45}.nb-text q{color:var(--rd-secondary);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.nb-text small{color:var(--rd-muted);font-size:12px}
 .nb-empty{padding:22px 18px;color:var(--rd-secondary);font-size:14px;line-height:1.55;margin:0}
+.rd-sort-group{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.rd-row-funding{font:inherit;font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid color-mix(in srgb,#2f6fde 30%,var(--rd-line));background:color-mix(in srgb,#2f6fde 8%,var(--rd-surface));color:#2457b3;cursor:pointer}

@@ -1,11 +1,12 @@
 "use client";
 import {useEffect,useState} from 'react';
+import {FUNDING} from '@/lib/funding';
 import Link from 'next/link';
 import {ArrowUpRight,Check,LoaderCircle,MapPin,Pencil,Plus,X} from 'lucide-react';
 import {genres} from '@/lib/directory';
 import MediaInputs from './MediaInputs';
 type M={username:string;name:string;product:string;image:string;city:string;onMap:boolean};
-type L={id:string;name:string;description:string;genre:string;status:string;url:string;logoUrl:string;bannerUrl:string;fallbackImage:string;city:string;pinStatus:string|null;submittedAt:string;updatedAt:string|null};
+type L={funding?:string;id:string;name:string;description:string;genre:string;status:string;url:string;logoUrl:string;bannerUrl:string;fallbackImage:string;city:string;pinStatus:string|null;submittedAt:string;updatedAt:string|null};
 const STATUS:Record<string,string>={pending:'In review · usually 1–2 days',published:'Live',rejected:'Not approved'};
 export default function MyListings(){
   const [items,setItems]=useState<L[]|null>(null),[makers,setMakers]=useState<M[]>([]),[edit,setEdit]=useState<L|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[saved,setSaved]=useState('');
@@ -22,6 +23,7 @@ export default function MyListings(){
       {edit?.id===l.id?<form className="ra-listing-edit" onSubmit={save}>
         <div className="rd-form-row"><label>Product name<input value={edit.name} onChange={e=>setEdit({...edit,name:e.target.value})} required minLength={2} maxLength={120}/></label><label>Category<select value={edit.genre} onChange={e=>setEdit({...edit,genre:e.target.value})}>{genres.map(g=><option key={g}>{g}</option>)}</select></label></div>
         <label>Description<textarea value={edit.description} onChange={e=>setEdit({...edit,description:e.target.value})} required minLength={80} maxLength={1500} rows={5}/><small>{edit.description.trim().length}/80 characters minimum</small></label>
+        <label>How is it funded? <small>(optional)</small><select value={edit.funding||''} onChange={e=>setEdit({...edit,funding:e.target.value})}><option value="">Prefer not to say</option>{FUNDING.map(f=><option key={f.id} value={f.id}>{f.label}</option>)}</select></label>
         <MediaInputs name={edit.name} logoUrl={edit.logoUrl} bannerUrl={edit.bannerUrl} onLogo={v=>setEdit({...edit,logoUrl:v})} onBanner={v=>setEdit({...edit,bannerUrl:v})}/>
         {error&&<p className="rd-error" role="alert">{error}</p>}
         <div className="ra-listing-actions"><button type="button" className="rd-button rd-outline" onClick={()=>{setEdit(null);setError('');}}><X size={15}/> Cancel</button><button className="rd-button rd-primary" disabled={busy}>{busy?<LoaderCircle className="rd-spin" size={15}/>:<Check size={15}/>} Save changes</button></div>

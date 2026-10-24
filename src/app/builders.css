@@ -42,3 +42,6 @@
 .bl-more-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;color:var(--rd-muted);font-size:14px;flex-wrap:wrap}.bl-more-row .rd-button{min-height:40px;padding:8px 16px;scroll-margin-top:120px}
 .bl .bl-search input,.bl .bl-search input:focus,.bl .bl-search input:focus-visible{border:0!important;outline:none!important;box-shadow:none!important;background:transparent!important;padding:0!important;height:auto!important;min-height:0!important;border-radius:0!important}
 .bl .bl-search:focus-within{border-color:var(--rd-coral);box-shadow:0 0 0 3px color-mix(in srgb,var(--rd-coral) 15%,transparent)}
+.bl-funding{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:-6px 0 20px;font-size:13px}.bl-funding>span{color:var(--rd-muted);margin-right:4px;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.bl-funding a{padding:5px 11px;border-radius:999px;border:1px solid var(--rd-line);color:var(--rd-secondary)}.bl-funding a:hover{color:var(--rd-ink)}.bl-funding .bl-fund-on{background:var(--rd-ink);color:var(--rd-surface);border-color:var(--rd-ink)}
+.bl-tags .bl-fund{background:color-mix(in srgb,#2f6fde 8%,var(--rd-surface));border-color:color-mix(in srgb,#2f6fde 30%,var(--rd-line));color:#2457b3}

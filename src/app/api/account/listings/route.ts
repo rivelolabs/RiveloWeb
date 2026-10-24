@@ -1,4 +1,5 @@
 import {NextRequest,NextResponse} from 'next/server';
+import {isFunding} from '@/lib/funding';
 import {currentUser} from '@/lib/auth/server';
 import {jsonBody,sameOrigin,shortText} from '@/lib/catalog/http';
 import {rateLimit} from '@/lib/catalog/limit';
@@ -14,7 +15,7 @@ function owns(state:CatalogState,listing:Listing,email:string){
   const e=email.toLowerCase();
   return listing.ownerEmail===e||state.pins.some(p=>p.productId===listing.id&&p.email.toLowerCase()===e)||state.claims.some(c=>c.productId===listing.id&&c.status==='approved'&&c.email.toLowerCase()===e);
 }
-const view=(state:CatalogState,l:Listing)=>{const pin=state.pins.find(p=>p.productId===l.id);return {id:l.id,name:l.name,description:l.editorialSummary||l.description,genre:l.genre,status:l.status,url:l.sourceUrl,logoUrl:l.logoUrl||'',bannerUrl:l.bannerUrl||'',fallbackImage:l.image?`/api/catalog/image/${l.id}`:'',city:pin?.city||'',pinStatus:pin?.status||null,submittedAt:l.importedAt,updatedAt:l.updatedAt||null};};
+const view=(state:CatalogState,l:Listing)=>{const pin=state.pins.find(p=>p.productId===l.id);return {id:l.id,name:l.name,description:l.editorialSummary||l.description,genre:l.genre,status:l.status,url:l.sourceUrl,logoUrl:l.logoUrl||'',bannerUrl:l.bannerUrl||'',funding:l.funding||'',fallbackImage:l.image?`/api/catalog/image/${l.id}`:'',city:pin?.city||'',pinStatus:pin?.status||null,submittedAt:l.importedAt,updatedAt:l.updatedAt||null};};
 
 export async function GET(request:NextRequest){
   const user=await currentUser(request);if(!user)return NextResponse.json({signedIn:false,listings:[],makers:[]},{headers:{'Cache-Control':'no-store'}});
@@ -36,7 +37,7 @@ export async function PATCH(request:NextRequest){
     const logoUrl=imageUrl(b.logoUrl),bannerUrl=imageUrl(b.bannerUrl);
     const updated=await updateCatalog(state=>{
       const l=state.listings.find(x=>x.id===b.id);if(!l||!owns(state,l,user.email!))throw Error('Listing not found.');
-      l.name=name;l.editorialSummary=description;if(l.id.startsWith('owner-'))l.description=description;l.genre=b.genre;l.logoUrl=logoUrl;l.bannerUrl=bannerUrl;l.updatedAt=new Date().toISOString();
+      l.name=name;l.editorialSummary=description;if(l.id.startsWith('owner-'))l.description=description;l.genre=b.genre;l.logoUrl=logoUrl;l.bannerUrl=bannerUrl;if('funding' in b){if(isFunding(b.funding))l.funding=b.funding;else delete l.funding;}l.updatedAt=new Date().toISOString();
       state.pins.filter(p=>p.productId===l.id).forEach(p=>{p.name=name;p.genre=b.genre;});
       return view(state,l);
     });
