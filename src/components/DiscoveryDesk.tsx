@@ -1,5 +1,5 @@
 "use client";
-import {useCallback,useMemo,useState} from 'react';
+import {useCallback,useEffect,useMemo,useState} from 'react';
 import Link from 'next/link';
 import {ArrowLeft,ArrowUpRight,Check,ChevronDown,Clock,Download,Inbox,LoaderCircle,Lock,MapPin,MessagesSquare,Play,Plus,RefreshCw,Send,ShieldCheck,Sparkles,UserCheck,X,History,Layers3,Mail,AtSign,Rocket,Search} from 'lucide-react';
 import MakersDesk from './MakersDesk';
@@ -16,9 +16,13 @@ export default function DiscoveryDesk(){
   const [key,setKey]=useState(''),[data,setData]=useState<Desk|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
   const notifyCb=useCallback((ok:boolean,msg:string)=>{if(ok){setNotice(msg);setTimeout(()=>setNotice(''),3500);}else setError(msg);},[]);
   const [tab,setTab]=useState<Tab>('review'),[filter,setFilter]=useState<Filter>('pending');
-  async function refresh(){const response=await fetch('/api/catalog/admin',{headers:{Authorization:`Bearer ${key}`},cache:'no-store'});const result=await response.json();if(!response.ok)throw Error(result.error);setData(result);}
-  async function connect(event:React.FormEvent){event.preventDefault();setError('');setBusy(true);try{await refresh();}catch(error){setError(error instanceof Error?error.message:'Could not connect.');}finally{setBusy(false);}}
-  async function action(body:Record<string,unknown>){setBusy(true);setError('');setNotice('');try{const response=await fetch('/api/catalog/admin',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},body:JSON.stringify(body)});const result=await response.json();if(!response.ok)throw Error(result.error);await refresh();setNotice(body.action==='run'?'Import completed. New candidates are in the review queue.':body.action==='import-producthunt'?'Product Hunt launches imported. Press “Find contacts” next.':body.action==='find-contacts'?'Contact lookup finished.':body.action==='review'&&body.status==='published'?'Listing published.':'Changes saved.');setTimeout(()=>setNotice(''),3500);return result;}catch(error){setError(error instanceof Error?error.message:'The action failed.');}finally{setBusy(false);}}
+  // After the key is entered once, a 24-hour session cookie signs requests; the key itself is not kept.
+  const auth=():Record<string,string>=>key?{Authorization:`Bearer ${key}`}:{};
+  const [checking,setChecking]=useState(true);
+  useEffect(()=>{fetch('/api/catalog/admin',{cache:'no-store'}).then(async r=>{if(r.ok)setData(await r.json());}).catch(()=>{}).finally(()=>setChecking(false));},[]);
+  async function refresh(){const response=await fetch('/api/catalog/admin',{headers:auth(),cache:'no-store'});const result=await response.json();if(!response.ok)throw Error(result.error);setData(result);}
+  async function connect(event:React.FormEvent){event.preventDefault();setError('');setBusy(true);try{const s=await fetch('/api/catalog/admin/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});const d=await s.json();if(!s.ok)throw Error(d.error);setKey('');await refresh();}catch(error){setError(error instanceof Error?error.message:'Could not connect.');}finally{setBusy(false);}}
+  async function action(body:Record<string,unknown>){setBusy(true);setError('');setNotice('');try{const response=await fetch('/api/catalog/admin',{method:'POST',headers:{...auth(),'Content-Type':'application/json'},body:JSON.stringify(body)});const result=await response.json();if(!response.ok)throw Error(result.error);await refresh();setNotice(body.action==='run'?'Import completed. New candidates are in the review queue.':body.action==='import-producthunt'?'Product Hunt launches imported. Press “Find contacts” next.':body.action==='find-contacts'?'Contact lookup finished.':body.action==='review'&&body.status==='published'?'Listing published.':'Changes saved.');setTimeout(()=>setNotice(''),3500);return result;}catch(error){setError(error instanceof Error?error.message:'The action failed.');}finally{setBusy(false);}}
 
   const counts=useMemo(()=>data?{
     pending:data.listings.filter(l=>l.status==='pending').length,published:data.listings.filter(l=>l.status==='published').length,rejected:data.listings.filter(l=>l.status==='rejected').length,
@@ -26,13 +30,14 @@ export default function DiscoveryDesk(){
     claims:data.claims.filter(c=>c.status!=='approved'&&c.status!=='rejected').length,drafts:data.invites.filter(i=>i.status==='draft').length,leads:data.leads.length,prospects:data.listings.filter(l=>l.sourceKey.startsWith('producthunt:')&&l.status!=='rejected'&&!!l.contactEmail&&!data.invites.some(i=>i.productId===l.id)).length,
   }:null,[data]);
 
+  if(checking&&!data)return <main className="rd-app dk"><p className="dk-login" role="status"><LoaderCircle className="rd-spin" size={18}/> Opening the Discovery desk…</p></main>;
   if(!data||!counts)return <main className="rd-app dk">
     <header className="dk-top"><Link href="/" className="rd-product-page-brand">rivelo<span>labs.</span></Link><Link href="/" className="dk-back"><ArrowLeft size={15}/> Back to directory</Link></header>
     <form className="dk-login" onSubmit={connect}>
       <span className="dk-login-icon"><ShieldCheck size={26}/></span>
       <span className="rd-overline">PRIVATE WORKSPACE</span>
       <h1>Discovery desk</h1>
-      <p>Enter the <code>CATALOG_ADMIN_KEY</code> from your server environment. It stays in this tab’s memory only.</p>
+      <p>Enter the <code>CATALOG_ADMIN_KEY</code> from your server environment. You stay signed in on this browser for 24 hours (press Lock to sign out).</p>
       <label>Admin key<input type="password" value={key} onChange={e=>setKey(e.target.value)} required autoComplete="off" autoFocus/></label>
       <button className="rd-button rd-primary" disabled={busy}>{busy?<LoaderCircle className="rd-spin" size={16}/>:<Lock size={16}/>} Open workspace</button>
       {error&&<p className="rd-error" role="alert">{error}</p>}
@@ -50,7 +55,7 @@ export default function DiscoveryDesk(){
       <div className="dk-top-actions">
         <span className="dk-pill"><i className={data.enabled?'dk-dot-on':'dk-dot-off'}/> Imports {data.enabled?'on':'paused'} · {data.storageBackend==='postgres'?'PostgreSQL':'Local files'}</span>
         <button className="dk-icon-btn" title="Refresh" aria-label="Refresh" disabled={busy} onClick={()=>{setBusy(true);refresh().catch(e=>setError(e.message)).finally(()=>setBusy(false));}}>{busy?<LoaderCircle className="rd-spin" size={16}/>:<RefreshCw size={16}/>}</button>
-        <button className="rd-button rd-outline dk-sm" onClick={()=>{setData(null);setKey('');}}><Lock size={14}/> Lock</button>
+        <button className="rd-button rd-outline dk-sm" onClick={()=>{void fetch('/api/catalog/admin/session',{method:'DELETE'});setData(null);setKey('');}}><Lock size={14}/> Lock</button>
       </div>
     </header>
     <div className="dk-shell">

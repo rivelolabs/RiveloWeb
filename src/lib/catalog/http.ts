@@ -1,6 +1,20 @@
-import {timingSafeEqual} from 'node:crypto';
+import {createHmac,timingSafeEqual} from 'node:crypto';
 export function sameSecret(actual:string|null,expected:string|undefined){if(!actual||!expected||expected.length<24)return false;const a=Buffer.from(actual),b=Buffer.from(expected);return a.length===b.length&&timingSafeEqual(a,b);}
-export function adminAuthorized(request:Request){return sameSecret(request.headers.get('authorization'),process.env.CATALOG_ADMIN_KEY?`Bearer ${process.env.CATALOG_ADMIN_KEY}`:undefined);}
+/** Discovery desk: the admin key in the Authorization header, or a signed 24-hour session cookie set after entering it once. */
+export const DESK_COOKIE='rivelo_desk';export const DESK_TTL=86400;
+const deskSig=(exp:string)=>createHmac('sha256',process.env.CATALOG_ADMIN_KEY||'').update(`desk:${exp}`).digest('base64url');
+export function deskToken(){const exp=String(Math.floor(Date.now()/1000)+DESK_TTL);return `${exp}.${deskSig(exp)}`;}
+function deskCookieValid(request:Request){
+  const key=process.env.CATALOG_ADMIN_KEY;if(!key||key.length<24)return false;
+  const m=(request.headers.get('cookie')||'').match(new RegExp(`(?:^|;\\s*)${DESK_COOKIE}=([^;]+)`));if(!m)return false;
+  const [exp,sig]=decodeURIComponent(m[1]).split('.');if(!exp||!sig||Number(exp)*1000<Date.now())return false;
+  const a=Buffer.from(sig),b=Buffer.from(deskSig(exp));return a.length===b.length&&timingSafeEqual(a,b);
+}
+export function adminAuthorized(request:Request){
+  if(sameSecret(request.headers.get('authorization'),process.env.CATALOG_ADMIN_KEY?`Bearer ${process.env.CATALOG_ADMIN_KEY}`:undefined))return true;
+  // Cookie sessions: writes must come from our own pages (the cookie is also SameSite=Strict).
+  return deskCookieValid(request)&&(request.method==='GET'||sameOrigin(request));
+}
 export function cronAuthorized(request:Request){return sameSecret(request.headers.get('authorization'),process.env.CRON_SECRET?`Bearer ${process.env.CRON_SECRET}`:undefined);}
 export async function jsonBody(request:Request,limit=12000){if(!request.headers.get('content-type')?.includes('application/json'))throw Error('Submit a JSON request.');if(Number(request.headers.get('content-length')||0)>limit)throw Error('Request is too large.');const reader=request.body?.getReader();if(!reader)throw Error('Request is empty.');let size=0;const chunks:Uint8Array[]=[];while(true){const {value,done}=await reader.read();if(done)break;size+=value.length;if(size>limit){await reader.cancel();throw Error('Request is too large.');}chunks.push(value);}return JSON.parse(Buffer.concat(chunks).toString('utf8'));}
 export function sameOrigin(request:Request){const origin=request.headers.get('origin');const url=new URL(request.url);const allowed=[url.origin,'https://rivelolabs.com','https://www.rivelolabs.com'];if(process.env.NODE_ENV==='development')allowed.push(`http://localhost:${url.port||'3000'}`,`http://127.0.0.1:${url.port||'3000'}`);return !!origin&&allowed.includes(origin);}

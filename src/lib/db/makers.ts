@@ -53,16 +53,16 @@ export async function joinAsMaker(userId:string,x:{username:string;id:string;ava
 export async function removeOwnMaker(id:string,userId:string){bust('makers');await db().query(`UPDATE rivelo.maker_pages SET status='hidden' WHERE id=$1 AND claimed_by=$2`,[id,userId]);}
 /** Claimed makers with a location appear on the world map. */
 export async function makerPins(){
-  const r=await db().query(`SELECT id,username,name,product_name,city,lat,lng,COALESCE(claimed_at,created_at) joined FROM rivelo.maker_pages WHERE status='claimed' AND lat IS NOT NULL AND lng IS NOT NULL`);
+  const r=await db().query(`SELECT id,username,name,product_name,city,lat,lng,avatar_url,NULLIF(logo_url,'') logo,COALESCE(claimed_at,created_at) joined FROM rivelo.maker_pages WHERE status='claimed' AND lat IS NOT NULL AND lng IS NOT NULL`);
   const extras=await makerExtras(r.rows.map(x=>x.id));
-  return r.rows.map(x=>({id:`maker-${x.id}`,productId:`maker:${x.username}`,name:productLabel(x.product_name,x.name)+((extras.get(x.id)?.length)?` +${extras.get(x.id)!.length}`:''),city:x.city||'',lat:x.lat,lng:x.lng,genre:'Makers',href:`/makers/${x.username}`,joinedAt:new Date(x.joined).toISOString()}));
+  return r.rows.map(x=>({id:`maker-${x.id}`,productId:`maker:${x.username}`,name:productLabel(x.product_name,x.name)+((extras.get(x.id)?.length)?` +${extras.get(x.id)!.length}`:''),city:x.city||'',lat:x.lat,lng:x.lng,genre:'Makers',href:`/makers/${x.username}`,joinedAt:new Date(x.joined).toISOString(),avatar:xPhoto(x.avatar_url,x.username),badge:x.logo||null}));
 }
 /** Pin photo per claimed maker: their product logo if they added one, otherwise their X profile photo (larger size). */
 export async function makerAvatarMap(){const r=await db().query(`SELECT id,username,NULLIF(logo_url,'') logo,avatar_url FROM rivelo.maker_pages WHERE status='claimed'`);return new Map<string,{photo:string;logo:string|null}>(r.rows.map(x=>[`maker-${x.id}`,{photo:xPhoto(x.avatar_url,x.username),logo:x.logo||null}]));}
 /** Keep the stored X photo fresh from the signed-in owner's X account. */
 export async function setMakerAvatar(id:string,avatar:string){bust('makers');await db().query(`UPDATE rivelo.maker_pages SET avatar_url=$2 WHERE id=$1`,[id,avatar]);}
 
-export const cachedMakerPins=cached(async()=>{const [pins,avatars]=await Promise.all([makerPins(),makerAvatarMap()]);return pins.map(p=>{const a=avatars.get(p.id);return {...p,avatar:a?.photo||null,badge:a?.logo||null};});},'maker-pins',['makers'],120);
+export const cachedMakerPins=cached(makerPins,'maker-pins-v2',['makers'],120);
 
 /** Maker pages this signed-in user has claimed (for their account page). */
 export async function myMakerPages(userId:string){const r=await db().query(`SELECT ${COLS} FROM rivelo.maker_pages WHERE claimed_by=$1 AND status='claimed' ORDER BY created_at DESC`,[userId]);return r.rows.map(map);}
