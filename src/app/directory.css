@@ -558,3 +558,4 @@ a.rd-trend-main{color:inherit;text-decoration:none}
 
 /* "Show more" under the product list */
 .rd-show-more{display:flex;justify-content:center;margin:22px 0 8px}.rd-show-more button{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:11px 20px;border:1px solid var(--rd-line);border-radius:999px;background:var(--rd-surface);color:var(--rd-ink);font-size:14px;font-weight:550;cursor:pointer}.rd-show-more button span{color:var(--rd-muted);font-weight:450}@media(hover:hover){.rd-show-more button:hover{background:var(--rd-soft)}}
+
