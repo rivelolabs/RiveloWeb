@@ -1,5 +1,5 @@
 "use client";
-import {useEffect,useRef,useState} from 'react';
+import {useCallback,useEffect,useRef,useState} from 'react';
 import 'leaflet/dist/leaflet.css';
 import type {YachtSpot} from '@/lib/yachts';
 import {YACHT_PRICE} from '@/lib/yachts';
@@ -49,14 +49,29 @@ export default function BusinessMap({pins=emptyPins,selected,onSelect,pick,onPic
       draw=()=>{
         if(!layer.current)return;
         layer.current.clearLayers();
-        const cells=new Map<string,PublicPin[]>();
-        for(const pin of pins){const pixel=instance.project([pin.lat,pin.lng]);const key=instance.getZoom()<10&&pin.id!==selected&&!pin.pending?`${Math.floor(pixel.x/72)}:${Math.floor(pixel.y/72)}`:pin.id;cells.set(key,[...(cells.get(key)||[]),pin]);}
-        for(const group of cells.values()){
+        // Group only pins that would actually overlap (closer than ~46px on screen). Small groups (up to 6) are
+        // fanned out around their spot so every pin is visible without zooming; bigger crowds become a "+N" bubble.
+        const zoom=instance.getZoom(),RADIUS=46,FAN_MAX=6;
+        const groups:{pins:PublicPin[];x:number;y:number}[]=[];
+        for(const pin of pins){const px=instance.project([pin.lat,pin.lng],zoom);
+          const g=zoom<10&&pin.id!==selected&&!pin.pending?groups.find(c=>Math.hypot(c.x-px.x,c.y-px.y)<RADIUS):undefined;
+          if(g){g.pins.push(pin);g.x=(g.x*(g.pins.length-1)+px.x)/g.pins.length;g.y=(g.y*(g.pins.length-1)+px.y)/g.pins.length;}else groups.push({pins:[pin],x:px.x,y:px.y});}
+        // Overlapping pins stay on their real location: the top-ranked one sits in front, the others are drawn
+        // underneath it (slightly smaller). Pins on the very same spot are nudged a few pixels so each one peeks out.
+        const items:{group:PublicPin[];point:import('leaflet').LatLng;under:boolean;z:number}[]=[];
+        for(const g of groups){
+          if(g.pins.length>FAN_MAX){items.push({group:g.pins,point:instance.unproject([g.x,g.y],zoom),under:false,z:0});continue;}
+          const ordered=[...g.pins].sort((a,b)=>(a.id===selected?-1:b.id===selected?1:0)||(a.rank||999)-(b.rank||999));
+          const taken:{x:number;y:number}[]=[];
+          ordered.forEach((pin,i)=>{const px=instance.project([pin.lat,pin.lng],zoom);let x=px.x,y=px.y;
+            while(taken.some(t=>Math.hypot(t.x-x,t.y-y)<14)){x+=16;y+=6;}taken.push({x,y});
+            items.push({group:[pin],point:x===px.x&&y===px.y?L.latLng(pin.lat,pin.lng):instance.unproject([x,y],zoom),under:i>0,z:(ordered.length-i)*2000});});
+        }
+        for(const {group,point,under,z} of items){
           const pin=group[0],cluster=group.length>1;
-          const point=cluster?L.latLng(group.reduce((sum,item)=>sum+item.lat,0)/group.length,group.reduce((sum,item)=>sum+item.lng,0)/group.length):L.latLng(pin.lat,pin.lng);
           // Round photo pin (X photo or product logo), optional product-logo badge, "+N" pill for nearby pins.
           const lead=group.find(item=>item.id===selected)||group.find(item=>item.avatar)||pin;
-          const face=document.createElement('span');face.className=`ra-pin2${cluster?' ra-pin2-cluster':''}${lead.id===selected?' ra-pin2-selected':''}${!cluster&&pin.pending?' ra-pin2-pending':''}`;
+          const face=document.createElement('span');face.className=`ra-pin2${under?' ra-pin2-under':''}${cluster?' ra-pin2-cluster':''}${lead.id===selected?' ra-pin2-selected':''}${!cluster&&pin.pending?' ra-pin2-pending':''}`;
           const disc=document.createElement('span');disc.className='ra-pin2-disc';disc.textContent=lead.name.slice(0,2).toUpperCase();
           if(lead.avatar){const img=document.createElement('img');img.src=lead.avatar;img.alt='';img.referrerPolicy='no-referrer';img.onerror=()=>img.remove();disc.append(img);}
           face.append(disc);
@@ -64,7 +79,7 @@ export default function BusinessMap({pins=emptyPins,selected,onSelect,pick,onPic
           if(cluster){const count=document.createElement('b');count.className='ra-pin2-count';count.textContent=`+${group.length-1}`;face.append(count);}
           if(lead.rank){const rank=document.createElement('b');rank.className='ra-pin2-rank';rank.textContent=`#${lead.rank}`;face.append(rank);}
           const tip=document.createElement('i');tip.className='ra-pin2-tip';face.append(tip);
-          const marker=L.marker(point,{icon:L.divIcon({className:'ra-product-pin',html:face,iconSize:[60,66],iconAnchor:[30,64]}),title:cluster?`${group.length} registered products`:pin.name,keyboard:true,zIndexOffset:pin.id===selected?1000:0}).addTo(layer.current);
+          const marker=L.marker(point,{icon:L.divIcon({className:'ra-product-pin',html:face,iconSize:[60,66],iconAnchor:[30,64]}),title:cluster?`${group.length} registered products`:pin.name,keyboard:true,riseOnHover:true,zIndexOffset:pin.id===selected?100000:z}).addTo(layer.current);
           const label=document.createElement('div'),strong=document.createElement('strong');strong.textContent=cluster?`${group.length} products nearby`:pin.name;label.append(strong,document.createElement('br'),document.createTextNode(cluster?'Zoom in to explore':pin.pending?`${pin.city} · Pending review (only you see this)`:pin.city));marker.bindTooltip(label,{direction:'top',offset:[0,-40]});
           marker.on('click',()=>{if(cluster)instance.fitBounds(L.latLngBounds(group.map(item=>[item.lat,item.lng] as [number,number])),{padding:[90,90],maxZoom:Math.max(10,instance.getZoom()+2)});else callbacks.current.onSelect?.(pin.id);});
         }
@@ -77,7 +92,14 @@ export default function BusinessMap({pins=emptyPins,selected,onSelect,pick,onPic
     });
     return()=>{disposed=true;if(draw)map.current?.off('zoomend moveend',draw);};
   },[pins,selected,pick,ready]);
-  useEffect(()=>{if(ready&&resetKey)map.current?.setView(world?[24,28]:[21,77],world?2:4,{animate:false});},[resetKey,ready,world]);
+  // World map: frame every pin, keeping clear of the results panel on the left (desktop), so nothing hides under it.
+  const framed=useRef(false);
+  const frame=useCallback((animate:boolean)=>{const m=map.current;if(!m||!world||!pins.length)return false;
+    import('leaflet').then(L=>{const panel=document.querySelector('.ra-results-panel') as HTMLElement|null;const wide=window.innerWidth>800;
+      const left=wide&&panel&&panel.offsetParent?panel.getBoundingClientRect().right-(container.current?.getBoundingClientRect().left||0)+24:24;
+      m.fitBounds(L.latLngBounds(pins.map(p=>[p.lat,p.lng] as [number,number])),{paddingTopLeft:[Math.max(24,left),80],paddingBottomRight:[24,90],maxZoom:4,animate});});return true;},[pins,world]);
+  useEffect(()=>{if(ready&&!framed.current&&pins.length)framed.current=frame(false);},[ready,pins,frame]);
+  useEffect(()=>{if(ready&&resetKey&&!frame(true))map.current?.setView(world?[24,28]:[21,77],world?2:4,{animate:false});},[resetKey,ready,world]);// eslint-disable-line react-hooks/exhaustive-deps
   useEffect(()=>{if(ready&&focus&&map.current)map.current.flyTo([focus.lat,focus.lng],focus.zoom,{duration:.8,animate:!matchMedia('(prefers-reduced-motion: reduce)').matches});},[focus,ready]);
   useEffect(()=>{
     if(!ready||!yachts?.length)return;let disposed=false;
