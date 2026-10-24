@@ -6,7 +6,7 @@ export const runtime='nodejs';export const dynamic='force-dynamic';
 export async function POST(request:NextRequest){
   try{
     if(!sameOrigin(request))return NextResponse.json({error:'Invalid origin.'},{status:403});
-    const user=await currentUser(request);if(!user)return NextResponse.json({error:'Sign in again.'},{status:401});
+    const user=await currentUser(request,{fresh:true});if(!user)return NextResponse.json({error:'Sign in again.'},{status:401});
     const b=await jsonBody(request,1000);const siteUrl=String(b.siteUrl||'');
     if(!(await listSites(user.id)).some(s=>s.siteUrl===siteUrl))return NextResponse.json({error:'Choose one of your Search Console properties.'},{status:400});
     await setSite(user.id,siteUrl);return NextResponse.json({success:true});

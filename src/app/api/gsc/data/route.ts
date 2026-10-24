@@ -7,7 +7,7 @@ export const runtime='nodejs';export const dynamic='force-dynamic';export const 
 const cachedReport=unstable_cache((userId:string,site:string,days:7|28|90)=>report(userId,site,days),['gsc-report'],{revalidate:3600});
 export async function GET(request:NextRequest){
   try{
-    const user=await currentUser(request);if(!user)return NextResponse.json({error:'Sign in again.'},{status:401});
+    const user=await currentUser(request,{fresh:true});if(!user)return NextResponse.json({error:'Sign in again.'},{status:401});
     if(!await canUseSearchConsole(user.id))return NextResponse.json({error:'Sign in to use Search Console.'},{status:403});
     const c=await getConnection(user.id);if(!c?.siteUrl)return NextResponse.json({error:'Connect Search Console and choose a property first.'},{status:400});
     const q=request.nextUrl.searchParams.get('days');const days=q==='90'?90:q==='7'?7:28;

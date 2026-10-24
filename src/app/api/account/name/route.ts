@@ -7,7 +7,7 @@ export const runtime='nodejs';export const dynamic='force-dynamic';
 // After the browser saves a new display name in Supabase (user_metadata.display_name), copy it to rivelo.profiles.
 export async function POST(request:NextRequest){
   if(!sameOrigin(request)||!dbEnabled())return NextResponse.json({error:'Unavailable.'},{status:403});
-  const user=await currentUser(request);if(!user)return NextResponse.json({error:'Sign in again.'},{status:401});
+  const user=await currentUser(request,{fresh:true});if(!user)return NextResponse.json({error:'Sign in again.'},{status:401});
   const name=String(user.user_metadata?.display_name||'').trim().slice(0,120);
   await upsertProfile(user);
   // One name everywhere: account, builder page, Builders list, map and community.

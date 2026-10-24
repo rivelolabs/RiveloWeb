@@ -9,7 +9,7 @@ export const runtime='nodejs';export const dynamic='force-dynamic';
 export async function POST(request:NextRequest){
   try{
     if(!sameOrigin(request)||!dbEnabled())return NextResponse.json({error:'Unavailable.'},{status:403});
-    const user=await currentUser(request);if(!user)return NextResponse.json({error:'Sign in again.'},{status:401});
+    const user=await currentUser(request,{fresh:true});if(!user)return NextResponse.json({error:'Sign in again.'},{status:401});
     const b=await jsonBody(request,500);const yacht=Number(b.yacht);if(!Number.isInteger(yacht)||yacht<1||yacht>5)throw Error('Choose a yacht.');
     const s=await db().query(`SELECT id,slot_index FROM rivelo.subscriptions WHERE id=$1 AND user_id=$2 AND plan_id IN ('growth','yacht') AND status IN ('active','authenticated')`,[String(b.id||''),user.id]);
     const sub=s.rows[0];if(!sub)throw Error('No active plan with a yacht found.');

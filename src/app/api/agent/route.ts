@@ -10,7 +10,7 @@ export const runtime='nodejs';export const dynamic='force-dynamic';export const 
 const KINDS=['setup','rewrite','keywords','outline','llms','visibility','leads','conversations','email','weekly','audit'];
 // GET: plan access, credit, settings, latest results. POST {settings} saves settings; POST {task,input} runs one agent task.
 export async function GET(request:NextRequest){
-  const user=dbEnabled()?await currentUser(request):null;if(!user)return NextResponse.json({signedIn:false});
+  const user=dbEnabled()?await currentUser(request,{fresh:true}):null;if(!user)return NextResponse.json({signedIn:false});
   const allowed=await canUseAgent(user.id);if(!allowed)return NextResponse.json({signedIn:true,growth:false});
   try{
     const [c,s,...lists]=await Promise.all([credit(user.id),getSettings(user.id),...KINDS.map(k=>results(user.id,k,k==='visibility'||k==='weekly'?8:k==='audit'?2:5))]);
@@ -20,7 +20,7 @@ export async function GET(request:NextRequest){
 export async function POST(request:NextRequest){
   try{
     if(!sameOrigin(request)||!dbEnabled())return NextResponse.json({error:'Unavailable.'},{status:403});
-    const user=await currentUser(request);if(!user)return NextResponse.json({error:'Sign in again.'},{status:401});
+    const user=await currentUser(request,{fresh:true});if(!user)return NextResponse.json({error:'Sign in again.'},{status:401});
     if(!await canUseAgent(user.id))return NextResponse.json({error:'The Claude agent is part of the Growth plan.'},{status:403});
     await upsertProfile(user);
     const b=await jsonBody(request,8000);

@@ -12,7 +12,7 @@ export async function POST(request:NextRequest){
     if(!sameOrigin(request))return NextResponse.json({error:'Invalid origin.'},{status:403});
     rateLimit(request,'billing',10);
     if(!dbEnabled()||!billingConfigured())return NextResponse.json({error:'Plans open soon. Please check back shortly.'},{status:503});
-    const user=await currentUser(request);if(!user)return NextResponse.json({error:'Sign in to choose a plan.',signIn:true},{status:401});
+    const user=await currentUser(request,{fresh:true});if(!user)return NextResponse.json({error:'Sign in to choose a plan.',signIn:true},{status:401});
     const body=await jsonBody(request,1000);const plan=body.plan as PlanId,productId=typeof body.productId==='string'?body.productId:'';
     if(!PLAN_IDS.includes(plan))return NextResponse.json({error:'Choose a plan.'},{status:400});
     if(!await ownsPublishedProduct({id:user.id,email:user.email},productId))return NextResponse.json({error:'Choose a published product that you listed or claimed with this email.'},{status:403});

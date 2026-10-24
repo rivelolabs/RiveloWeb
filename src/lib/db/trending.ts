@@ -7,9 +7,11 @@ export async function voteCounts():Promise<VoteCounts>{
 }
 export async function myVotes(userId:string){const r=await db().query(`SELECT product_id FROM rivelo.upvotes WHERE user_id=$1`,[userId]);return r.rows.map(x=>x.product_id as string);}
 export async function toggleVote(userId:string,productId:string){
-  const del=await db().query(`DELETE FROM rivelo.upvotes WHERE user_id=$1 AND product_id=$2`,[userId,productId]);
-  if(del.rowCount)return false;
-  await db().query(`INSERT INTO rivelo.upvotes (user_id,product_id) VALUES ($1,$2) ON CONFLICT DO NOTHING`,[userId,productId]);return true;
+  // One round trip: remove the vote if it exists, otherwise add it.
+  const r=await db().query(`WITH del AS (DELETE FROM rivelo.upvotes WHERE user_id=$1 AND product_id=$2 RETURNING 1),
+    ins AS (INSERT INTO rivelo.upvotes (user_id,product_id) SELECT $1,$2 WHERE NOT EXISTS (SELECT 1 FROM del) ON CONFLICT DO NOTHING RETURNING 1)
+    SELECT EXISTS (SELECT 1 FROM ins) voted`,[userId,productId]);
+  return r.rows[0].voted as boolean;
 }
 export type Launch={id:string;source:'producthunt'|'indiehackers'|'rivelo'|'hackernews';name:string;tagline:string;url:string;website:string|null;image:string|null;votes:number;comments:number;launchedAt:string;topics:string[]};
 export async function recentLaunches(limit=30,days=14):Promise<Launch[]>{

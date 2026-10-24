@@ -12,7 +12,7 @@ export async function POST(request:NextRequest){
   try{
     if(!sameOrigin(request)||!dbEnabled())return NextResponse.json({error:'Unavailable.'},{status:403});
     rateLimit(request,'maker-claim',10);
-    const user=await currentUser(request);if(!user)return NextResponse.json({error:'Sign in with X to claim your page.',signIn:true},{status:401});
+    const user=await currentUser(request,{fresh:true});if(!user)return NextResponse.json({error:'Sign in with X to claim your page.',signIn:true},{status:401});
     const b=await jsonBody(request,1000);let productUrl='';try{productUrl=b.productUrl?httpsUrl(String(b.productUrl))||'':'';}catch{productUrl='';}const maker=await makerByUsername(String(b.username||''));
     if(!maker||maker.status==='hidden')return NextResponse.json({error:'Page not found.'},{status:404});
     if(maker.status==='claimed')return NextResponse.json({error:'This page has already been claimed.'},{status:409});

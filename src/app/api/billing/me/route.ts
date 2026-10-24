@@ -11,7 +11,7 @@ export async function GET(request:NextRequest){
   
   const provider=dodoConfigured()?'dodo':billingConfigured()?'razorpay':null;
   const billingReady=!!provider&&dbEnabled();const testMode=provider==='dodo'&&dodoMode()==='test';
-  const user=await currentUser(request);
+  const user=await currentUser(request,{fresh:true});
   const [yachts,spotlight]=dbEnabled()?await Promise.all([yachtSchedule(user?.id).catch(()=>[]),spotlightAvailability(user?.id).catch(()=>null)]):[[],null];
   const takenYachts=yachts.filter(y=>!y.free).map(y=>y.index);if(!user)return NextResponse.json({signedIn:false,takenYachts,yachts,spotlight,billingReady,provider,testMode},{headers:{'Cache-Control':'no-store'}});
   try{

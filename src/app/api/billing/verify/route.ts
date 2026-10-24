@@ -9,7 +9,7 @@ export const runtime='nodejs';export const dynamic='force-dynamic';
 export async function POST(request:NextRequest){
   try{
     if(!sameOrigin(request)||!dbEnabled())return NextResponse.json({error:'Unavailable.'},{status:403});
-    const user=await currentUser(request);if(!user)return NextResponse.json({error:'Sign in again.'},{status:401});
+    const user=await currentUser(request,{fresh:true});if(!user)return NextResponse.json({error:'Sign in again.'},{status:401});
     const b=await jsonBody(request,2000);
     const paymentId=String(b.razorpay_payment_id||''),subscriptionId=String(b.razorpay_subscription_id||''),signature=String(b.razorpay_signature||'');
     if(!verifyCheckoutSignature(paymentId,subscriptionId,signature))return NextResponse.json({error:'Payment could not be verified.'},{status:400});

@@ -14,7 +14,7 @@ export async function POST(request:NextRequest){
   try{
     if(!sameOrigin(request)||!dbEnabled())return NextResponse.json({error:'Unavailable.'},{status:403});
     rateLimit(request,'maker-join',10);
-    const user=await currentUser(request);if(!user)return NextResponse.json({error:'Sign in with X to add yourself.',signIn:true},{status:401});
+    const user=await currentUser(request,{fresh:true});if(!user)return NextResponse.json({error:'Sign in with X to add yourself.',signIn:true},{status:401});
     const x=xIdentity(user);if(!x?.username)return NextResponse.json({error:'Builder pages use your X profile. Sign in with X to add yourself.',signIn:true},{status:403});
     const b=await jsonBody(request,1000).catch(()=>({} as Record<string,unknown>));let productUrl:string;try{productUrl=httpsUrl(String(b.productUrl||''))||'';if(!productUrl)throw 0;}catch{return NextResponse.json({error:'Add the link to your app or website (starting with https://).'},{status:400});}
     await upsertProfile(user);

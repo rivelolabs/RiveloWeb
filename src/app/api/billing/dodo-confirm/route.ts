@@ -11,7 +11,7 @@ export const runtime='nodejs';export const dynamic='force-dynamic';
 export async function POST(request:NextRequest){
   try{
     if(!sameOrigin(request)||!dbEnabled())return NextResponse.json({error:'Unavailable.'},{status:403});
-    const user=await currentUser(request);if(!user)return NextResponse.json({error:'Sign in again.'},{status:401});
+    const user=await currentUser(request,{fresh:true});if(!user)return NextResponse.json({error:'Sign in again.'},{status:401});
     const b=await jsonBody(request,500);const given=String(b.subscriptionId||'');
     // No id in the return URL: look up this user's own recent subscriptions on Dodo (by our metadata).
     const ids=/^sub_[A-Za-z0-9]{6,60}$/.test(given)?[given]:(await listDodoSubscriptions()).filter(x=>x.metadata?.user_id===user.id&&x.status==='active').map(x=>x.subscription_id).slice(0,10);

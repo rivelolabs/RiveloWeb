@@ -6,7 +6,7 @@ export async function GET(request:NextRequest){
   const origin=callbackOrigin(request),p=request.nextUrl.searchParams;
   const back=(status:string)=>NextResponse.redirect(`${origin}/growth?gsc=${status}`);
   if(p.get('error'))return back('cancelled');
-  const user=await currentUser(request);const owner=readState(p.get('state')||'');
+  const user=await currentUser(request,{fresh:true});const owner=readState(p.get('state')||'');
   if(!user||!owner||owner!==user.id)return back('expired');
   try{
     await saveConnection(user.id,await exchangeCode(origin,p.get('code')||''));

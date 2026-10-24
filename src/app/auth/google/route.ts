@@ -1,4 +1,4 @@
-import {NextRequest,NextResponse} from 'next/server';
+import {NextRequest,NextResponse,after} from 'next/server';
 import {serverAuth} from '@/lib/auth/server';
 import {authConfig,safeNext} from '@/lib/auth/config';
 import {jsonBody,sameOrigin} from '@/lib/catalog/http';
@@ -20,7 +20,8 @@ export async function POST(request:NextRequest){
     const response=NextResponse.json({});
     const client=serverAuth(request,response);
     const {data,error}=await client.auth.signInWithIdToken({provider:'google',token,nonce});
-    if(!error&&data.user)await upsertProfile(data.user).catch(()=>{});
+    // Saving the profile runs after the reply, so a slow database never blocks Google sign-in.
+    if(!error&&data.user){const user=data.user;after(()=>upsertProfile(user).catch(()=>{}));}
     if(error)return NextResponse.json({error:'We couldn’t complete Google sign-in. Please try again.'},{status:401});
     const result=NextResponse.json({url:safeNext(body.next)},{headers:{'Cache-Control':'no-store'}});
     response.cookies.getAll().forEach(cookie=>result.cookies.set(cookie));
