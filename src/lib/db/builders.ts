@@ -1,3 +1,4 @@
+import {displayImage} from '@/lib/image-url';
 import {db} from './index';
 import {cached} from '@/lib/cache';
 import {makerExtras,productLabel,xPhoto,type MakerProduct} from './makers';
@@ -117,7 +118,7 @@ export function builderProducts(all:Builder[]):Product[]{
   const item=(b:Builder,id:string,name:string,u:string,desc:string,logo:string|null):Product=>{
     const store=/play\.google\.com/.test(u)?'Android':/apps\.apple\.com|itunes\.apple\.com/.test(u)?'iOS':null;const text=(desc||b.bio||`Built by @${b.username}`).replace(/\s+/g,' ').trim();
     return {id,name,tagline:text.length>150?text.slice(0,149)+'…':text,description:text,genre:GENRE[categoryOf(`${name} ${desc}`)]||GENRE[b.category]||'Productivity',platforms:store?[store]:['Web'],type:store?'App':'Website',
-      color:['lilac','lime','peach','butter','blue'][id.length%5],letter:name.slice(0,1).toLowerCase(),url:u,logo:logo||siteIcon(u),claimed:true,funding:b.funding||undefined} as Product;};
+      color:['lilac','lime','peach','butter','blue'][id.length%5],letter:name.slice(0,1).toLowerCase(),url:u,logo:displayImage(logo)||siteIcon(u),claimed:true,funding:b.funding||undefined} as Product;};
   return all.filter(b=>b.source==='x'&&b.claimed&&(b.productUrl||b.extras.length)).flatMap(b=>[...(b.productUrl?[item(b,`maker:${b.username}`,b.product&&b.product!==b.name?b.product:b.name,b.productUrl,b.productDescription,b.logo)]:[]),
     ...b.extras.map(e=>item(b,`maker:${b.username}/${e.key}`,e.name,e.url,e.description,e.logo))]);
 }

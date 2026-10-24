@@ -3,6 +3,8 @@ import Link from 'next/link';
 import {after} from 'next/server';
 import {ArrowUpRight,ChevronUp,MessageSquare,Rocket} from 'lucide-react';
 import CommunityShell from '@/components/CommunityShell';
+import SafeImg from '@/components/SafeImg';
+import {displayImage} from '@/lib/image-url';
 import {dbEnabled} from '@/lib/db';
 import {cachedRecentLaunches,type Launch} from '@/lib/db/trending';
 import {refreshLaunchesIfStale} from '@/lib/launches/refresh';
@@ -35,7 +37,7 @@ export default async function Page({searchParams}:Props){
       <h2 className="bl-list-title" style={{display:'flex',alignItems:'center',gap:8}}><Rocket size={18}/>{dayLabel(day)}</h2>
       <ol className="bl-list">{items.map((l,i)=><li key={l.id} className="bl-row" style={{gridTemplateColumns:'34px 48px 1fr auto'}}>
         <span className={`bl-rank${i<3?' bl-rank-top':''}`}>{i+1}</span>
-        {l.image?/* eslint-disable-next-line @next/next/no-img-element */<img src={l.image} alt="" width={48} height={48} loading="lazy" style={{width:48,height:48,borderRadius:12,objectFit:'cover',background:'var(--rd-soft)'}}/>:<span className="rd-launch-ph" style={{width:48,height:48,borderRadius:12}}>{l.name.slice(0,1)}</span>}
+        <SafeImg src={displayImage(l.image)} letter={l.name}/>
         <div className="bl-main">
           <p className="bl-name"><a href={l.website||l.url} target="_blank" rel="noopener">{l.name}</a></p>
           {l.tagline&&<p className="bl-bio">{l.tagline}</p>}

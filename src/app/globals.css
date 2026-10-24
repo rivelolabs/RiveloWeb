@@ -360,3 +360,11 @@ html[data-theme="dark"] body{color:#f2f5f9}
 .rl-nav-progress.rl-nav-on{opacity:1;animation:rl-nav 8s cubic-bezier(.1,.8,.2,1) forwards}
 @keyframes rl-nav{0%{width:0}15%{width:45%}100%{width:92%}}
 @media (prefers-reduced-motion:reduce){.rl-nav-progress.rl-nav-on{animation:none;width:60%}}
+
+/* Loading placeholders (PageSkeleton) */
+.rl-skel{display:flex;flex-direction:column;align-items:flex-start}
+.rl-skel-line{display:block;border-radius:8px;background:linear-gradient(90deg,var(--rd-soft,#eee) 25%,color-mix(in srgb,var(--rd-soft,#eee) 60%,var(--rd-line,#ddd)) 50%,var(--rd-soft,#eee) 75%);background-size:200% 100%;animation:rl-skel 1.2s ease-in-out infinite}
+.rl-skel-list{display:grid;gap:12px;width:100%;margin-top:34px}
+.rl-skel-row{display:flex;gap:14px;align-items:center;padding:16px;border:1px solid var(--rd-line,#e5e5e5);border-radius:14px}
+@keyframes rl-skel{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.rl-skel-line{animation:none}}
